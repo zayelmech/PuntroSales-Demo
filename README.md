@@ -10,3 +10,17 @@ This file must include
 - Any relevant information about the app's performance, such as its stability, scalability, or user feedback
 - A link to the app's documentation or user manual, if available
 - A call to action encouraging people to try out the app and contact me if they have any questions or feedback.
+
+
+## Branching Strategy
+
+### Main branches
+
+- master
+
+Naming Conventions
+Generally, we can follow next structured pattern
+
+<feature|bugfix>/<package|layer>/<description>
+
+

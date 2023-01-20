@@ -1,8 +1,7 @@
 package com.imecatro.ui.products.views
 
-import androidx.compose.foundation.BorderStroke
+import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,45 +13,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.rememberAsyncImagePainter
 import com.imecatro.ui.R
 import com.imecatro.ui.products.model.ProductUiModel
+import com.imecatro.ui.products.viewmodels.ProductsViewModel
 import com.imecatro.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.ui.theme.Typography
 
 
 @Composable
-fun ListOfProducts(list: List<ProductUiModel>) {
+fun ListOfProducts(list: List<ProductUiModel>, onCardClicked: (Int?) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(list) { product ->
-            ProductCardCompose(product = product, {})
+            ProductCardCompose(product = product) { onCardClicked(product.id) }
         }
     }
 }
 
-val imgTest =
+private const val TAG = "ListProductsComposables"
+const val imgTest =
     "https://imecatro.com/img/mechanic.jpg"
 
-//@OptIn(ExperimentalGlideComposeApi::class)
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
 
+    val cardTag = "${ListProductsTestTags.CARD.name}-${product.id}"
+
     ElevatedCard(
         modifier = Modifier
-            .padding(2.dp, 5.dp)
-            .width(350.dp)
-            .clickable { onCardClicked },
-        elevation = CardDefaults.cardElevation(3.dp)
+            .padding(2.dp, 2.dp)
+            .fillMaxWidth(0.9f)
+//            .width(350.dp)
+            .clickable { onCardClicked() }
+            .testTag(cardTag),
+        elevation = CardDefaults.cardElevation(0.5.dp),
+        colors = CardDefaults.cardColors(Color.White)
     ) {
         Row(
             modifier = Modifier
@@ -61,28 +64,23 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
         ) {
             // TODO add description and implement image by url
             product.imageUrl?.let { link ->
-                GlideImage(
-                    model = link,
+                Image(
+                    painter = rememberAsyncImagePainter(R.raw.arcreactor),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(5.dp)
                         .size(100.dp)
-                        .clip(RoundedCornerShape(25))
-                        .border(
-                            BorderStroke(1.dp, Color.Transparent),
-                            shape = RoundedCornerShape(25)
-                        )//.clickable(onClick = onClick).fillParentMaxSize(),
-                )
+                        .padding(5.dp)
+                        .clip(RoundedCornerShape(25)),
+                    contentScale = ContentScale.FillWidth
 
-//                AsyncImage(
-//                    model = link,
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .size(60.dp)
-//                        .padding(5.dp)
-//                )
+                    //                        .border(
+//                            BorderStroke(1.dp, Color.Transparent),
+//                            shape = RoundedCornerShape(25)
+//                        )//.clickable(onClick = onClick).fillParentMaxSize(),
+
+                )
             } ?: Image(
-                painter = painterResource(id = R.drawable.ic_baseline_hide_source_24),
+                painter = rememberAsyncImagePainter(R.raw.arcreactor),
                 contentDescription = null, modifier = Modifier
                     .size(60.dp)
                     .padding(5.dp), alignment = Alignment.Center
@@ -105,6 +103,12 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
     return fakeList
 }
 
+@Composable
+fun ListOfProductsStateImpl(viewModel: ProductsViewModel) {
+
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewListOfProducts() {
@@ -114,7 +118,13 @@ fun PreviewListOfProducts() {
             color = MaterialTheme.colorScheme.background
         ) {
 
-            ListOfProducts(list = fakeProductsList(20))
+            ListOfProducts(list = fakeProductsList(20)) {
+                Log.d(TAG, "PreviewListOfProducts: $it")
+            }
         }
     }
+}
+
+enum class ListProductsTestTags(value: String) {
+    CARD("ElevatedCard")
 }
