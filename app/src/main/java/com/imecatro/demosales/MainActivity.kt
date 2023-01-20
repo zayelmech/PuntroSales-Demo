@@ -11,13 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.ui.products.views.ListOfProducts
+import com.imecatro.ui.products.views.fakeProductsList
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MainApp {
-                Greeting("Android")
+                ListOfProducts(list = fakeProductsList(20))
+
             }
         }
     }

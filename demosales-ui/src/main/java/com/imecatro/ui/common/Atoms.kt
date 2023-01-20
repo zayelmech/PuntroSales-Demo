@@ -19,7 +19,7 @@ fun AtomsPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            ProductCardCompose(ProductUiModel(1,"Rice","2.00","1kg",""))
+            ProductCardCompose(ProductUiModel(1,"Rice","2.00","1kg",""),{})
         }
     }
 }
