@@ -7,8 +7,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,13 +29,21 @@ import com.imecatro.ui.products.model.ProductUiModel
 import com.imecatro.ui.products.viewmodels.ProductsViewModel
 import com.imecatro.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.ui.theme.Typography
+import kotlinx.coroutines.launch
 
+
+private const val TAG = "ListProductsComposables"
 
 @Composable
-fun ListOfProducts(list: List<ProductUiModel>, onCardClicked: (Int?) -> Unit) {
+fun ListOfProducts(
+    list: List<ProductUiModel>,
+    innerPadding: PaddingValues,
+    onCardClicked: (Int?) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = innerPadding
     ) {
         items(list) { product ->
             ProductCardCompose(product = product) { onCardClicked(product.id) }
@@ -38,25 +51,19 @@ fun ListOfProducts(list: List<ProductUiModel>, onCardClicked: (Int?) -> Unit) {
     }
 }
 
-private const val TAG = "ListProductsComposables"
-const val imgTest =
-    "https://imecatro.com/img/mechanic.jpg"
-
 @Composable
 fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
 
     val cardTag = "${ListProductsTestTags.CARD.name}-${product.id}"
 
-    ElevatedCard(
-        modifier = Modifier
-            .padding(2.dp, 2.dp)
-            .fillMaxWidth(0.9f)
+    ElevatedCard(modifier = Modifier
+        .padding(2.dp, 2.dp)
+        .fillMaxWidth(0.9f)
 //            .width(350.dp)
-            .clickable { onCardClicked() }
-            .testTag(cardTag),
+        .clickable { onCardClicked() }
+        .testTag(cardTag),
         elevation = CardDefaults.cardElevation(0.5.dp),
-        colors = CardDefaults.cardColors(Color.White)
-    ) {
+        colors = CardDefaults.cardColors(Color.White)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,18 +79,15 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
                         .padding(5.dp)
                         .clip(RoundedCornerShape(25)),
                     contentScale = ContentScale.FillWidth
-
-                    //                        .border(
-//                            BorderStroke(1.dp, Color.Transparent),
-//                            shape = RoundedCornerShape(25)
-//                        )//.clickable(onClick = onClick).fillParentMaxSize(),
-
                 )
             } ?: Image(
                 painter = rememberAsyncImagePainter(R.raw.arcreactor),
-                contentDescription = null, modifier = Modifier
-                    .size(60.dp)
-                    .padding(5.dp), alignment = Alignment.Center
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(5.dp)
+                    .clip(RoundedCornerShape(25)),
+                contentScale = ContentScale.FillWidth
             )
             Column {
                 Text(text = product.name ?: "Product name", style = Typography.titleMedium)
@@ -95,17 +99,74 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ListOfProductsPlusFloatIcon(
+    list: List<ProductUiModel>,
+    onCardClicked: (Int?) -> Unit,
+    onNavigateAction: () -> Unit
+) {
+    Scaffold(floatingActionButton = {
+        FloatingActionButton(onClick = { onNavigateAction()}) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        }
+    }) { innerPadding ->
+        ListOfProducts(list, innerPadding, onCardClicked)
+    }
+}
+
 fun fakeProductsList(qty: Int): List<ProductUiModel> {
     val fakeList = mutableListOf<ProductUiModel>()
     for (i in 1..qty) {
-        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", imgTest))
+        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", "null"))
     }
     return fakeList
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ListOfProductsStateImpl(viewModel: ProductsViewModel) {
+fun ListOfProductsStateImpl(
+    productsViewModel: ProductsViewModel,
+    onNavigateAction: (Int?) -> Unit,
+    //TODO ON NAVIGATE NEW
+) {
+    val scope = rememberCoroutineScope()
+    val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val _list by productsViewModel.productsList.collectAsState()
 
+    //val list = _list.toMutableStateList()
+//    val list = remember {
+//        mutableStateListOf<ProductUiModel>()
+//    }
+
+    var productSelected by remember {
+        //productsViewModel.getAllProducts()
+        mutableStateOf(_list.first())
+    }
+
+    BottomSheetDetailsCompose(
+        productDetails = productSelected,
+        state = state,
+        onDeleteClicked = {
+            scope.launch {
+                productsViewModel.onDeleteAction(productSelected?.id)
+                state.hide()
+            }
+        },
+        onEditClicked = { onNavigateAction(productSelected?.id) },
+
+        ) {
+        ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
+            onCardClicked = {
+            scope.launch {
+                productSelected = productsViewModel.getDetailsById(it) ?: _list.first()
+                state.show()
+            }
+        }) {
+            productsViewModel.addRandom()
+                //onNavigateAction(2)
+        }
+    }
 }
 
 
@@ -114,12 +175,11 @@ fun ListOfProductsStateImpl(viewModel: ProductsViewModel) {
 fun PreviewListOfProducts() {
     PuntroSalesDemoTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
 
-            ListOfProducts(list = fakeProductsList(20)) {
-                Log.d(TAG, "PreviewListOfProducts: $it")
+            ListOfProductsPlusFloatIcon(list = fakeProductsList(20),{}) {
+                Log.d(TAG, "PreviewListOfProducts: ")
             }
         }
     }

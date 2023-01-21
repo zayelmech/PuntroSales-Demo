@@ -25,12 +25,13 @@ import com.imecatro.ui.theme.*
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomSheetDetailsCompose(
-    productDetails: ProductUiModel,
+    productDetails: ProductUiModel?,
     state: ModalBottomSheetState,
     onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit,
     content: @Composable () -> Unit
 ) {
+
     ModalBottomSheetLayout(sheetState = state, sheetContent = {
         DetailsComposable(productDetails, onDeleteClicked, onEditClicked)
     }, sheetShape = RoundedCornerShape(20.dp, 20.dp)) {
@@ -40,7 +41,7 @@ fun BottomSheetDetailsCompose(
 
 @Composable
 fun DetailsComposable(
-    productDetails: ProductUiModel,
+    productDetails: ProductUiModel?,
     onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit
 ) {
@@ -67,11 +68,11 @@ fun DetailsComposable(
             horizontalAlignment = Alignment.Start
         ) {
             //tittle
-            Text(text = productDetails.name ?: "No name", style = Typography.titleMedium)
+            Text(text = productDetails?.name ?: "No name", style = Typography.titleMedium)
             //pz
-            Text(text = productDetails.unit ?: "", style = Typography.bodyLarge)
+            Text(text = productDetails?.unit ?: "", style = Typography.bodyLarge)
             //price
-            Text(text = productDetails.price ?: "$0.00", style = Typography.titleMedium)
+            Text(text = productDetails?.price ?: "$0.00", style = Typography.titleMedium)
             Spacer(modifier = Modifier.height(20.dp))
             //Details
             Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
