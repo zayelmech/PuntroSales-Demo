@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.imecatro.ui.R
+import com.imecatro.ui.common.ButtonFancy
 import com.imecatro.ui.products.model.ProductUiModel
 import com.imecatro.ui.theme.*
 
@@ -84,29 +85,20 @@ fun DetailsComposable(
         }
         Spacer(modifier = Modifier.height(80.dp))
         //button edit
-        Button(
-            onClick = { onEditClicked() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingX, 10.dp),
-            colors = ButtonDefaults.buttonColors(BlueTurquoise80),
-            shape = RoundedCornerShape(50)
-        ) {
-            Icon(Icons.Filled.Edit, null, tint = Color.White, modifier = Modifier.padding(4.dp))
-            Text(text = "EDIT", style = Typography.titleMedium, color = Color.White)
-        }
+        ButtonFancy(
+            text = "EDIT",
+            paddingX = paddingX,
+            icon = Icons.Filled.Edit,
+            onClicked = onEditClicked
+        )
         //button delete
-        Button(
-            onClick = { onDeleteClicked() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingX, 10.dp),
-            colors = ButtonDefaults.buttonColors(PurpleRed),
-            shape = RoundedCornerShape(50)
-        ) {
-            Icon(Icons.Filled.Delete, null, tint = Color.White, modifier = Modifier.padding(4.dp))
-            Text(text = "DELETE", style = Typography.titleMedium, color = Color.White)
-        }
+        ButtonFancy(
+            text = "DELETE",
+            color = PurpleRed,
+            paddingX = paddingX,
+            icon = Icons.Filled.Delete,
+            onClicked = onDeleteClicked
+        )
     }
 }
 

@@ -57,8 +57,15 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 
+    //implementation "com.google.accompanist:accompanist-permissions:0.29.0-alpha"
+    implementation 'androidx.activity:activity-compose:1.6.1'
+
     //Coil for images in compose
     implementation("io.coil-kt:coil-compose:2.2.2")
     //Glide for images in compose
 //   implementation "com.github.bumptech.glide:compose:1.0.0-alpha.1"
+
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+
 }
