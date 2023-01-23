@@ -1,6 +1,9 @@
 package com.imecatro.ui.products.views
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -134,14 +137,15 @@ fun ListOfProductsStateImpl(
     val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val _list by productsViewModel.productsList.collectAsState()
 
+
     //val list = _list.toMutableStateList()
 //    val list = remember {
 //        mutableStateListOf<ProductUiModel>()
 //    }
 
     var productSelected by remember {
-        //productsViewModel.getAllProducts()
-        mutableStateOf(_list.first())
+        productsViewModel.getAllProducts()
+        mutableStateOf(ProductUiModel(0,"Product","0.00","pz",null))
     }
 
     BottomSheetDetailsCompose(
@@ -149,11 +153,11 @@ fun ListOfProductsStateImpl(
         state = state,
         onDeleteClicked = {
             scope.launch {
-                productsViewModel.onDeleteAction(productSelected?.id)
+                productsViewModel.onDeleteAction(productSelected.id)
                 state.hide()
             }
         },
-        onEditClicked = { onNavigateAction(productSelected?.id) },
+        onEditClicked = { onNavigateAction(productSelected.id) },
 
         ) {
         ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
@@ -163,8 +167,7 @@ fun ListOfProductsStateImpl(
                 state.show()
             }
         }) {
-            productsViewModel.addRandom()
-                //onNavigateAction(2)
+            onNavigateAction(null)
         }
     }
 }

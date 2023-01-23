@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.ui.add.viewmodel.AddViewModel
 import com.imecatro.ui.products.model.ProductUiModel
 import com.imecatro.ui.products.viewmodels.ProductsViewModel
 import com.imecatro.ui.products.views.BottomSheetDetailsCompose
@@ -28,13 +29,13 @@ import kotlinx.coroutines.launch
 private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
     val viewModel by viewModels<ProductsViewModel>()
+    val addProductViewModel by viewModels<AddViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MainApp {
-                ListOfProductsStateImpl(viewModel){
-                    Log.d(TAG, "onCreate: Product ID: $it --EDIT REQUEST")
-                }
+                ProductsNavigation(viewModel,addProductViewModel)
             }
         }
     }
@@ -53,15 +54,10 @@ fun MainApp(composable: @Composable () -> Unit) {
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     PuntroSalesDemoTheme {
-        Greeting("Android")
+
     }
 }
