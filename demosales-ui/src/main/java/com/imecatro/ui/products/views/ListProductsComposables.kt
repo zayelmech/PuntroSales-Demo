@@ -73,18 +73,9 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
                 .padding(10.dp)
         ) {
             // TODO add description and implement image by url
-            product.imageUrl?.let { link ->
-                Image(
-                    painter = rememberAsyncImagePainter(R.raw.arcreactor),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(5.dp)
-                        .clip(RoundedCornerShape(25)),
-                    contentScale = ContentScale.FillWidth
-                )
-            } ?: Image(
-                painter = rememberAsyncImagePainter(R.raw.arcreactor),
+
+            Image(
+                painter = rememberAsyncImagePainter(product.imageUrl ?: R.raw.arcreactor),
                 contentDescription = null,
                 modifier = Modifier
                     .size(100.dp)
@@ -92,6 +83,7 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
                     .clip(RoundedCornerShape(25)),
                 contentScale = ContentScale.FillWidth
             )
+
             Column {
                 Text(text = product.name ?: "Product name", style = Typography.titleMedium)
                 Text(text = " x ${product.unit}", fontSize = 18.sp)
@@ -110,7 +102,7 @@ fun ListOfProductsPlusFloatIcon(
     onNavigateAction: () -> Unit
 ) {
     Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { onNavigateAction()}) {
+        FloatingActionButton(onClick = { onNavigateAction() }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
     }) { innerPadding ->
@@ -145,7 +137,7 @@ fun ListOfProductsStateImpl(
 
     var productSelected by remember {
         productsViewModel.getAllProducts()
-        mutableStateOf(ProductUiModel(0,"Product","0.00","pz",null))
+        mutableStateOf(ProductUiModel(0, "Product", "0.00", "pz", null))
     }
 
     BottomSheetDetailsCompose(
@@ -162,11 +154,11 @@ fun ListOfProductsStateImpl(
         ) {
         ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
             onCardClicked = {
-            scope.launch {
-                productSelected = productsViewModel.getDetailsById(it) ?: _list.first()
-                state.show()
-            }
-        }) {
+                scope.launch {
+                    productSelected = productsViewModel.getDetailsById(it) ?: _list.first()
+                    state.show()
+                }
+            }) {
             onNavigateAction(null)
         }
     }
@@ -181,7 +173,7 @@ fun PreviewListOfProducts() {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
 
-            ListOfProductsPlusFloatIcon(list = fakeProductsList(20),{}) {
+            ListOfProductsPlusFloatIcon(list = fakeProductsList(20), {}) {
                 Log.d(TAG, "PreviewListOfProducts: ")
             }
         }

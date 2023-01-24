@@ -150,7 +150,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         mutableStateOf("")
     }
     var unitSelected by remember {
-        mutableStateOf("")
+        mutableStateOf("pz")
     }
     var details by remember {
         mutableStateOf("")

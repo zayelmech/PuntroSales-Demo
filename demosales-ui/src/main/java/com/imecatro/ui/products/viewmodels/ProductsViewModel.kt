@@ -2,13 +2,10 @@ package com.imecatro.ui.products.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imecatro.domain.products.model.ProductDomainModel
 import com.imecatro.domain.products.repository.ProductsRepository
 import com.imecatro.domain.products.repository.ProductsRepositoryDummyImpl
 import com.imecatro.ui.products.mappers.toProductUiModel
 import com.imecatro.ui.products.model.ProductUiModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

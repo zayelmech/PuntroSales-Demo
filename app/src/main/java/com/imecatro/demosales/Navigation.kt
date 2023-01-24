@@ -1,16 +1,13 @@
 package com.imecatro.demosales
 
-import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.*
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.imecatro.ui.add.viewmodel.AddViewModel
-import com.imecatro.ui.products.viewmodels.ProductsViewModel
-import com.imecatro.ui.add.views.AddProductComposable
 import com.imecatro.ui.add.views.AddProductComposableStateImpl
+import com.imecatro.ui.products.viewmodels.ProductsViewModel
 import com.imecatro.ui.products.views.ListOfProductsStateImpl
 
 private const val TAG = "ProductsNavigation"
@@ -34,7 +31,9 @@ fun ProductsNavigation(productsViewModel: ProductsViewModel, addProductViewModel
         composable(ProductsDestinations.Add.name) {
 
             AddProductComposableStateImpl(addProductViewModel) {
-                navController.navigate(ProductsDestinations.List.name)
+                navController.navigate(ProductsDestinations.List.name){
+                    popUpTo(ProductsDestinations.List.name)
+                }
             }
         }
 

@@ -18,7 +18,7 @@ class ProductsRepositoryDummyImpl(
                     "pz",
                     ProductUnit.DEFAULT,
                     "This product must contain info here",
-                    ""
+                    null
 
                 )
 
