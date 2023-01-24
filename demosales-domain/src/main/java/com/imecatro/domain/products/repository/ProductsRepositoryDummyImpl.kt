@@ -16,7 +16,7 @@ class ProductsRepositoryDummyImpl(
                     "Product Name $i",
                     3f,
                     "pz",
-                    ProductUnit.DEFAULT,
+                    ProductUnit.Default,
                     "This product must contain info here",
                     null
 

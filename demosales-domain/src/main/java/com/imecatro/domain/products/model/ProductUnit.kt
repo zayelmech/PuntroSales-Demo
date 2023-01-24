@@ -1,12 +1,12 @@
 package com.imecatro.domain.products.model
 
 
-enum class ProductUnit(value: String) {
-    KILOGRAMS("kg"),
-    GRAMS("g"),
-    LITERS("L"),
-    MILLILITERS("ml"),
-    METERS("m"),
-    CENTIMETERS("cm"),
-    DEFAULT("pz"),
+sealed class ProductUnit(val symbol: String) {
+    object Kilograms : ProductUnit("kg")
+    object Grams : ProductUnit("g")
+    object Litters : ProductUnit("L")
+    object Milliliters : ProductUnit("ml")
+    object Meters : ProductUnit("m")
+    object Centimeters : ProductUnit("cm")
+    object Default : ProductUnit("pz")
 }

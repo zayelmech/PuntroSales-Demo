@@ -6,7 +6,7 @@ data class ProductDomainModel(
     val name: String?,
     val price: Float?,
     val currency: String?,
-    val unit: ProductUnit = ProductUnit.valueOf("pz"),
+    val unit: ProductUnit = ProductUnit.Default,
     val details: String,
     val imageUri : String?
 )

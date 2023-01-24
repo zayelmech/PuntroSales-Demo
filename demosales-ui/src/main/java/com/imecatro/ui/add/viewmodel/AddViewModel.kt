@@ -36,7 +36,7 @@ private fun AddProductUiModel.toDomain(): ProductDomainModel? {
         name =this.name,
         price =this.price?.toFloat() ?: 0f,
         currency =this.currency,
-        unit = ProductUnit.valueOf("DEFAULT"),
+        unit =ProductUnit.Default,
         details =this.details,
         imageUri = this.imageUri?.toString()
 
