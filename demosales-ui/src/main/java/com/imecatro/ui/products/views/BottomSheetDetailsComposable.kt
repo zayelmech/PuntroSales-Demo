@@ -51,7 +51,7 @@ fun DetailsComposable(
 
         Spacer(modifier = Modifier.height(20.dp))
         Image(
-            painter = rememberAsyncImagePainter(R.raw.arcreactor),
+            painter = rememberAsyncImagePainter(productDetails?.imageUrl ?: R.raw.arcreactor),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()

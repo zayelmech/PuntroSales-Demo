@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.domain.products.repository.DummyRepository
 import com.imecatro.ui.add.viewmodel.AddViewModel
 import com.imecatro.ui.products.model.ProductUiModel
 import com.imecatro.ui.products.viewmodels.ProductsViewModel
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
+    //val repository : DummyRepository = DummyRepository
     val viewModel by viewModels<ProductsViewModel>()
     val addProductViewModel by viewModels<AddViewModel>()
 
