@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.imecatro.ui.add.viewmodel.AddViewModel
-import com.imecatro.ui.add.views.AddProductComposableStateImpl
-import com.imecatro.ui.products.viewmodels.ProductsViewModel
-import com.imecatro.ui.products.views.ListOfProductsStateImpl
+import com.imecatro.products.ui.add.viewmodel.AddViewModel
+import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
+import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
+import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
 
 private const val TAG = "ProductsNavigation"
 
@@ -17,22 +17,22 @@ fun ProductsNavigation(productsViewModel: ProductsViewModel, addProductViewModel
 
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = ProductsDestinations.List.name) {
-        composable(ProductsDestinations.List.name) {
+    NavHost(navController = navController, startDestination = ProductsDestinations.List.route) {
+        composable(ProductsDestinations.List.route) {
             ListOfProductsStateImpl(productsViewModel) {
                 it?.let {
                     Log.d(TAG, "Product ID: $it --EDIT REQUEST")
                 } ?: run {
-                    navController.navigate(ProductsDestinations.Add.name)
+                    navController.navigate(ProductsDestinations.Add.route)
                     Log.d(TAG, "Product ID: --ADD REQUEST")
                 }
             }
         }
-        composable(ProductsDestinations.Add.name) {
+        composable(ProductsDestinations.Add.route) {
 
             AddProductComposableStateImpl(addProductViewModel) {
-                navController.navigate(ProductsDestinations.List.name){
-                    popUpTo(ProductsDestinations.List.name)
+                navController.navigate(ProductsDestinations.List.route){
+                    popUpTo(ProductsDestinations.List.route)
                 }
             }
         }
@@ -42,7 +42,7 @@ fun ProductsNavigation(productsViewModel: ProductsViewModel, addProductViewModel
 }
 
 
-sealed class ProductsDestinations(val name: String) {
+sealed class ProductsDestinations(val route: String) {
     object List : ProductsDestinations("Home")
     object Add : ProductsDestinations("Add")
 
