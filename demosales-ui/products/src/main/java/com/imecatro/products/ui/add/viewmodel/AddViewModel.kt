@@ -8,6 +8,7 @@ import com.imecatro.domain.products.repository.ProductsRepository
 import com.imecatro.domain.products.repository.ProductsRepositoryDummyImpl
 import com.imecatro.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.domain.products.usecases.GetListOfUnitsUseCase
+import com.imecatro.products.ui.add.mappers.toDomain
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import kotlinx.coroutines.launch
 
@@ -34,15 +35,3 @@ class AddViewModel(
     }
 }
 
-private fun AddProductUiModel.toDomain(): ProductDomainModel? {
-    return ProductDomainModel(
-        id = null,
-        name = this.name,
-        price = this.price?.toFloat() ?: 0f,
-        currency = this.currency,
-        unit = ProductUnit.Default,
-        details = this.details,
-        imageUri = this.imageUri?.toString()
-
-    )
-}

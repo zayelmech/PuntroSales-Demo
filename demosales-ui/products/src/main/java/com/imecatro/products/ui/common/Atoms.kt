@@ -143,10 +143,10 @@ fun AtomsPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-
+ 
 
             Column {
-                // TextFieldCompose("", {}, "text")
+                 TextFieldCompose("", {}, "text")
 //                var expanded by remember { mutableStateOf(true) }
 
                 DropListPicker(

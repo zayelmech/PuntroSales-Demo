@@ -16,7 +16,8 @@ fun UpdateProductComposableStateImpl(updateProductViewModel: UpdateProductViewMo
     }
 
     var imageUri by remember {
-        mutableStateOf<Uri?>(null)
+
+        mutableStateOf<Uri?>(updateProductUiModel.imageUri)
     }
 
     val launcher = rememberLauncherForActivityResult(
