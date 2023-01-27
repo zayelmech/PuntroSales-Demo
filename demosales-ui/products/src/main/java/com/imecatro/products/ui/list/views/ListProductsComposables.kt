@@ -121,48 +121,47 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
 @Composable
 fun ListOfProductsStateImpl(
     productsViewModel: ProductsViewModel,
-    productDetailsUiModel: ProductsDetailsViewModel,
     onNavigateAction: (Int?) -> Unit,
     //TODO ON NAVIGATE NEW
 ) {
     val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    //val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val _list by productsViewModel.productsList.collectAsState()
+    productsViewModel.getAllProducts()
 
-
-    //val list = _list.toMutableStateList()
-//    val list = remember {
-//        mutableStateListOf<ProductUiModel>()
-//    }
-    val initDetails = ProductDetailsUiModel(0, "Product", "0.00", "pz", null,"")
-
-    var productSelected : ProductDetailsUiModel by remember {
-        productsViewModel.getAllProducts()
-        mutableStateOf(initDetails)
-    }
-
-    BottomSheetDetailsCompose(
-        productDetails = productSelected,
-        state = state,
-        onDeleteClicked = {
+    ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
+        onCardClicked = {
             scope.launch {
-                productDetailsUiModel.onDeleteAction(productSelected.id)
-                state.hide()
-            }
-        },
-        onEditClicked = { onNavigateAction(productSelected.id) },
 
-        ) {
-        ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
-            onCardClicked = {
-                scope.launch {
-                    productSelected = productDetailsUiModel.getDetailsById(it)?: initDetails
-                    state.show()
-                }
-            }) {
-            onNavigateAction(null)
-        }
+                onNavigateAction(it )
+//                    productSelected = productDetailsUiModel.getDetailsById(it)?: initDetails
+//                    state.show()
+            }
+        }) {
+        onNavigateAction(null)
     }
+//    BottomSheetDetailsCompose(
+//        productDetails = productSelected,
+//        state = state,
+//        onDeleteClicked = {
+//            scope.launch {
+//                productDetailsUiModel.onDeleteAction(productSelected.id)
+//                state.hide()
+//            }
+//        },
+//        onEditClicked = { onNavigateAction(productSelected.id) },
+//
+//        ) {
+//        ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
+//            onCardClicked = {
+//                scope.launch {
+//                    productSelected = productDetailsUiModel.getDetailsById(it)?: initDetails
+//                    state.show()
+//                }
+//            }) {
+//            onNavigateAction(null)
+//        }
+//    }
 }
 
 

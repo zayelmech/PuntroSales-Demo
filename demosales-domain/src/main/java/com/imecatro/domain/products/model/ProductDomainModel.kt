@@ -2,7 +2,7 @@ package com.imecatro.domain.products.model
 
 
 data class ProductDomainModel(
-    val id: Int?,
+    var id: Int?,
     val name: String?,
     val price: Float?,
     val currency: String?,

@@ -9,7 +9,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +20,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.common.ButtonFancy
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
+import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.theme.PurpleGrey40
@@ -28,21 +29,45 @@ import com.imecatro.products.ui.theme.Typography
 import com.imecatro.products.ui.theme.*
 
 
-@OptIn(ExperimentalMaterialApi::class)
+//@OptIn(ExperimentalMaterialApi::class)
+//@Composable
+//fun BottomSheetDetailsCompose(
+//    productDetails: ProductDetailsUiModel?,
+//    state: ModalBottomSheetState,
+//    onDeleteClicked: () -> Unit,
+//    onEditClicked: () -> Unit,
+//    content: @Composable () -> Unit
+//) {
+//
+//    ModalBottomSheetLayout(sheetState = state, sheetContent = {
+//        DetailsComposable(productDetails, onDeleteClicked, onEditClicked)
+//    }, sheetShape = RoundedCornerShape(20.dp, 20.dp)) {
+//        content()
+//    }
+//}
+
 @Composable
-fun BottomSheetDetailsCompose(
-    productDetails: ProductDetailsUiModel?,
-    state: ModalBottomSheetState,
-    onDeleteClicked: () -> Unit,
-    onEditClicked: () -> Unit,
-    content: @Composable () -> Unit
+fun DetailsComposableStateImpl(
+    productDetailsViewModel: ProductsDetailsViewModel,
+    productId: Int?,
+    onNavigateToEdit: (Int?) -> Unit
 ) {
 
-    ModalBottomSheetLayout(sheetState = state, sheetContent = {
-        DetailsComposable(productDetails, onDeleteClicked, onEditClicked)
-    }, sheetShape = RoundedCornerShape(20.dp, 20.dp)) {
-        content()
-    }
+    val productSelected by productDetailsViewModel.product.collectAsState()
+    productDetailsViewModel.getDetailsById(productId)
+
+    DetailsComposable(
+        productDetails = productSelected,
+        onDeleteClicked = {
+            onNavigateToEdit(null)
+            productDetailsViewModel.onDeleteAction(productId)
+                          },
+        onEditClicked = {
+            productId?.let {
+                onNavigateToEdit(it)
+            }
+        }
+    )
 }
 
 @Composable
@@ -84,7 +109,8 @@ fun DetailsComposable(
             Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
             Divider(color = Color.LightGray, thickness = 2.dp)
             Text(
-                text =  productDetails?.details?:"This text must contains some details about this product",
+                text = productDetails?.details
+                    ?: "This text must contains some details about this product",
                 style = Typography.bodyLarge
             )
         }
@@ -116,7 +142,14 @@ fun PreviewWordsListDetailsCompose() {
             color = MaterialTheme.colorScheme.background
         ) {
             DetailsComposable(
-                productDetails = ProductDetailsUiModel(1, "Cebolla", "$0.00", "x pz", null,"details"),
+                productDetails = ProductDetailsUiModel(
+                    1,
+                    "Cebolla",
+                    "$0.00",
+                    "x pz",
+                    null,
+                    "details"
+                ),
                 onDeleteClicked = { /*TODO*/ }) {
 
             }
