@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.imecatro.products.ui.R
+import com.imecatro.products.ui.details.model.ProductDetailsUiModel
+import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
@@ -119,6 +121,7 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
 @Composable
 fun ListOfProductsStateImpl(
     productsViewModel: ProductsViewModel,
+    productDetailsUiModel: ProductsDetailsViewModel,
     onNavigateAction: (Int?) -> Unit,
     //TODO ON NAVIGATE NEW
 ) {
@@ -131,10 +134,11 @@ fun ListOfProductsStateImpl(
 //    val list = remember {
 //        mutableStateListOf<ProductUiModel>()
 //    }
+    val initDetails = ProductDetailsUiModel(0, "Product", "0.00", "pz", null,"")
 
-    var productSelected by remember {
+    var productSelected : ProductDetailsUiModel by remember {
         productsViewModel.getAllProducts()
-        mutableStateOf(ProductUiModel(0, "Product", "0.00", "pz", null))
+        mutableStateOf(initDetails)
     }
 
     BottomSheetDetailsCompose(
@@ -142,7 +146,7 @@ fun ListOfProductsStateImpl(
         state = state,
         onDeleteClicked = {
             scope.launch {
-                productsViewModel.onDeleteAction(productSelected.id)
+                productDetailsUiModel.onDeleteAction(productSelected.id)
                 state.hide()
             }
         },
@@ -152,7 +156,7 @@ fun ListOfProductsStateImpl(
         ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
             onCardClicked = {
                 scope.launch {
-                    productSelected = productsViewModel.getDetailsById(it) ?: _list.first()
+                    productSelected = productDetailsUiModel.getDetailsById(it)?: initDetails
                     state.show()
                 }
             }) {

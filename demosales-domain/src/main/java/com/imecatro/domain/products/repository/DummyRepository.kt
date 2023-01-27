@@ -4,5 +4,5 @@ import com.imecatro.domain.products.model.ProductDomainModel
 
 object DummyRepository {
 
-    val fakeList: MutableList<ProductDomainModel> = mutableListOf()
+    val fakeList: MutableSet<ProductDomainModel> = mutableSetOf()
 }

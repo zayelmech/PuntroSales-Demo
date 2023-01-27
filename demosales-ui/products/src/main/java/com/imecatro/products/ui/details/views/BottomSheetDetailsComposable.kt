@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.common.ButtonFancy
+import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.theme.PurpleGrey40
@@ -30,7 +31,7 @@ import com.imecatro.products.ui.theme.*
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomSheetDetailsCompose(
-    productDetails: ProductUiModel?,
+    productDetails: ProductDetailsUiModel?,
     state: ModalBottomSheetState,
     onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit,
@@ -46,7 +47,7 @@ fun BottomSheetDetailsCompose(
 
 @Composable
 fun DetailsComposable(
-    productDetails: ProductUiModel?,
+    productDetails: ProductDetailsUiModel?,
     onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit
 ) {
@@ -83,7 +84,7 @@ fun DetailsComposable(
             Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
             Divider(color = Color.LightGray, thickness = 2.dp)
             Text(
-                text = "This text must contains some details about this product",
+                text =  productDetails?.details?:"This text must contains some details about this product",
                 style = Typography.bodyLarge
             )
         }
@@ -115,7 +116,7 @@ fun PreviewWordsListDetailsCompose() {
             color = MaterialTheme.colorScheme.background
         ) {
             DetailsComposable(
-                productDetails = ProductUiModel(1, "Cebolla", "$0.00", "x pz", null),
+                productDetails = ProductDetailsUiModel(1, "Cebolla", "$0.00", "x pz", null,"details"),
                 onDeleteClicked = { /*TODO*/ }) {
 
             }

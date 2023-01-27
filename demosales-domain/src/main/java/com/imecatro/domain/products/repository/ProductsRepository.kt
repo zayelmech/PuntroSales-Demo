@@ -7,4 +7,5 @@ interface ProductsRepository {
     suspend fun getAllProducts(): List<ProductDomainModel>
     fun deleteProductById(id :Int?)
     fun updateProduct(product: ProductDomainModel?)
+    fun getProductDetailsById(id: Int?): ProductDomainModel?
 }

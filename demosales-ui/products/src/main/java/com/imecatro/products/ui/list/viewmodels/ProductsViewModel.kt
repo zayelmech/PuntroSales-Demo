@@ -27,18 +27,6 @@ class ProductsViewModel(
         }
     }
 
-    fun getDetailsById(id: Int?): ProductUiModel? {
 
-        return _productsList.value.find { it.id == id }
-
-    }
-
-    fun onDeleteAction(id: Int?) {
-        viewModelScope.launch {
-            productsRepository.deleteProductById(id)
-        }.invokeOnCompletion {
-            getAllProducts()
-        }
-    }
 }
 

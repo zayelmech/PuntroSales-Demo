@@ -33,7 +33,7 @@ class ProductsRepositoryDummyImpl(
     }
 
     override suspend fun getAllProducts(): List<ProductDomainModel> {
-        return localDatabase.fakeList
+        return localDatabase.fakeList.toMutableList()
     }
 
     override fun deleteProductById(id: Int?) {
@@ -43,6 +43,12 @@ class ProductsRepositoryDummyImpl(
     }
 
     override fun updateProduct(product: ProductDomainModel?) {
-        //TODO Implement update method
+        product?.let { p ->
+            localDatabase.fakeList.add(p)
+        }
+    }
+
+    override fun getProductDetailsById(id: Int?): ProductDomainModel? {
+        return localDatabase.fakeList.find { it.id == id }
     }
 }

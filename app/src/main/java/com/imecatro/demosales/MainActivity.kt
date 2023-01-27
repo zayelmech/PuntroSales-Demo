@@ -12,19 +12,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
+import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
+import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 
 private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
     //val repository : DummyRepository = DummyRepository
     val viewModel by viewModels<ProductsViewModel>()
     val addProductViewModel by viewModels<AddViewModel>()
-
+    val productDetailsViewModel by viewModels<ProductsDetailsViewModel>()
+    val updateProductViewModel by viewModels<UpdateProductViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MainApp {
-                ProductsNavigation(viewModel,addProductViewModel)
+                ProductsNavigation(viewModel,productDetailsViewModel,addProductViewModel,updateProductViewModel)
             }
         }
     }
