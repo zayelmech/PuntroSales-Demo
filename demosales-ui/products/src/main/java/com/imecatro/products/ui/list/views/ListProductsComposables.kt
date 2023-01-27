@@ -29,6 +29,8 @@ import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
+import com.imecatro.products.ui.theme.BlueTurquoise80
+import com.imecatro.products.ui.theme.GreenTurquoise
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.theme.Typography
 import kotlinx.coroutines.launch
@@ -101,7 +103,7 @@ fun ListOfProductsPlusFloatIcon(
     onNavigateAction: () -> Unit
 ) {
     Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { onNavigateAction() }) {
+        FloatingActionButton(onClick = { onNavigateAction() }, containerColor = BlueTurquoise80, contentColor = Color.White) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
     }) { innerPadding ->
