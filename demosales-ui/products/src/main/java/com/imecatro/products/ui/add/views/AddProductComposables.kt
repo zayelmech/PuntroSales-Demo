@@ -1,8 +1,16 @@
 package com.imecatro.products.ui.add.views
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,19 +22,27 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.scale
 import coil.compose.rememberAsyncImagePainter
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import com.imecatro.products.ui.common.ButtonFancy
 import com.imecatro.products.ui.common.DropListPicker
+import com.imecatro.products.ui.common.saveMediaToStorage
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.theme.PurpleGrey40
 import com.imecatro.products.ui.theme.Typography
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,9 +60,15 @@ fun AddProductComposable(
     onUnitPicked: (String) -> Unit,
     detailsText: String,
     onDetailsChange: (String) -> Unit,
-    buttonSaveState: Boolean ,
+    buttonSaveState: Boolean,
     onSaveButtonClicked: () -> Unit
 ) {
+    val bitmap = remember {
+        mutableStateOf<Bitmap?>(null)
+    }
+    val context = LocalContext.current
+
+
     Column(modifier = Modifier.padding(10.dp)) {
 
         Text(text = "Image", style = Typography.labelMedium, color = PurpleGrey40)
@@ -60,14 +82,32 @@ fun AddProductComposable(
                 .wrapContentSize(Alignment.Center)
 
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    uri ?: R.drawable.baseline_add_photo_alternate_24
-                ),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth
-            )
 
+            uri?.let {
+
+                val imgFile = File(uri.toString())
+
+//                if (Build.VERSION.SDK_INT > 28) {
+//                    val source = ImageDecoder.createSource(imgFile) //BitmapFactory.decodeFile(imgFile.absolutePath)
+//                    bitmap.value = ImageDecoder.decodeBitmap(source)
+//
+//                }
+                bitmap.value = BitmapFactory.decodeFile(imgFile.absolutePath)
+
+                bitmap.value?.let { btm ->
+                    Image(
+                        painter = rememberAsyncImagePainter(model =btm )  ,//.asImageBitmap(),
+                        contentDescription = null,
+//                        modifier = Modifier.size(400.dp),
+                        contentScale = ContentScale.FillWidth
+                    )
+                } ?: run {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = R.drawable.baseline_add_photo_alternate_24),
+                        contentDescription = null
+                    )
+                }
+            }
         }
 
         Text(text = "Product name", style = Typography.labelMedium, color = PurpleGrey40)
@@ -131,13 +171,31 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
-        imageUri = uriPicked
+
+        //imageUri = uriPicked
+        var bitmap: Bitmap? = null
+        if (Build.VERSION.SDK_INT < 28) {
+            bitmap = MediaStore.Images
+                .Media.getBitmap(context.contentResolver, uriPicked)
+
+        } else {
+            val source = ImageDecoder
+                .createSource(context.contentResolver, uriPicked!!)
+            bitmap = ImageDecoder.decodeBitmap(source).scale(500,500)
+        }
+        bitmap?.let {
+            saveMediaToStorage(context, it) { uri ->
+                imageUri = uri
+            }
+        }
     }
+
 
     var productName by remember {
         mutableStateOf("")
@@ -161,9 +219,11 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         mutableStateOf(false)
     }
 
-    if (productName.isNotEmpty()&& productPrice.isNotEmpty()){
-            buttonEnableState = true
+    if (productName.isNotEmpty() && productPrice.isNotEmpty()) {
+        buttonEnableState = true
     }
+
+
 
     AddProductComposable(
         uri = imageUri,

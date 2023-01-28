@@ -1,4 +1,4 @@
-package com.imecatro.demosales
+package com.imecatro.demosales.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -11,7 +11,7 @@ import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
-import com.imecatro.products.ui.list.views.DetailsComposableStateImpl
+import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
 import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 import com.imecatro.products.ui.update.views.UpdateProductComposableStateImpl
@@ -32,7 +32,9 @@ fun ProductsNavigation(
         composable(ProductsDestinations.List.route) {
             ListOfProductsStateImpl(productsViewModel ) {
                 it?.let {
-                    navController.navigate(ProductsDestinations.Details.route + "/"+ it)
+                    navController.navigate(ProductsDestinations.Details.route + "/"+ it){
+                        popUpTo(ProductsDestinations.List.route)
+                    }
                     Log.d(TAG, "Product ID: $it --EDIT REQUEST")
                 } ?: run {
                     navController.navigate(ProductsDestinations.Add.route)

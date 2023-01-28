@@ -1,6 +1,9 @@
 package com.imecatro.products.ui.list.views
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,17 +21,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
+import com.imecatro.products.ui.theme.BlueTurquoise80
+import com.imecatro.products.ui.theme.GreenTurquoise
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.theme.Typography
 import kotlinx.coroutines.launch
@@ -74,7 +83,15 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
             // TODO add description and implement image by url
 
             Image(
-                painter = rememberAsyncImagePainter(product.imageUrl ?: R.raw.arcreactor),
+                painter = rememberAsyncImagePainter(
+                    //product.imageUrl ?: .error(R.raw.arcreactor)
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(product.imageUrl)
+                        .error(R.drawable.baseline_insert_photo_24)
+                        .crossfade(true)
+                        .build()
+
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(100.dp)
@@ -101,7 +118,11 @@ fun ListOfProductsPlusFloatIcon(
     onNavigateAction: () -> Unit
 ) {
     Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { onNavigateAction() }) {
+        FloatingActionButton(
+            onClick = { onNavigateAction() },
+            containerColor = BlueTurquoise80,
+            contentColor = Color.White
+        ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
     }) { innerPadding ->
@@ -112,7 +133,7 @@ fun ListOfProductsPlusFloatIcon(
 fun fakeProductsList(qty: Int): List<ProductUiModel> {
     val fakeList = mutableListOf<ProductUiModel>()
     for (i in 1..qty) {
-        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", "null"))
+        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", null))
     }
     return fakeList
 }
@@ -129,11 +150,18 @@ fun ListOfProductsStateImpl(
     val _list by productsViewModel.productsList.collectAsState()
     productsViewModel.getAllProducts()
 
+//    val launcher = rememberLauncherForActivityResult(
+//        contract =
+//        ActivityResultContracts.GetContent()
+//    ) { uriPicked: Uri? ->
+//        val x = uriPicked
+//    }
+
     ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
         onCardClicked = {
             scope.launch {
 
-                onNavigateAction(it )
+                onNavigateAction(it)
 //                    productSelected = productDetailsUiModel.getDetailsById(it)?: initDetails
 //                    state.show()
             }
