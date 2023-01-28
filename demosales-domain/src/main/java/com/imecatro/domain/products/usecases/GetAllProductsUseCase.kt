@@ -10,8 +10,8 @@ class GetAllProductsUseCase(
     private val productsRepository: ProductsRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
-    suspend operator fun invoke(): List<ProductDomainModel> =
-        withContext(dispatcher) {
-            productsRepository.getAllProducts()
-        }
+//    suspend operator fun invoke(): List<ProductDomainModel> =
+//        withContext(dispatcher) {
+//            productsRepository.getAllProducts()
+//        }
 }

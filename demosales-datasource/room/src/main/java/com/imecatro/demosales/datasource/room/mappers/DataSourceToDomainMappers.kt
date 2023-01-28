@@ -22,13 +22,25 @@ fun ProductRoomEntity.toDomain(): ProductDomainModel {
 }
 
 fun ProductDomainModel.toData(): ProductRoomEntity {
-    return ProductRoomEntity(
-        id = this.id!!,
-        name = this.name!!,
-        price = this.price!!,
-        currency = this.currency!!,
-        unit = this.unit.symbol,
-        details = this.details,
-        imageUri = this.imageUri.toString()
-    )
+    return this.id?.let { id ->
+        ProductRoomEntity(
+            id = id,
+            name = this.name ?: "",
+            price = this.price ?: 0f,
+            currency = this.currency ?: "",
+            unit = this.unit.symbol,
+            details = this.details,
+            imageUri = this.imageUri ?: ""
+        )
+    } ?: run {
+        ProductRoomEntity(
+            name = this.name ?: "",
+            price = this.price ?: 0f,
+            currency = this.currency ?: "",
+            unit = this.unit.symbol,
+            details = this.details,
+            imageUri = this.imageUri ?: ""
+        )
+    }
+
 }

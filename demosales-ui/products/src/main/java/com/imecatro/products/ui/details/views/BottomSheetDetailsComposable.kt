@@ -1,8 +1,7 @@
-package com.imecatro.products.ui.list.views
+package com.imecatro.products.ui.details.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -14,19 +13,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.common.ButtonFancy
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
-import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.theme.PurpleGrey40
 import com.imecatro.products.ui.theme.PurpleRed
 import com.imecatro.products.ui.theme.Typography
-import com.imecatro.products.ui.theme.*
 
 
 //@OptIn(ExperimentalMaterialApi::class)
@@ -81,7 +80,14 @@ fun DetailsComposable(
 
         Spacer(modifier = Modifier.height(20.dp))
         Image(
-            painter = rememberAsyncImagePainter(productDetails?.imageUrl ?: R.raw.arcreactor),
+            painter = rememberAsyncImagePainter(
+                //productDetails?.imageUrl ?: R.raw.arcreactor
+                ImageRequest.Builder(LocalContext.current)
+                    .data(productDetails?.imageUrl)
+                    .error(R.drawable.baseline_insert_photo_24)
+                    .crossfade(true)
+                    .build()
+            ),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()

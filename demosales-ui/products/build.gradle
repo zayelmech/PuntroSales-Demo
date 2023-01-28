@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+
 }
 
 android {
@@ -68,4 +70,8 @@ dependencies {
 
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+
+    //dependency injection dagger 2
+    implementation 'com.google.dagger:dagger:2.44'
+    kapt 'com.google.dagger:dagger-compiler:2.42'
 }

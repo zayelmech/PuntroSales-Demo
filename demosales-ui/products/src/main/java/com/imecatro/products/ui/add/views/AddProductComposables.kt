@@ -1,6 +1,11 @@
 package com.imecatro.products.ui.add.views
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -14,11 +19,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
@@ -44,9 +52,15 @@ fun AddProductComposable(
     onUnitPicked: (String) -> Unit,
     detailsText: String,
     onDetailsChange: (String) -> Unit,
-    buttonSaveState: Boolean ,
+    buttonSaveState: Boolean,
     onSaveButtonClicked: () -> Unit
 ) {
+    val bitmap = remember {
+        mutableStateOf<Bitmap?>(null)
+    }
+    val context = LocalContext.current
+
+
     Column(modifier = Modifier.padding(10.dp)) {
 
         Text(text = "Image", style = Typography.labelMedium, color = PurpleGrey40)
@@ -60,13 +74,51 @@ fun AddProductComposable(
                 .wrapContentSize(Alignment.Center)
 
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    uri ?: R.drawable.baseline_add_photo_alternate_24
-                ),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth
-            )
+
+            uri?.let {
+                context.grantUriPermission(
+                    context.packageName,
+                    it,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                // context.contentResolver.takePersistableUriPermission(it, (Intent.FLAG_GRANT_READ_URI_PERMISSION + Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
+                //context.contentResolver.openFile(it)
+                if (Build.VERSION.SDK_INT < 28) {
+                    bitmap.value = MediaStore.Images
+                        .Media.getBitmap(context.contentResolver, it)
+
+                } else {
+                    val source = ImageDecoder
+                        .createSource(context.contentResolver, it)
+                    bitmap.value = ImageDecoder.decodeBitmap(source)
+                }
+
+                bitmap.value?.let { btm ->
+                    Image(
+                        bitmap = btm.asImageBitmap(),
+                        contentDescription = null,
+//                        modifier = Modifier.size(400.dp),
+                        contentScale = ContentScale.FillWidth
+                    )
+                } ?: run {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = R.drawable.baseline_add_photo_alternate_24),
+                        contentDescription = null
+                    )
+                }
+            }
+//            Image(
+//                painter = rememberAsyncImagePainter(
+//                    //uri ?: R.drawable.baseline_add_photo_alternate_24
+//                    ImageRequest.Builder(LocalContext.current)
+//                        .data(uri)
+//                        .error(R.drawable.baseline_add_photo_alternate_24)
+//                        .crossfade(true)
+//                        .build()
+//                ),
+//                contentDescription = null,
+//                contentScale = ContentScale.FillWidth
+//            )
 
         }
 
@@ -139,6 +191,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         imageUri = uriPicked
     }
 
+
     var productName by remember {
         mutableStateOf("")
     }
@@ -161,9 +214,11 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         mutableStateOf(false)
     }
 
-    if (productName.isNotEmpty()&& productPrice.isNotEmpty()){
-            buttonEnableState = true
+    if (productName.isNotEmpty() && productPrice.isNotEmpty()) {
+        buttonEnableState = true
     }
+
+
 
     AddProductComposable(
         uri = imageUri,

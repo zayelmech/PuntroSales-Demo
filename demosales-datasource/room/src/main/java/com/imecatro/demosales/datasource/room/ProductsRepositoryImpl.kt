@@ -1,29 +1,41 @@
 package com.imecatro.demosales.datasource.room
 
+import android.net.Uri
+import android.util.Log
+import androidx.annotation.WorkerThread
 import com.imecatro.demosales.datasource.room.mappers.toData
 import com.imecatro.demosales.datasource.room.mappers.toDomain
 import com.imecatro.demosales.datasource.room.mappers.toListDomain
 import com.imecatro.domain.products.model.ProductDomainModel
 import com.imecatro.domain.products.repository.ProductsRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
+
+private const val TAG = "ProductsRepositoryImpl"
 
 class ProductsRepositoryImpl(
-    private val productsDao: ProductsDao? = ProductsRoomDatabase.globalDao
+    private val productsDao: ProductsDao?
 ) : ProductsRepository {
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     override fun addProduct(product: ProductDomainModel?) {
         product?.let {
             productsDao?.addProduct(product = it.toData())
+            Log.d(TAG, "addProduct: ${Uri.parse(it.imageUri)}")
         }
         //TODO implement error
     }
 
-    private var allProducts: List<ProductDomainModel> = listOf()
+//    private var allProducts: List<ProductDomainModel> = listOf()
 
-    override suspend fun getAllProducts(): List<ProductDomainModel> {
-        productsDao?.getAllProducts()?.collectLatest {
-            allProducts = it.toListDomain()
+    override  fun getAllProducts(): Flow<List<ProductDomainModel>> {
+        return flow {
+            productsDao?.getAllProducts()?.collect {
+                emit(it.toListDomain())
+            }
+
         }
-        return allProducts
     }
 
     override fun deleteProductById(id: Int?) {
@@ -33,6 +45,8 @@ class ProductsRepositoryImpl(
         //TODO implement error
     }
 
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     override fun updateProduct(product: ProductDomainModel?) {
         product?.let {
             productsDao?.updateProduct(it.toData())
@@ -40,9 +54,9 @@ class ProductsRepositoryImpl(
         //TODO implement error null
     }
 
-    override  fun getProductDetailsById(id: Int?): ProductDomainModel? {
+    override fun getProductDetailsById(id: Int?): ProductDomainModel? {
         return id?.let {
-            null //productsDao?.getProductDetailsById(it)?.toDomain()
+           productsDao?.getProductDetailsById(it)?.toDomain()
         } ?: run {
             null
         }
