@@ -60,4 +60,10 @@ class UpdateProductViewModel @Inject constructor(
             productsRepository.updateProduct(updateProductUiModel.toDomain())
         }
     }
+
+    fun onStop() {
+
+        _uiState.value = UpdateUiState.Loading
+        _productSelected.value = null
+    }
 }

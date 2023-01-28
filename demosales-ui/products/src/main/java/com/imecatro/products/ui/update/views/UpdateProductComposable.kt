@@ -9,7 +9,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.graphics.scale
+import androidx.lifecycle.LifecycleOwner
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.common.saveMediaToStorage
 import com.imecatro.products.ui.update.UpdateUiState
@@ -27,6 +29,8 @@ fun UpdateProductComposableStateImpl(
 //    val updateProductUiModel : UpdateProductUiModel by remember {
 //        mutableStateOf(updateProductViewModel.getProductById(productId))
 //    }
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+
     val updateProductUiModel by updateProductViewModel.productSelected.collectAsState()
     val uiState by updateProductViewModel.uiState.collectAsState()
 
@@ -129,6 +133,12 @@ fun UpdateProductComposableStateImpl(
         }
         is UpdateUiState.Loaded -> {
 
+        }
+    }
+
+    DisposableEffect(lifecycleOwner){
+        onDispose(){
+            updateProductViewModel.onStop()
         }
     }
 }
