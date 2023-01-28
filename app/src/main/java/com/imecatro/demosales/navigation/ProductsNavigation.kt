@@ -32,7 +32,9 @@ fun ProductsNavigation(
         composable(ProductsDestinations.List.route) {
             ListOfProductsStateImpl(productsViewModel ) {
                 it?.let {
-                    navController.navigate(ProductsDestinations.Details.route + "/"+ it)
+                    navController.navigate(ProductsDestinations.Details.route + "/"+ it){
+                        popUpTo(ProductsDestinations.List.route)
+                    }
                     Log.d(TAG, "Product ID: $it --EDIT REQUEST")
                 } ?: run {
                     navController.navigate(ProductsDestinations.Add.route)

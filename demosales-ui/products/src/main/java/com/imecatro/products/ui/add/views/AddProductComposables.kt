@@ -1,13 +1,16 @@
 package com.imecatro.products.ui.add.views
 
-import android.content.Intent
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,16 +28,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.scale
 import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import com.imecatro.products.ui.common.ButtonFancy
 import com.imecatro.products.ui.common.DropListPicker
+import com.imecatro.products.ui.common.saveMediaToStorage
 import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.theme.PurpleGrey40
 import com.imecatro.products.ui.theme.Typography
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,26 +84,19 @@ fun AddProductComposable(
         ) {
 
             uri?.let {
-                context.grantUriPermission(
-                    context.packageName,
-                    it,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
-                // context.contentResolver.takePersistableUriPermission(it, (Intent.FLAG_GRANT_READ_URI_PERMISSION + Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
-                //context.contentResolver.openFile(it)
-                if (Build.VERSION.SDK_INT < 28) {
-                    bitmap.value = MediaStore.Images
-                        .Media.getBitmap(context.contentResolver, it)
 
-                } else {
-                    val source = ImageDecoder
-                        .createSource(context.contentResolver, it)
-                    bitmap.value = ImageDecoder.decodeBitmap(source)
-                }
+                val imgFile = File(uri.toString())
+
+//                if (Build.VERSION.SDK_INT > 28) {
+//                    val source = ImageDecoder.createSource(imgFile) //BitmapFactory.decodeFile(imgFile.absolutePath)
+//                    bitmap.value = ImageDecoder.decodeBitmap(source)
+//
+//                }
+                bitmap.value = BitmapFactory.decodeFile(imgFile.absolutePath)
 
                 bitmap.value?.let { btm ->
                     Image(
-                        bitmap = btm.asImageBitmap(),
+                        painter = rememberAsyncImagePainter(model =btm )  ,//.asImageBitmap(),
                         contentDescription = null,
 //                        modifier = Modifier.size(400.dp),
                         contentScale = ContentScale.FillWidth
@@ -107,19 +108,6 @@ fun AddProductComposable(
                     )
                 }
             }
-//            Image(
-//                painter = rememberAsyncImagePainter(
-//                    //uri ?: R.drawable.baseline_add_photo_alternate_24
-//                    ImageRequest.Builder(LocalContext.current)
-//                        .data(uri)
-//                        .error(R.drawable.baseline_add_photo_alternate_24)
-//                        .crossfade(true)
-//                        .build()
-//                ),
-//                contentDescription = null,
-//                contentScale = ContentScale.FillWidth
-//            )
-
         }
 
         Text(text = "Product name", style = Typography.labelMedium, color = PurpleGrey40)
@@ -183,12 +171,29 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
-        imageUri = uriPicked
+
+        //imageUri = uriPicked
+        var bitmap: Bitmap? = null
+        if (Build.VERSION.SDK_INT < 28) {
+            bitmap = MediaStore.Images
+                .Media.getBitmap(context.contentResolver, uriPicked)
+
+        } else {
+            val source = ImageDecoder
+                .createSource(context.contentResolver, uriPicked!!)
+            bitmap = ImageDecoder.decodeBitmap(source).scale(500,500)
+        }
+        bitmap?.let {
+            saveMediaToStorage(context, it) { uri ->
+                imageUri = uri
+            }
+        }
     }
 
 

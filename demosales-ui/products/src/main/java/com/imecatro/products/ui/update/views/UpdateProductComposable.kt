@@ -1,10 +1,17 @@
 package com.imecatro.products.ui.update.views
 
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.graphics.scale
 import com.imecatro.products.ui.add.views.AddProductComposable
+import com.imecatro.products.ui.common.saveMediaToStorage
 import com.imecatro.products.ui.update.UpdateUiState
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
@@ -26,12 +33,28 @@ fun UpdateProductComposableStateImpl(
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
-        imageUri = uriPicked
+        //imageUri = uriPicked
+        var bitmap: Bitmap? = null
+        if (Build.VERSION.SDK_INT < 28) {
+            bitmap = MediaStore.Images
+                .Media.getBitmap(context.contentResolver, uriPicked)
+
+        } else {
+            val source = ImageDecoder
+                .createSource(context.contentResolver, uriPicked!!)
+            bitmap = ImageDecoder.decodeBitmap(source).scale(500,500)
+        }
+        bitmap?.let {
+            saveMediaToStorage(context, it) { uri ->
+                imageUri = uri
+            }
+        }
     }
 
     var productName by remember {
