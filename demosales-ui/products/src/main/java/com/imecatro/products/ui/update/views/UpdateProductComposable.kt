@@ -31,7 +31,7 @@ fun UpdateProductComposableStateImpl(
     val uiState by updateProductViewModel.uiState.collectAsState()
 
     var imageUri by remember {
-        mutableStateOf<Uri?>(null)
+        mutableStateOf<Uri?>(updateProductUiModel?.imageUri)
     }
     val context = LocalContext.current
 
