@@ -82,7 +82,7 @@ fun AddProductComposable(
 
         ) {
             Image(
-                painter = rememberAsyncImagePainter (
+                painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(context)
                         .data(uri)
                         .error(R.drawable.baseline_insert_photo_24)
@@ -170,9 +170,11 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
                 .Media.getBitmap(context.contentResolver, uriPicked)
 
         } else {
-            val source = ImageDecoder
-                .createSource(context.contentResolver, uriPicked!!)
-            bitmap = ImageDecoder.decodeBitmap(source).scale(500, 500)
+            uriPicked?.let {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver, it)
+                bitmap = ImageDecoder.decodeBitmap(source).scale(500, 500)
+            }
         }
         bitmap?.let {
             saveMediaToStorage(context, it) { uri ->

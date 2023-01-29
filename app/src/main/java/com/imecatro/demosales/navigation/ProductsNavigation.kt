@@ -2,35 +2,32 @@ package com.imecatro.demosales.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
-import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
-import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
 import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
 import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
-import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 import com.imecatro.products.ui.update.views.UpdateProductComposableStateImpl
 
 private const val TAG = "ProductsNavigation"
 
 @Composable
 fun ProductsNavigation(
-    productsViewModel: ProductsViewModel,
-    productsDetailsViewModel: ProductsDetailsViewModel,
-    addProductViewModel: AddViewModel,
-    updateProductViewModel : UpdateProductViewModel
+//    productsViewModel: ProductsViewModelFactory,
+//    productsDetailsViewModel: ProductsDetailsViewModelFactory,
+//    addProductViewModel: AddProductsViewModelFactory,
+//    updateProductViewModel : UpdateProductViewModelFactory
 ) {
 
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = ProductsDestinations.List.route) {
         composable(ProductsDestinations.List.route) {
-            ListOfProductsStateImpl(productsViewModel ) {
+            ListOfProductsStateImpl(productsViewModel = hiltViewModel()) {
                 it?.let {
                     navController.navigate(ProductsDestinations.Details.route + "/"+ it){
                         popUpTo(ProductsDestinations.List.route)
@@ -43,7 +40,7 @@ fun ProductsNavigation(
             }
         }
         composable("${ProductsDestinations.Details.route}/{productId}", arguments =listOf(navArgument("productId"){type = NavType.IntType} ) ){backStackEntry ->
-            DetailsComposableStateImpl(productsDetailsViewModel,backStackEntry.arguments?.getInt("productId")){
+            DetailsComposableStateImpl(hiltViewModel(),backStackEntry.arguments?.getInt("productId")){
                 it?.let {
                     navController.navigate(ProductsDestinations.Edit.route + "/"+ it)
                 } ?: run {
@@ -57,7 +54,7 @@ fun ProductsNavigation(
         }
         composable(ProductsDestinations.Add.route) {
 
-            AddProductComposableStateImpl(addProductViewModel) {
+            AddProductComposableStateImpl(hiltViewModel()) {
                 navController.navigate(ProductsDestinations.List.route) {
                     popUpTo(ProductsDestinations.List.route)
                 }
@@ -66,7 +63,7 @@ fun ProductsNavigation(
 
         composable("${ProductsDestinations.Edit.route}/{productId}", arguments = listOf(navArgument("productId"){type = NavType.IntType} ) ) {backStackEntry ->
 
-        UpdateProductComposableStateImpl(updateProductViewModel = updateProductViewModel, productId = backStackEntry.arguments?.getInt("productId")){
+        UpdateProductComposableStateImpl(updateProductViewModel = hiltViewModel(), productId = backStackEntry.arguments?.getInt("productId")){
                 navController.navigate(ProductsDestinations.List.route) {
                     popUpTo(ProductsDestinations.List.route)
                 }

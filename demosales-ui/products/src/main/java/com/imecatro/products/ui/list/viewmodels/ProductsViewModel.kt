@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.imecatro.domain.products.repository.ProductsRepository
 import com.imecatro.products.ui.list.mappers.toProductUiModel
 import com.imecatro.products.ui.list.model.ProductUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class ProductsViewModel @Inject constructor(
     private val productsRepository: ProductsRepository //= ProductsRepositoryDummyImpl()
 ) : ViewModel() {

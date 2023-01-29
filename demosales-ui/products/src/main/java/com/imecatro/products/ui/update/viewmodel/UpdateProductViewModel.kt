@@ -1,5 +1,6 @@
 package com.imecatro.products.ui.update.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.domain.products.repository.ProductsRepository
@@ -9,6 +10,7 @@ import com.imecatro.products.ui.update.UpdateUiState
 import com.imecatro.products.ui.update.mappers.toDomain
 import com.imecatro.products.ui.update.mappers.toUpdateUiModel
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class UpdateProductViewModel @Inject constructor(
     private val productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl(),
     private val getListOfCurrenciesUseCase: GetListOfCurrenciesUseCase = GetListOfCurrenciesUseCase(),
@@ -66,4 +69,11 @@ class UpdateProductViewModel @Inject constructor(
         _uiState.value = UpdateUiState.Loading
         _productSelected.value = null
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(TAG, "onCleared: ${javaClass.name} was removed")
+    }
 }
+
+private const val TAG = "UpdateProductViewModel"
