@@ -50,9 +50,12 @@ fun UpdateProductComposableStateImpl(
                 .Media.getBitmap(context.contentResolver, uriPicked)
 
         } else {
-            val source = ImageDecoder
-                .createSource(context.contentResolver, uriPicked!!)
-            bitmap = ImageDecoder.decodeBitmap(source).scale(500,500)
+            uriPicked?.let {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver, it)
+
+                bitmap = ImageDecoder.decodeBitmap(source).scale(500, 500)
+            }
         }
         bitmap?.let {
             saveMediaToStorage(context, it) { uri ->
@@ -136,8 +139,8 @@ fun UpdateProductComposableStateImpl(
         }
     }
 
-    DisposableEffect(lifecycleOwner){
-        onDispose(){
+    DisposableEffect(lifecycleOwner) {
+        onDispose() {
             updateProductViewModel.onStop()
         }
     }
