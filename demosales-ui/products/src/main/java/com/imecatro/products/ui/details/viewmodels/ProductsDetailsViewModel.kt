@@ -1,12 +1,11 @@
 package com.imecatro.products.ui.details.viewmodels
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.domain.products.repository.ProductsRepository
 import com.imecatro.products.ui.details.mappers.toUiModel
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class ProductsDetailsViewModel @Inject constructor(
     private val productsRepository: ProductsRepository //= ProductsRepositoryDummyImpl()
 ) : ViewModel() {

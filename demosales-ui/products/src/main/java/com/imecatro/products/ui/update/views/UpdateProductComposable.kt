@@ -9,7 +9,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.graphics.scale
+import androidx.lifecycle.LifecycleOwner
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.common.saveMediaToStorage
 import com.imecatro.products.ui.update.UpdateUiState
@@ -27,11 +29,13 @@ fun UpdateProductComposableStateImpl(
 //    val updateProductUiModel : UpdateProductUiModel by remember {
 //        mutableStateOf(updateProductViewModel.getProductById(productId))
 //    }
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+
     val updateProductUiModel by updateProductViewModel.productSelected.collectAsState()
     val uiState by updateProductViewModel.uiState.collectAsState()
 
     var imageUri by remember {
-        mutableStateOf<Uri?>(null)
+        mutableStateOf<Uri?>(updateProductUiModel?.imageUri)
     }
     val context = LocalContext.current
 
@@ -46,9 +50,12 @@ fun UpdateProductComposableStateImpl(
                 .Media.getBitmap(context.contentResolver, uriPicked)
 
         } else {
-            val source = ImageDecoder
-                .createSource(context.contentResolver, uriPicked!!)
-            bitmap = ImageDecoder.decodeBitmap(source).scale(500,500)
+            uriPicked?.let {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver, it)
+
+                bitmap = ImageDecoder.decodeBitmap(source).scale(500, 500)
+            }
         }
         bitmap?.let {
             saveMediaToStorage(context, it) { uri ->
@@ -129,6 +136,12 @@ fun UpdateProductComposableStateImpl(
         }
         is UpdateUiState.Loaded -> {
 
+        }
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        onDispose() {
+            updateProductViewModel.onStop()
         }
     }
 }

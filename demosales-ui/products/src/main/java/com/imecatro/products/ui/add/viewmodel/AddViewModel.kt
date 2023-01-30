@@ -8,11 +8,13 @@ import com.imecatro.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.products.ui.add.mappers.toDomain
 import com.imecatro.products.ui.add.model.AddProductUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "AddViewModel"
+@HiltViewModel
 class AddViewModel @Inject constructor(
     private val productsRepository: ProductsRepository,
     private val getListOfCurrenciesUseCase: GetListOfCurrenciesUseCase = GetListOfCurrenciesUseCase(),

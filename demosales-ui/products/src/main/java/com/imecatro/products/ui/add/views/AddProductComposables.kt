@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.scale
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
@@ -63,9 +64,7 @@ fun AddProductComposable(
     buttonSaveState: Boolean,
     onSaveButtonClicked: () -> Unit
 ) {
-    val bitmap = remember {
-        mutableStateOf<Bitmap?>(null)
-    }
+
     val context = LocalContext.current
 
 
@@ -82,32 +81,18 @@ fun AddProductComposable(
                 .wrapContentSize(Alignment.Center)
 
         ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(context)
+                        .data(uri)
+                        .error(R.drawable.baseline_insert_photo_24)
+                        .crossfade(true)
+                        .build()
+                ),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth
+            )
 
-            uri?.let {
-
-                val imgFile = File(uri.toString())
-
-//                if (Build.VERSION.SDK_INT > 28) {
-//                    val source = ImageDecoder.createSource(imgFile) //BitmapFactory.decodeFile(imgFile.absolutePath)
-//                    bitmap.value = ImageDecoder.decodeBitmap(source)
-//
-//                }
-                bitmap.value = BitmapFactory.decodeFile(imgFile.absolutePath)
-
-                bitmap.value?.let { btm ->
-                    Image(
-                        painter = rememberAsyncImagePainter(model =btm )  ,//.asImageBitmap(),
-                        contentDescription = null,
-//                        modifier = Modifier.size(400.dp),
-                        contentScale = ContentScale.FillWidth
-                    )
-                } ?: run {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = R.drawable.baseline_add_photo_alternate_24),
-                        contentDescription = null
-                    )
-                }
-            }
         }
 
         Text(text = "Product name", style = Typography.labelMedium, color = PurpleGrey40)
@@ -185,9 +170,11 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
                 .Media.getBitmap(context.contentResolver, uriPicked)
 
         } else {
-            val source = ImageDecoder
-                .createSource(context.contentResolver, uriPicked!!)
-            bitmap = ImageDecoder.decodeBitmap(source).scale(500,500)
+            uriPicked?.let {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver, it)
+                bitmap = ImageDecoder.decodeBitmap(source).scale(500, 500)
+            }
         }
         bitmap?.let {
             saveMediaToStorage(context, it) { uri ->

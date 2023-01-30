@@ -1,46 +1,28 @@
 package com.imecatro.domain.products.repository
-/**
+
 import com.imecatro.domain.products.model.ProductDomainModel
-import com.imecatro.domain.products.model.ProductUnit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class ProductsRepositoryDummyImpl(
     private val localDatabase: DummyRepository = DummyRepository
 ) : ProductsRepository {
 
-//    init {
-//        for (i in 1..5) {
-//
-//            localDatabase.fakeList.add(
-//                ProductDomainModel(
-//                    i,
-//                    "Product Name $i",
-//                    3f,
-//                    "pz",
-//                    ProductUnit.Default,
-//                    "This product must contain info here",
-//                    null
-//
-//                )
-//
-//            )
-//        }
-//    }
-
     override fun addProduct(product: ProductDomainModel?) {
-        product?.let {p ->
+        product?.let { p ->
             p.id?.let {
                 localDatabase.fakeList.add(p)
+            }?:run {
+                val newId = localDatabase.fakeList.size + 1
+                localDatabase.fakeList.add(p.apply {
+                    id = newId
+                })
             }
-            val newId = localDatabase.fakeList.size + 1
-            localDatabase.fakeList.add(p.apply {
-                id = newId
-            })
-
         }
     }
 
-    override suspend fun getAllProducts(): List<ProductDomainModel> {
-        return localDatabase.fakeList.toMutableList()
+    override fun getAllProducts(): Flow<List<ProductDomainModel>> {
+        return flow { emit(localDatabase.fakeList) }
     }
 
     override fun deleteProductById(id: Int?) {
@@ -52,7 +34,7 @@ class ProductsRepositoryDummyImpl(
     override fun updateProduct(product: ProductDomainModel?) {
         product?.let { p ->
             val last = localDatabase.fakeList.indexOf(localDatabase.fakeList.find { it.id == p.id })
-            localDatabase.fakeList[last]= p
+            localDatabase.fakeList[last] = p
         }
     }
 
@@ -61,4 +43,3 @@ class ProductsRepositoryDummyImpl(
     }
 }
 
- */

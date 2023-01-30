@@ -22,7 +22,7 @@ class ProductsRepositoryImpl(
     override fun addProduct(product: ProductDomainModel?) {
         product?.let {
             productsDao?.addProduct(product = it.toData())
-            Log.d(TAG, "addProduct: ${Uri.parse(it.imageUri)}")
+            //Log.d(TAG, "addProduct: ${Uri.parse(it.imageUri)}")
         }
         //TODO implement error
     }

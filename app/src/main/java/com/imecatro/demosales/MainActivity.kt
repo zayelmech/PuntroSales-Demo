@@ -11,12 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.imecatro.demosales.navigation.ProductsNavigation
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.products.ui.add.viewmodel.AddViewModel
-import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
-import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
-import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 private const val TAG = "MainActivity"
 
@@ -27,26 +22,26 @@ class MainActivity : ComponentActivity() {
 //    val addProductViewModel by viewModels<AddViewModel>()
 //    val productDetailsViewModel by viewModels<ProductsDetailsViewModel>()
 //    val updateProductViewModel by viewModels<UpdateProductViewModel>()
-
-    @Inject
-    lateinit var  viewModel :ProductsViewModel
-    @Inject
-    lateinit var addProductViewModel : AddViewModel
-    @Inject
-    lateinit var productDetailsViewModel : ProductsDetailsViewModel
-    @Inject
-    lateinit var  updateProductViewModel : UpdateProductViewModel
+//
+//    @Inject
+//    lateinit var  viewModel :ProductsViewModelFactory
+//    @Inject
+//    lateinit var addProductViewModel : AddProductsViewModelFactory
+//    @Inject
+//    lateinit var productDetailsViewModel : ProductsDetailsViewModelFactory
+//    @Inject
+//    lateinit var  updateProductViewModel : UpdateProductViewModelFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             MainApp {
-//                val viewModel :ProductsViewModel = hiltViewModel()
+                //val viewModel :ProductsViewModel = hiltViewModel()
 //                val addProductViewModel : AddViewModel = hiltViewModel()
 //                val productDetailsViewModel : ProductsDetailsViewModel = hiltViewModel()
 //                val updateProductViewModel : UpdateProductViewModel = hiltViewModel()
 
-                ProductsNavigation(viewModel,productDetailsViewModel,addProductViewModel,updateProductViewModel)
+                ProductsNavigation()
             }
         }
     }
