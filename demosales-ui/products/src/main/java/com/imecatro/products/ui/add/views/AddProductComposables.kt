@@ -166,8 +166,10 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         //imageUri = uriPicked
         var bitmap: Bitmap? = null
         if (Build.VERSION.SDK_INT < 28) {
+            uriPicked?.let {
             bitmap = MediaStore.Images
-                .Media.getBitmap(context.contentResolver, uriPicked)
+                .Media.getBitmap(context.contentResolver, it)
+            }
 
         } else {
             uriPicked?.let {

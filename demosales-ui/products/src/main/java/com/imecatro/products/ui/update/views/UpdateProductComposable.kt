@@ -46,8 +46,10 @@ fun UpdateProductComposableStateImpl(
         //imageUri = uriPicked
         var bitmap: Bitmap? = null
         if (Build.VERSION.SDK_INT < 28) {
-            bitmap = MediaStore.Images
-                .Media.getBitmap(context.contentResolver, uriPicked)
+            uriPicked?.let {
+                bitmap = MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, uriPicked)
+            }
 
         } else {
             uriPicked?.let {

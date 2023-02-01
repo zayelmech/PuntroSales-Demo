@@ -21,6 +21,7 @@ class ProductsRepositoryImplTest {
 
     @Before
     fun createDb() {
+
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
             context, ProductsRoomDatabase::class.java).build()
@@ -46,7 +47,8 @@ class ProductsRepositoryImplTest {
         productsDao.addProduct(product)
         val byName = productsDao.getProductDetailsById(1)
         assertEquals(byName.name,"Onion")
-
+        val set = setOf("a","b","c")
+        set.minus("a")
     }
 
 //    @Test

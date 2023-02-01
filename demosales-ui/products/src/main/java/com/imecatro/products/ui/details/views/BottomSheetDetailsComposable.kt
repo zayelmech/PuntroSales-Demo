@@ -109,7 +109,7 @@ fun DetailsComposable(
             //pz
             Text(text = productDetails?.unit ?: "", style = Typography.bodyLarge)
             //price
-            Text(text = productDetails?.price ?: "$0.00", style = Typography.titleMedium)
+            Text(text =  "$${productDetails?.price ?: "0.00"}", style = Typography.titleMedium)
             Spacer(modifier = Modifier.height(20.dp))
             //Details
             Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)

@@ -23,4 +23,28 @@ Generally, we can follow next structured pattern
 
 <feature|bugfix>/<package|layer>/<description>
 
+## UI Layer
+
+### Libraries
+
+- Hilt for dependency injection
+- Compose 
+- Material 2 and 3
+- Jetpack libraries
+- Coil for images
+
+Need permissions
+
+## Domain layer
+
+### Libraries
+
+- KotlinX coroutines
+
+## Data Source layer
+
+## Libraries
+
+- Room Database
+- Dagger 2 for dependency injection
 
