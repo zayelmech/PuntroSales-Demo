@@ -14,6 +14,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -21,13 +23,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintSet
 import androidx.core.graphics.scale
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -67,88 +72,114 @@ fun AddProductComposable(
 
     val context = LocalContext.current
 
+    LazyColumn {
+        item {
+            Column(modifier = Modifier.padding(10.dp)) {
 
-    Column(modifier = Modifier.padding(10.dp)) {
+                Text(text = "Image", style = Typography.labelMedium, color = PurpleGrey40)
+                Box(
 
-        Text(text = "Image", style = Typography.labelMedium, color = PurpleGrey40)
-        Box(
+                    modifier = Modifier
+                        .clickable {
+                            onPickImage()
+                        }
+                        .size(100.dp)
+                        .wrapContentSize(Alignment.Center)
 
-            modifier = Modifier
-                .clickable {
-                    onPickImage()
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            ImageRequest.Builder(context)
+                                .data(uri)
+                                .error(R.drawable.baseline_add_photo_alternate_24)
+                                .crossfade(true)
+                                .build()
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(5.dp)
+                            .clip(RoundedCornerShape(25)),
+                        contentScale = ContentScale.FillWidth
+                    )
+
                 }
-                .size(100.dp)
-                .wrapContentSize(Alignment.Center)
 
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(context)
-                        .data(uri)
-                        .error(R.drawable.baseline_insert_photo_24)
-                        .crossfade(true)
-                        .build()
-                ),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth
-            )
+                Text(text = "Product name", style = Typography.labelMedium, color = PurpleGrey40)
+                OutlinedTextField(value = productName, onValueChange = onProductNameChange)
 
-        }
-
-        Text(text = "Product name", style = Typography.labelMedium, color = PurpleGrey40)
-        OutlinedTextField(value = productName, onValueChange = onProductNameChange)
-
-        Text(text = "Price", style = Typography.labelMedium, color = PurpleGrey40)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
-                value = productPrice,
-                onValueChange = onProductPriceChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
+                Text(text = "Price", style = Typography.labelMedium, color = PurpleGrey40)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedTextField(
+                        value = productPrice,
+                        onValueChange = onProductPriceChange,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
 
 
-            DropListPicker(
-                currencyList
-            ) { currencyPicked ->
-                onCurrencyChange(currencyPicked)
+                    DropListPicker(
+                        currencyList
+                    ) { currencyPicked ->
+                        onCurrencyChange(currencyPicked)
+                    }
+
+                }
+                Text(text = "Unit", style = Typography.labelMedium, color = PurpleGrey40)
+
+
+                DropListPicker(
+                    unitList
+                ) { unitPicked ->
+                    onUnitPicked(unitPicked)
+                }
+
+
+                //Details
+                Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
+                Divider(
+                    color = Color.LightGray,
+                    thickness = 2.dp,
+                    modifier = Modifier.padding(0.dp, 5.dp)
+                )
+
+
+                OutlinedTextField(
+                    value = detailsText,
+                    onValueChange = onDetailsChange,
+                    singleLine = false,
+                    modifier = Modifier
+                        .height(100.dp)
+                        .fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(60.dp))
+                ButtonFancy(
+                    text = "SAVE",
+                    paddingX = 0.dp,
+                    icon = Icons.Filled.Done,
+                    enable = buttonSaveState
+                ) {
+                    onSaveButtonClicked()
+                }
             }
-
-        }
-        Text(text = "Unit", style = Typography.labelMedium, color = PurpleGrey40)
-
-
-        DropListPicker(
-            unitList
-        ) { unitPicked ->
-            onUnitPicked(unitPicked)
-        }
-
-
-        //Details
-        Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
-        Divider(color = Color.LightGray, thickness = 2.dp, modifier = Modifier.padding(0.dp, 5.dp))
-
-
-        OutlinedTextField(
-            value = detailsText,
-            onValueChange = onDetailsChange,
-            singleLine = false,
-            modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(60.dp))
-        ButtonFancy(
-            text = "SAVE",
-            paddingX = 0.dp,
-            icon = Icons.Filled.Done,
-            enable = buttonSaveState
-        ) {
-            onSaveButtonClicked()
         }
     }
 
 }
+
+private fun decoupledConstraints(margin: Dp): ConstraintSet {
+    return ConstraintSet {
+        val button = createRefFor("button")
+        val text = createRefFor("text")
+
+        constrain(button) {
+            top.linkTo(parent.top, margin = margin)
+        }
+        constrain(text) {
+            top.linkTo(button.bottom, margin)
+        }
+    }
+}
+
 
 @Composable
 fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -> Unit) {
@@ -163,22 +194,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
-        //imageUri = uriPicked
-        var bitmap: Bitmap? = null
-        if (Build.VERSION.SDK_INT < 28) {
-            uriPicked?.let {
-            bitmap = MediaStore.Images
-                .Media.getBitmap(context.contentResolver, it)
-            }
-
-        } else {
-            uriPicked?.let {
-                val source = ImageDecoder
-                    .createSource(context.contentResolver, it)
-                bitmap = ImageDecoder.decodeBitmap(source).scale(500, 500)
-            }
-        }
-        bitmap?.let {
+        uriPicked?.let {
             saveMediaToStorage(context, it) { uri ->
                 imageUri = uri
             }
