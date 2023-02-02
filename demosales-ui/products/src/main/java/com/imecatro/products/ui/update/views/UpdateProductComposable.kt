@@ -43,23 +43,8 @@ fun UpdateProductComposableStateImpl(
         contract =
         ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
-        //imageUri = uriPicked
-        var bitmap: Bitmap? = null
-        if (Build.VERSION.SDK_INT < 28) {
-            uriPicked?.let {
-                bitmap = MediaStore.Images
-                    .Media.getBitmap(context.contentResolver, uriPicked)
-            }
 
-        } else {
-            uriPicked?.let {
-                val source = ImageDecoder
-                    .createSource(context.contentResolver, it)
-
-                bitmap = ImageDecoder.decodeBitmap(source).scale(500, 500)
-            }
-        }
-        bitmap?.let {
+        uriPicked?.let {
             saveMediaToStorage(context, it) { uri ->
                 imageUri = uri
             }

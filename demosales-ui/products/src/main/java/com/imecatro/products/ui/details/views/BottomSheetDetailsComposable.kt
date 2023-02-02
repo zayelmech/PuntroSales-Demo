@@ -28,23 +28,6 @@ import com.imecatro.products.ui.theme.PurpleRed
 import com.imecatro.products.ui.theme.Typography
 
 
-//@OptIn(ExperimentalMaterialApi::class)
-//@Composable
-//fun BottomSheetDetailsCompose(
-//    productDetails: ProductDetailsUiModel?,
-//    state: ModalBottomSheetState,
-//    onDeleteClicked: () -> Unit,
-//    onEditClicked: () -> Unit,
-//    content: @Composable () -> Unit
-//) {
-//
-//    ModalBottomSheetLayout(sheetState = state, sheetContent = {
-//        DetailsComposable(productDetails, onDeleteClicked, onEditClicked)
-//    }, sheetShape = RoundedCornerShape(20.dp, 20.dp)) {
-//        content()
-//    }
-//}
-
 @Composable
 fun DetailsComposableStateImpl(
     productDetailsViewModel: ProductsDetailsViewModel,
