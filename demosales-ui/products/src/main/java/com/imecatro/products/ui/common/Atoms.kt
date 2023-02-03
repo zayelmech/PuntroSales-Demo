@@ -92,6 +92,7 @@ fun DropListPicker(
             readOnly = true,
             enabled = false,
             modifier = Modifier
+                .width(150.dp)
                 .height(60.dp)
                 .clickable {
                     expanded = true
