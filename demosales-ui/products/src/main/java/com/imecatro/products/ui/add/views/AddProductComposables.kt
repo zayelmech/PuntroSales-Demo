@@ -47,8 +47,10 @@ fun AddProductComposable(
     productPrice: String,
     onProductPriceChange: (String) -> Unit,
     currencyList: List<String>,
+    currencyPicked: String,
     onCurrencyChange: (String) -> Unit,
     unitList: List<String>,
+    unitPicked: String,
     onUnitPicked: (String) -> Unit,
     detailsText: String,
     onDetailsChange: (String) -> Unit,
@@ -105,9 +107,9 @@ fun AddProductComposable(
 
 
                     DropListPicker(
-                        currencyList
-                    ) { currencyPicked ->
-                        onCurrencyChange(currencyPicked)
+                        currencyList, currencyPicked
+                    ) { currency ->
+                        onCurrencyChange(currency)
                     }
 
                 }
@@ -115,7 +117,7 @@ fun AddProductComposable(
 
 
                 DropListPicker(
-                    unitList
+                    unitList, unitPicked
                 ) { unitPicked ->
                     onUnitPicked(unitPicked)
                 }
@@ -197,11 +199,10 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
     }
 
     var currencySelected by remember {
-        mutableStateOf("")
+        mutableStateOf("USD")
     }
     var unitSelected by remember {
-        //mutableStateOf("pz")
-        mutableStateOf("")
+        mutableStateOf("pz")
     }
     var details by remember {
         mutableStateOf("")
@@ -225,8 +226,10 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         productPrice = productPrice,
         onProductPriceChange = { productPrice = it },
         currencyList = addViewModel.getCurrencies(),
+        currencyPicked = currencySelected,
         onCurrencyChange = { currencySelected = it },
         unitList = addViewModel.getUnities(),
+        unitPicked = unitSelected,
         onUnitPicked = { unitSelected = it },
         detailsText = details,
         onDetailsChange = { details = it },
@@ -263,8 +266,10 @@ fun AddProductComposablePreview() {
                 productPrice = "",
                 onProductPriceChange = {},
                 currencyList = listOf("USD", "MXN", "EUR", "GBP"),
+                currencyPicked = "USD",
                 onCurrencyChange = {},
                 unitList = listOf("pz", "kg", "g", "m", "cm"),
+                unitPicked = "pz",
                 onUnitPicked = {},
                 detailsText = "",
                 onDetailsChange = {},

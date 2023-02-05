@@ -3,9 +3,9 @@ package com.imecatro.products.ui.update.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imecatro.domain.products.repository.ProductsRepository
-import com.imecatro.domain.products.usecases.GetListOfCurrenciesUseCase
-import com.imecatro.domain.products.usecases.GetListOfUnitsUseCase
+import com.imecatro.demosales.domain.products.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.products.usecases.GetListOfCurrenciesUseCase
+import com.imecatro.demosales.domain.products.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.products.ui.update.UpdateUiState
 import com.imecatro.products.ui.update.mappers.toDomain
 import com.imecatro.products.ui.update.mappers.toUpdateUiModel

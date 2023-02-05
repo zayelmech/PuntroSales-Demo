@@ -1,7 +1,7 @@
 package com.imecatro.demosales.di
 
 import com.imecatro.demosales.datasource.room.ProductsRepositoryImpl
-import com.imecatro.domain.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.products.repository.ProductsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
