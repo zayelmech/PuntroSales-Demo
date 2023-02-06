@@ -1,8 +1,8 @@
 package com.imecatro.products.ui.update.mappers
 
 import android.net.Uri
-import com.imecatro.demosales.domain.products.products.model.ProductDomainModel
-import com.imecatro.demosales.domain.products.products.model.ProductUnit
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductUnit
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
 
 

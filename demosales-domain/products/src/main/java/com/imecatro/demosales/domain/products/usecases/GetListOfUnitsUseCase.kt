@@ -1,6 +1,6 @@
-package com.imecatro.demosales.domain.products.products.usecases
+package com.imecatro.demosales.domain.products.usecases
 
-import com.imecatro.demosales.domain.products.products.model.ProductUnit
+import com.imecatro.demosales.domain.products.model.ProductUnit
 
 class GetListOfUnitsUseCase() {
     operator fun invoke(): List<String> {

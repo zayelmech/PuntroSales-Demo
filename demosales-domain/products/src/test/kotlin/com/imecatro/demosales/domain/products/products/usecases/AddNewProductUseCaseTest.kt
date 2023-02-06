@@ -1,8 +1,10 @@
 package com.imecatro.demosales.domain.products.products.usecases
 
-import com.imecatro.demosales.domain.products.products.model.ProductDomainModel
-import com.imecatro.demosales.domain.products.products.model.ProductUnit
-import com.imecatro.demosales.domain.products.products.repository.ProductsRepositoryDummyImpl
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductUnit
+import com.imecatro.demosales.domain.products.repository.ProductsRepositoryDummyImpl
+import com.imecatro.demosales.domain.products.usecases.AddNewProductUseCase
+import com.imecatro.demosales.domain.products.usecases.State
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

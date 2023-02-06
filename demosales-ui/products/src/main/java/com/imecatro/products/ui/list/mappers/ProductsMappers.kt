@@ -1,7 +1,7 @@
 package com.imecatro.products.ui.list.mappers
 
 import android.net.Uri
-import com.imecatro.demosales.domain.products.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 
 fun List<ProductDomainModel>.toProductUiModel(): List<ProductUiModel> {

@@ -1,7 +1,7 @@
 package com.imecatro.products.ui.add.mappers
 
-import com.imecatro.demosales.domain.products.products.model.ProductDomainModel
-import com.imecatro.demosales.domain.products.products.model.ProductUnit
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductUnit
 import com.imecatro.products.ui.add.model.AddProductUiModel
 
 fun AddProductUiModel.toDomain(): ProductDomainModel? {

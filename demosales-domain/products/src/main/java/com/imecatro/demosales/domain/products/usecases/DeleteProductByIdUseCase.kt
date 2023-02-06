@@ -1,6 +1,6 @@
-package com.imecatro.demosales.domain.products.products.usecases
+package com.imecatro.demosales.domain.products.usecases
 
-import com.imecatro.demosales.domain.products.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 

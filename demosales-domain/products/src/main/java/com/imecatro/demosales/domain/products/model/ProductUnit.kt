@@ -1,4 +1,4 @@
-package com.imecatro.demosales.domain.products.products.model
+package com.imecatro.demosales.domain.products.model
 
 
 sealed class ProductUnit(val symbol: String) {

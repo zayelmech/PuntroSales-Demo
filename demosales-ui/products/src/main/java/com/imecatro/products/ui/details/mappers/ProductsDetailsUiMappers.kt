@@ -1,6 +1,6 @@
 package com.imecatro.products.ui.details.mappers
 
-import com.imecatro.demosales.domain.products.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 
 fun ProductDomainModel.toUiModel(): ProductDetailsUiModel {

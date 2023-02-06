@@ -2,7 +2,7 @@ package com.imecatro.products.ui.details.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imecatro.demosales.domain.products.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.products.ui.details.mappers.toUiModel
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel

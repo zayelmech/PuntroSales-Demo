@@ -4,8 +4,8 @@ import androidx.annotation.WorkerThread
 import com.imecatro.demosales.datasource.room.mappers.toData
 import com.imecatro.demosales.datasource.room.mappers.toDomain
 import com.imecatro.demosales.datasource.room.mappers.toListDomain
-import com.imecatro.demosales.domain.products.products.model.ProductDomainModel
-import com.imecatro.demosales.domain.products.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

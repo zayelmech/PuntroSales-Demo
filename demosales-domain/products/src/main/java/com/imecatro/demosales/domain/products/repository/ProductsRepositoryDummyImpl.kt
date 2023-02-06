@@ -1,6 +1,6 @@
-package com.imecatro.demosales.domain.products.products.repository
+package com.imecatro.demosales.domain.products.repository
 
-import com.imecatro.demosales.domain.products.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

@@ -2,7 +2,7 @@ package com.imecatro.products.ui.list.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imecatro.demosales.domain.products.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.products.ui.list.mappers.toProductUiModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
-    private val productsRepository: com.imecatro.demosales.domain.products.products.repository.ProductsRepository //= ProductsRepositoryDummyImpl()
+    private val productsRepository: ProductsRepository //= ProductsRepositoryDummyImpl()
 ) : ViewModel() {
 
 

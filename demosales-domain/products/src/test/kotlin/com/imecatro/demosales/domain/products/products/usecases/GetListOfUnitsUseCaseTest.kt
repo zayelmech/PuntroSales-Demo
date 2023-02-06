@@ -1,5 +1,6 @@
 package com.imecatro.demosales.domain.products.products.usecases
 
+import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test

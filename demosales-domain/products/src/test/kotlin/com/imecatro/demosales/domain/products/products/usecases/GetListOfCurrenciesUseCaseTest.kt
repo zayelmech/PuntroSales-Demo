@@ -1,5 +1,6 @@
 package com.imecatro.demosales.domain.products.products.usecases
 
+import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
