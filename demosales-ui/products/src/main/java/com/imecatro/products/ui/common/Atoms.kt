@@ -71,14 +71,13 @@ fun ButtonFancy(
 @Composable
 fun DropListPicker(
     list: List<String>,
+    itemSelected : String,
     // expanded: Boolean = false,
 //    onExpanded: () -> Unit,
     onItemClicked: (String) -> Unit
 ) {
 
-    var text by remember {
-        mutableStateOf(list.first())
-    }
+
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -87,7 +86,7 @@ fun DropListPicker(
         // .wrapContentSize(Alignment.Center)
     ) {
         OutlinedTextField(
-            value = text,
+            value = itemSelected,
             onValueChange = {},
             readOnly = true,
             enabled = false,
@@ -121,7 +120,7 @@ fun DropListPicker(
                     text = { Text(name) },
                     onClick = {
                         expanded = false
-                        text = name
+                        //itemSelected = name
                         onItemClicked(name)
                     },
                     modifier = Modifier.padding(0.5.dp)
@@ -151,7 +150,7 @@ fun AtomsPreview() {
 //                var expanded by remember { mutableStateOf(true) }
 
                 DropListPicker(
-                    listOf("lb", "pz", "m", "cm", "kg")
+                    listOf("lb", "pz", "m", "cm", "kg"),"pz"
                 ) {}
                 ButtonFancy(text = "Click me") {
 

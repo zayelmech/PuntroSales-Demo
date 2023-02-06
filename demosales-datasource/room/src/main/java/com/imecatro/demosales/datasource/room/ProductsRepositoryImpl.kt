@@ -1,15 +1,12 @@
 package com.imecatro.demosales.datasource.room
 
-import android.net.Uri
-import android.util.Log
 import androidx.annotation.WorkerThread
 import com.imecatro.demosales.datasource.room.mappers.toData
 import com.imecatro.demosales.datasource.room.mappers.toDomain
 import com.imecatro.demosales.datasource.room.mappers.toListDomain
-import com.imecatro.domain.products.model.ProductDomainModel
-import com.imecatro.domain.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 
 private const val TAG = "ProductsRepositoryImpl"

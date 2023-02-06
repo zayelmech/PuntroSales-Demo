@@ -1,8 +1,8 @@
 package com.imecatro.demosales.datasource.room.mappers
 
 import com.imecatro.demosales.datasource.room.entities.ProductRoomEntity
-import com.imecatro.domain.products.model.ProductDomainModel
-import com.imecatro.domain.products.model.ProductUnit
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductUnit
 
 fun List<ProductRoomEntity>.toListDomain(): List<ProductDomainModel> {
     return map { it.toDomain() }

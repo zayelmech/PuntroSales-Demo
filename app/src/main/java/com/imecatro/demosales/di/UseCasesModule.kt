@@ -1,7 +1,7 @@
 package com.imecatro.demosales.di
 
-import com.imecatro.domain.products.usecases.GetListOfCurrenciesUseCase
-import com.imecatro.domain.products.usecases.GetListOfUnitsUseCase
+import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
+import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
