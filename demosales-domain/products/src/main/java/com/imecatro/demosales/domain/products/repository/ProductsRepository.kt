@@ -9,5 +9,5 @@ interface ProductsRepository {
     fun deleteProductById(id :Int?)
     fun updateProduct(product: ProductDomainModel?)
     fun getProductDetailsById(id: Int?): ProductDomainModel?
-    fun getProductsStartingWith(letter: String): List<ProductDomainModel>
+    fun searchProducts(letter: String): Flow<List<ProductDomainModel>>
 }

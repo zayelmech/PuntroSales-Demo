@@ -1,4 +1,4 @@
-package com.imecatro.products.ui.theme
+package com.imecatro.demosales.ui.theme
 
 import android.app.Activity
 import android.os.Build
