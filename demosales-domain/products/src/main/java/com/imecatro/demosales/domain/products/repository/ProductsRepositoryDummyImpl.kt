@@ -41,5 +41,9 @@ class ProductsRepositoryDummyImpl(
     override fun getProductDetailsById(id: Int?): ProductDomainModel? {
         return DummyRepository.fakeList.find { it.id == id }
     }
+
+    override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
+        TODO("Not yet implemented")
+    }
 }
 

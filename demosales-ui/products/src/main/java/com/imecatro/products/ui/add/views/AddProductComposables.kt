@@ -26,15 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintSet
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.PurpleGrey40
+import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import com.imecatro.products.ui.common.ButtonFancy
 import com.imecatro.products.ui.common.DropListPicker
 import com.imecatro.products.ui.common.saveMediaToStorage
-import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.products.ui.theme.PurpleGrey40
-import com.imecatro.products.ui.theme.Typography
 
 
 @OptIn(ExperimentalMaterial3Api::class)

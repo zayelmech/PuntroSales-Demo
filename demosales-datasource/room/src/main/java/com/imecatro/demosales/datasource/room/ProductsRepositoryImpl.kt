@@ -7,6 +7,7 @@ import com.imecatro.demosales.datasource.room.mappers.toListDomain
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 
 private const val TAG = "ProductsRepositoryImpl"
@@ -26,12 +27,12 @@ class ProductsRepositoryImpl(
 
 //    private var allProducts: List<ProductDomainModel> = listOf()
 
-    override  fun getAllProducts(): Flow<List<ProductDomainModel>> {
+    override fun getAllProducts(): Flow<List<ProductDomainModel>> {
         return flow {
             productsDao?.getAllProducts()?.collect {
                 emit(it.toListDomain())
             }
-
+            //TODO implement error null
         }
     }
 
@@ -53,9 +54,18 @@ class ProductsRepositoryImpl(
 
     override fun getProductDetailsById(id: Int?): ProductDomainModel? {
         return id?.let {
-           productsDao?.getProductDetailsById(it)?.toDomain()
+            productsDao?.getProductDetailsById(it)?.toDomain()
         } ?: run {
             null
+        }
+    }
+
+    override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
+        return flow {
+            productsDao?.searchProducts(letter)?.collectLatest {
+                emit(it.toListDomain())
+            }
+            //TODO implement error null
         }
     }
 }

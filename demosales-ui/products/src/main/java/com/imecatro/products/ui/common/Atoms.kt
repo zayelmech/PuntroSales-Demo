@@ -13,9 +13,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.imecatro.products.ui.theme.BlueTurquoise80
-import com.imecatro.products.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.products.ui.theme.Typography
+import com.imecatro.demosales.ui.theme.BlueTurquoise80
+import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,12 +1,10 @@
-package com.imecatro.products.ui.theme
+package com.imecatro.demosales.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.imecatro.products.ui.theme.BlueGrey40
-import com.imecatro.products.ui.theme.BlueTurquoise80
 
 // Set of Material typography styles to start with
 val Typography = Typography(
