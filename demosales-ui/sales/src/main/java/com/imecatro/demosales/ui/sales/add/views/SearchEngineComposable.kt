@@ -62,28 +62,6 @@ fun SearchBottomSheetComposable(
     }
 }
 
-@Composable
-fun SearchBottomSheetComposableStateImpl(
-    addSaleViewModel: AddSaleViewModel
-) {
-    val resultsList by addSaleViewModel.productsFound.collectAsState()
-
-    var query by remember {
-        mutableStateOf("")
-    }
-
-
-    SearchBottomSheetComposable(
-        list = resultsList.toMutableStateList(),
-        query = query,
-        onQueryChange = {query =it}
-    ){
-        addSaleViewModel.onAddProductToCartAction(it)
-    }
-
-
-}
-
 
 @Composable
 fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked: (Int) -> Unit) {

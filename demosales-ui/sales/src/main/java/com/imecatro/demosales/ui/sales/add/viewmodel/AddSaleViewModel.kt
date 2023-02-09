@@ -8,17 +8,21 @@ import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseC
 import com.imecatro.demosales.domain.sales.model.SaleModelDomain
 import com.imecatro.demosales.ui.sales.add.mappers.toListAddSaleUi
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AddSaleViewModel(
+@HiltViewModel
+class AddSaleViewModel @Inject constructor(
     private val addNewSaleToDatabaseUseCase: AddNewSaleToDatabaseUseCase,
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _results: MutableStateFlow<List<ProductResultUiModel>> = MutableStateFlow(listOf())

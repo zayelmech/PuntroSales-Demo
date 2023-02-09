@@ -4,11 +4,12 @@ import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.model.ResultDomainCodes
 import com.imecatro.demosales.domain.sales.model.SaleModelDomain
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class AddNewSaleToDatabaseUseCase(
     private val addSaleRepository: AddSaleRepository,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     suspend operator fun invoke(saleModelDomain: SaleModelDomain): Result<ResultDomainCodes> =
         withContext(dispatcher) {

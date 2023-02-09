@@ -61,9 +61,11 @@ dependencies {
 //    implementation project(path: ':demosales-domain')
     implementation project(path: ':demosales-data:products')
     implementation project(path: ':demosales-ui:products')
+    implementation project(path: ':demosales-ui:sales')
     implementation project(path: ':demosales-ui:theme')
     implementation project(path: ':demosales-datasource:room')
     implementation project(path: ':demosales-domain:products')
+    implementation project(path: ':demosales-domain:sales')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

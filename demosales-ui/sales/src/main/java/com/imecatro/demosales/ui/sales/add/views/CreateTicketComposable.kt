@@ -1,17 +1,14 @@
 package com.imecatro.demosales.ui.sales.add.views
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +24,7 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.theme.GreenTurquoise
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
@@ -35,12 +33,18 @@ import com.imecatro.demosales.ui.theme.Typography
 fun CreateTicketComposable(
     productOnCart: List<ProductOnCartUiModel>,
     onDeleteProduct: (Int) -> Unit,
+    onProductPlusClicked: (Int) -> Unit,
+    onProductMinusClicked: (Int) -> Unit,
 ) {
     LazyColumn {
         itemsIndexed(productOnCart) { index, item ->
-            OrderOnCartComposable(product = item, index, {}) {
-
-            }
+            OrderOnCartComposable(
+                product = item,
+                productPosition = index,
+                onPlusClicked = onProductPlusClicked,
+                onMinusClick = onProductMinusClicked
+            )
+            //TODO implement onDelete
         }
     }
 }
@@ -71,6 +75,7 @@ fun OrderOnCartComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
+                .horizontalScroll(rememberScrollState())
         ) {
             // TODO add description and implement image by url
 
@@ -86,12 +91,12 @@ fun OrderOnCartComposable(
                 contentDescription = null,
                 modifier = Modifier
                     .size(50.dp)
-                    .padding(5.dp)
+//                    .padding(5.dp)
                     .clip(RoundedCornerShape(50)),
                 contentScale = ContentScale.FillBounds
             )
 
-            Column {
+            Column(Modifier.weight(1f)) {
                 Text(text = product.product.name ?: "Product name", style = Typography.titleMedium)
 //                Text(text = " x ${product.product.unit}", fontSize = 18.sp)
                 Text(text = "$${product.product.price ?: 0.00}", style = Typography.titleMedium)
@@ -131,11 +136,32 @@ fun OrderOnCartComposable(
 
                 }
             }
-            //TODO show subtotal
             Text(text = "$${product.subtotal}", style = Typography.titleMedium)
 
         }
     }
+}
+
+
+@Composable
+fun CreateTicketComposableStateImpl(
+    addSaleViewModel: AddSaleViewModel
+) {
+    val resultsList by addSaleViewModel.productsFound.collectAsState()
+
+    var query by remember {
+        mutableStateOf("")
+    }
+
+
+    SearchBottomSheetComposable(
+        list = resultsList.toMutableStateList(),
+        query = query,
+        onQueryChange = { query = it }
+    ) {
+        addSaleViewModel.onAddProductToCartAction(it)
+    }
+
 }
 
 fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
@@ -162,7 +188,7 @@ fun PreviewCreateTicketComposable() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            CreateTicketComposable(createFakeListOfProductsOnCart(5)) {}
+            CreateTicketComposable(createFakeListOfProductsOnCart(5),{},{},{})
 
         }
     }
