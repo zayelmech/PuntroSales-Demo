@@ -6,5 +6,5 @@ data class ProductResultUiModel(
     val id: Int?,
     val name: String?,
     val price: Float?,
-    val imageUri: Uri
+    val imageUri: Uri?
 )

@@ -37,7 +37,7 @@ class AddSaleViewModel(
         }
     }
 
-    fun onAddProductToCartAction() {
+    fun onAddProductToCartAction(id : Int) {
 
     }
 

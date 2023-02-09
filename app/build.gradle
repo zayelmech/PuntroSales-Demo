@@ -61,6 +61,7 @@ dependencies {
 //    implementation project(path: ':demosales-domain')
     implementation project(path: ':demosales-data:products')
     implementation project(path: ':demosales-ui:products')
+    implementation project(path: ':demosales-ui:theme')
     implementation project(path: ':demosales-datasource:room')
     implementation project(path: ':demosales-domain:products')
     testImplementation 'junit:junit:4.13.2'
