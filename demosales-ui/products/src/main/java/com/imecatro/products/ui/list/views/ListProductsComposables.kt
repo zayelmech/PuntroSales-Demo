@@ -136,50 +136,21 @@ fun ListOfProductsStateImpl(
     //TODO ON NAVIGATE NEW
 ) {
     val scope = rememberCoroutineScope()
-    //val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
     val _list by productsViewModel.productsList.collectAsState()
     productsViewModel.getAllProducts()
 
-//    val launcher = rememberLauncherForActivityResult(
-//        contract =
-//        ActivityResultContracts.GetContent()
-//    ) { uriPicked: Uri? ->
-//        val x = uriPicked
-//    }
+
 
     ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
         onCardClicked = {
             scope.launch {
-
                 onNavigateAction(it)
-//                    productSelected = productDetailsUiModel.getDetailsById(it)?: initDetails
-//                    state.show()
             }
         }) {
         onNavigateAction(null)
     }
-//    BottomSheetDetailsCompose(
-//        productDetails = productSelected,
-//        state = state,
-//        onDeleteClicked = {
-//            scope.launch {
-//                productDetailsUiModel.onDeleteAction(productSelected.id)
-//                state.hide()
-//            }
-//        },
-//        onEditClicked = { onNavigateAction(productSelected.id) },
-//
-//        ) {
-//        ListOfProductsPlusFloatIcon(_list.toMutableStateList(),
-//            onCardClicked = {
-//                scope.launch {
-//                    productSelected = productDetailsUiModel.getDetailsById(it)?: initDetails
-//                    state.show()
-//                }
-//            }) {
-//            onNavigateAction(null)
-//        }
-//    }
+
 }
 
 

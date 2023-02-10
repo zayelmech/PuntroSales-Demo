@@ -9,16 +9,14 @@ import kotlinx.coroutines.flow.flow
 class GetProductsLikeUseCase(
     private val productsRepository: ProductsRepository,
 ) {
-    operator fun invoke(productName: String): Flow<List<ProductDomainModel>> =
-        flow {
-            try {
-                productsRepository.searchProducts(productName).collectLatest {
-                    emit(it)
-                }
-
-            } catch (e: Exception) {
-                println(e.message)
-                emit(emptyList())
-            }
-        }
+    operator fun invoke(productName: String): Flow<List<ProductDomainModel>> =productsRepository.searchProducts(productName)
+//        flow {
+//            try {
+//
+//
+//            } catch (e: Exception) {
+//                println(e.message)
+//                //emit(emptyList())
+//            }
+//        }
 }

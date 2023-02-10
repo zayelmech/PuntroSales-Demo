@@ -16,11 +16,6 @@ class RoomModule {
     @Singleton
     fun provideAppDatabase( app: Application): ProductsRoomDatabase {
         return  ProductsRoomDatabase.initDatabase(app)
-//        return Room.databaseBuilder(
-//            app,
-//            ProductsRoomDatabase::class.java,
-//            "database"
-//        ).build()
     }
 
     @Provides

@@ -54,7 +54,7 @@ fun SearchBottomSheetComposable(
                     contentDescription = null
                 )
             })
-        LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp)) {
+        LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier.height(300.dp)) {
             items(list) {
                 ProductResultCardComposable(product = it, onProductClicked = onProductClicked)
             }

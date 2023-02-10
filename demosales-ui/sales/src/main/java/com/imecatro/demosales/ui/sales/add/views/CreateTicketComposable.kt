@@ -1,12 +1,18 @@
 package com.imecatro.demosales.ui.sales.add.views
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -24,27 +31,47 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
+import com.imecatro.demosales.ui.theme.BlueTurquoise80
 import com.imecatro.demosales.ui.theme.GreenTurquoise
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTicketComposable(
-    productOnCart: List<ProductOnCartUiModel>,
+    productsOnCart: List<ProductOnCartUiModel>,
     onDeleteProduct: (Int) -> Unit,
     onProductPlusClicked: (Int) -> Unit,
     onProductMinusClicked: (Int) -> Unit,
+    onQtyValueChange: (Int, Float) -> Unit,
+    onAddProductClicked: () -> Unit
 ) {
-    LazyColumn {
-        itemsIndexed(productOnCart) { index, item ->
-            OrderOnCartComposable(
-                product = item,
-                productPosition = index,
-                onPlusClicked = onProductPlusClicked,
-                onMinusClick = onProductMinusClicked
-            )
-            //TODO implement onDelete
+    Scaffold(floatingActionButton = {
+        FloatingActionButton(
+            onClick = onAddProductClicked,
+            containerColor = BlueTurquoise80,
+            contentColor = Color.White
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        }
+    }) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier.consumeWindowInsets(innerPadding),
+            contentPadding = innerPadding
+        ) {
+            itemsIndexed(productsOnCart) { index, item ->
+                OrderOnCartComposable(
+                    product = item,
+                    productPosition = index,
+                    onPlusClicked = onProductPlusClicked,
+                    onMinusClick = onProductMinusClicked,
+                    onQtyValueChange = { onQtyValueChange(index, it.toFloat()) },
+                )
+                //TODO implement onDelete
+            }
         }
     }
 }
@@ -56,8 +83,8 @@ fun OrderOnCartComposable(
     productPosition: Int,
     onPlusClicked: (Int) -> Unit,
     onMinusClick: (Int) -> Unit,
-
-    ) {
+    onQtyValueChange: (String) -> Unit,
+) {
 
     val cardTag = "CARD-${product.product.id}"
 
@@ -65,7 +92,7 @@ fun OrderOnCartComposable(
         modifier = Modifier
             .padding(2.dp, 2.dp)
             .fillMaxWidth()
-//            .width(350.dp)
+//            .height(120.dp)
 //        .clickable { onCardClicked() }
             .testTag(cardTag),
         elevation = CardDefaults.cardElevation(0.5.dp),
@@ -75,7 +102,6 @@ fun OrderOnCartComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
-                .horizontalScroll(rememberScrollState())
         ) {
             // TODO add description and implement image by url
 
@@ -110,7 +136,11 @@ fun OrderOnCartComposable(
             ) {
 
 
-                OutlinedTextField(value = "${product.qty}", onValueChange = { })
+                OutlinedTextField(
+                    value = "${product.qty}",
+                    onValueChange = onQtyValueChange,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
 
                 Row(Modifier.padding(5.dp)) {
 
@@ -143,23 +173,75 @@ fun OrderOnCartComposable(
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreateTicketComposableStateImpl(
     addSaleViewModel: AddSaleViewModel
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
+    val productsOnCart by addSaleViewModel.cartList.collectAsState()
 
     var query by remember {
         mutableStateOf("")
     }
+//    var qtyValue by remember {
+//        mutableStateOf(0f)
+//    }
+    var subTotalProduct by remember {
+        mutableStateOf(0f)
+    }
 
+    val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val scope = rememberCoroutineScope()
 
-    SearchBottomSheetComposable(
-        list = resultsList.toMutableStateList(),
-        query = query,
-        onQueryChange = { query = it }
+    ModalBottomSheetLayout(
+        sheetState = state,
+        sheetContent = {
+            SearchBottomSheetComposable(
+                list = resultsList.toMutableStateList(),
+                query = query,
+                onQueryChange = {
+                    query = it
+                    addSaleViewModel.onSearchAction(query)
+                },
+                onProductClicked = {
+                    addSaleViewModel.onAddProductToCartAction(it)
+                    scope.launch { state.hide() }
+                    //TODO hide keyboard
+                }
+            )
+        }
     ) {
-        addSaleViewModel.onAddProductToCartAction(it)
+        CreateTicketComposable(
+            productsOnCart = productsOnCart.toMutableStateList(),
+            onDeleteProduct = {/*TODO */ },
+            onProductMinusClicked = {
+                addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
+            },
+            onProductPlusClicked = {
+                addSaleViewModel.onQtyValueIncreaseAtPos(it, 1)
+            },
+            onQtyValueChange = { pos, number ->
+                addSaleViewModel.onQtyValueChangeAtPos(pos, number)
+            }
+        ) {
+            scope.launch { state.show() }
+        }
+    }
+    val ticketState by addSaleViewModel.ticketState.collectAsState()
+    when (ticketState) {
+        is TicketUiState.Initialized -> {
+            addSaleViewModel.onGetCacheTicketAction()
+        }
+        is TicketUiState.OnCache -> {
+
+            Log.d(
+                "TAG",
+                "CreateTicketComposableStateImpl: ${(ticketState as TicketUiState.OnCache).cart.size}"
+            )
+        }
+        is TicketUiState.Saved -> {}
+        is TicketUiState.Error -> {}
     }
 
 }
@@ -188,7 +270,13 @@ fun PreviewCreateTicketComposable() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            CreateTicketComposable(createFakeListOfProductsOnCart(5),{},{},{})
+            CreateTicketComposable(
+                createFakeListOfProductsOnCart(5),
+                {},
+                {},
+                {},
+                { _, _ -> }
+            ) {}
 
         }
     }

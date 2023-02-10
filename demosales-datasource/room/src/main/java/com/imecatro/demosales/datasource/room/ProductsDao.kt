@@ -1,5 +1,6 @@
 package com.imecatro.demosales.datasource.room
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.imecatro.demosales.datasource.room.entities.ProductRoomEntity
 import kotlinx.coroutines.flow.Flow
