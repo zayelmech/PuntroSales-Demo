@@ -33,10 +33,7 @@ import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
-import com.imecatro.demosales.ui.theme.BlueTurquoise80
-import com.imecatro.demosales.ui.theme.GreenTurquoise
-import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.Typography
+import com.imecatro.demosales.ui.theme.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
@@ -58,19 +55,78 @@ fun CreateTicketComposable(
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
     }) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.consumeWindowInsets(innerPadding),
-            contentPadding = innerPadding
+        Column(
+            modifier = Modifier
+                .consumeWindowInsets(innerPadding)
+                .padding(innerPadding)
         ) {
-            itemsIndexed(productsOnCart) { index, item ->
-                OrderOnCartComposable(
-                    product = item,
-                    productPosition = index,
-                    onPlusClicked = onProductPlusClicked,
-                    onMinusClick = onProductMinusClicked,
-                    onQtyValueChange = { onQtyValueChange(index, it.toFloat()) },
-                )
-                //TODO implement onDelete
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(10.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+
+                Button(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.weight(1f),
+                    enabled = productsOnCart.isNotEmpty(),
+                    colors = ButtonDefaults.buttonColors(
+                        BlueTurquoise40),
+                    shape = RoundedCornerShape(20)
+                ) {
+                    Text(text = "SAVE", color = Color.White)
+                }
+                Spacer(modifier = Modifier.width(5.dp))
+                Button(
+                    onClick = { /*TODO*/ },
+                    enabled = productsOnCart.isNotEmpty(),
+                    colors = ButtonDefaults.buttonColors(
+                        BlueTurquoise40),
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(20)
+                ) {
+                    Text(text = "CHARGE $${0.0}",color = Color.White)
+                }
+            }
+
+            Divider(color = Color.LightGray, thickness = 1.dp)
+
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+//            modifier = Modifier.consumeWindowInsets(innerPadding),
+//            contentPadding = innerPadding
+            ) {
+                if (productsOnCart.isEmpty()) {
+                    item {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp), verticalAlignment = Alignment.CenterVertically) {
+
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_playlist_add_24),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clickable { onAddProductClicked() },
+                                tint = Color.LightGray
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+                itemsIndexed(productsOnCart) { index, item ->
+                    OrderOnCartComposable(
+                        product = item,
+                        productPosition = index,
+                        onPlusClicked = onProductPlusClicked,
+                        onMinusClick = onProductMinusClicked,
+                        onQtyValueChange = { onQtyValueChange(index, it.toFloat()) },
+                    )
+                    //TODO implement onDelete
+                }
             }
         }
     }
@@ -139,6 +195,7 @@ fun OrderOnCartComposable(
                 OutlinedTextField(
                     value = "${product.qty}",
                     onValueChange = onQtyValueChange,
+                    modifier = Modifier.padding(0.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
