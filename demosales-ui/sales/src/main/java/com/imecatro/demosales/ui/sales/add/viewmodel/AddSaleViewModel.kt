@@ -69,7 +69,7 @@ class AddSaleViewModel @Inject constructor(
 
             getProductDetailsByIdUseCase(id)?.let {
                 val p = it.toCartUiModel()
-                lista.add(p)
+                lista.add(p.apply { qty = 1f;subtotal = product.price?:0f })
                 _cartList.emit(lista)
 
                 //addProductToCartUseCase(p.toOrderDomainModel())
@@ -111,13 +111,10 @@ class AddSaleViewModel @Inject constructor(
 
     fun onQtyValueChangeAtPos(pos: Int, qtyValue: Float) {
         val element = lista.elementAt(pos)
-        lista[pos] = element.copy(qty = qtyValue) //copy notify an update was made, this is needed because
+        lista[pos] =
+            element.copy(qty = qtyValue) //copy notify an update was made, this is needed because
 
-//            element.apply {
-//            qty = qtyValue
-//
-//        }
-        onCalculateSubtotalAtPos(pos,qtyValue)
+        onCalculateSubtotalAtPos(pos, qtyValue)
     }
 
     private fun onCalculateSubtotalAtPos(pos: Int, qtyValue: Float) {
@@ -128,17 +125,14 @@ class AddSaleViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
 //            _cartList.tryEmit(lista.apply { add(element);remove(element)})
 
-            _cartList.tryEmit(lista.apply { size})
+            _cartList.tryEmit(lista.apply { size })
         }
     }
 
     fun onQtyValueIncreaseAtPos(pos: Int, i: Int) {
         val element = lista.elementAt(pos)
-        lista[pos] = element.copy(qty = element.qty+i)
+        lista[pos] = element.copy(qty = element.qty + i)
 
-//            element.apply {
-//            qty += i
-//        }
-        onCalculateSubtotalAtPos(pos,element.qty +i)
+        onCalculateSubtotalAtPos(pos, element.qty + i)
     }
 }
