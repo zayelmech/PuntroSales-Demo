@@ -139,6 +139,6 @@ class AddSaleViewModel @Inject constructor(
 //            element.apply {
 //            qty += i
 //        }
-        onCalculateSubtotalAtPos(pos,element.qty)
+        onCalculateSubtotalAtPos(pos,element.qty +i)
     }
 }

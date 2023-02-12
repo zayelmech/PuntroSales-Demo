@@ -9,6 +9,7 @@ import com.imecatro.products.ui.list.uistate.ListProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,6 @@ class ProductsViewModel @Inject constructor(
     private val iODispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
-
     private val _productsList: MutableStateFlow<List<ProductUiModel>> =
         MutableStateFlow(listOf())
     val productsList: StateFlow<List<ProductUiModel>> = _productsList.asStateFlow()
@@ -35,6 +35,7 @@ class ProductsViewModel @Inject constructor(
         viewModelScope.launch(iODispatcher) {
             try {
                 productsRepository.getAllProducts().collectLatest { list ->
+//                    delay(5000) //active in case you want to see the shimmer effect
                     _uiState.value = ListProductsUiState.Success(list.size)
                     _productsList.emit(list.toProductUiModel())
                 }
@@ -43,7 +44,5 @@ class ProductsViewModel @Inject constructor(
             }
         }
     }
-
-
 }
 

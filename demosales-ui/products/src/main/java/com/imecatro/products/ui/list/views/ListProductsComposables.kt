@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -40,6 +39,7 @@ private const val TAG = "ListProductsComposables"
 @Composable
 fun ListOfProducts(
     list: List<ProductUiModel>,
+    isLoading: Boolean,
     onCardClicked: (Int?) -> Unit,
     onNavigateAction: () -> Unit
 ) {
@@ -58,8 +58,21 @@ fun ListOfProducts(
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = innerPadding
         ) {
-            items(list) { product ->
-                ProductCardCompose(product = product) { onCardClicked(product.id) }
+            if (isLoading) {
+
+                items(10) {
+                    ShimmerListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                    )
+                }
+
+            } else {
+                items(list) { product ->
+
+                    ProductCardCompose(product = product) { onCardClicked(product.id) }
+                }
             }
         }
     }
@@ -138,6 +151,9 @@ fun ListOfProductsStateImpl(
 
     val productsList by productsViewModel.productsList.collectAsState()
     val uiState by productsViewModel.uiState.collectAsState()
+    var isLoading by remember {
+        mutableStateOf(true)
+    }
 
     when (uiState) {
         is ListProductsUiState.Initialized -> {
@@ -145,15 +161,18 @@ fun ListOfProductsStateImpl(
         }
         is ListProductsUiState.Loading -> {/*TODO */
         }
-        is ListProductsUiState.Success -> {/*TODO */
+        is ListProductsUiState.Success -> {
+            isLoading = false
         }
-        is ListProductsUiState.Error -> {/*TODO */
+        is ListProductsUiState.Error -> {
+            isLoading = false
         }
     }
 
 
     ListOfProducts(
         list = productsList.toMutableStateList(),
+        isLoading = isLoading,
         onCardClicked = {
             scope.launch { onNavigateAction(it) }
         },
@@ -170,7 +189,7 @@ fun PreviewListOfProducts() {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
 
-            ListOfProducts(list = fakeProductsList(20), {}) {
+            ListOfProducts(list = fakeProductsList(20), false, {}) {
                 Log.d(TAG, "PreviewListOfProducts: ")
             }
         }
