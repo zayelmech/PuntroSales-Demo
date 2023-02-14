@@ -3,8 +3,8 @@ package com.imecatro.products.ui.details.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Divider
-import androidx.compose.material.Surface
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
