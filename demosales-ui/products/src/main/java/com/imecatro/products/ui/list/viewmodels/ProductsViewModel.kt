@@ -1,5 +1,6 @@
 package com.imecatro.products.ui.list.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
@@ -37,9 +38,12 @@ class ProductsViewModel @Inject constructor(
                 productsRepository.getAllProducts().collectLatest { list ->
 //                    delay(5000) //active in case you want to see the shimmer effect
                     _uiState.value = ListProductsUiState.Success(list.size)
+                    Log.d("TAG", "getAllProducts: ${list.size}")
                     _productsList.emit(list.toProductUiModel())
                 }
             } catch (e: Exception) {
+                Log.d("TAG", "getAllProducts: ${e.message}")
+
                 _uiState.value = ListProductsUiState.Error(e.message ?: "Unable to get data")
             }
         }

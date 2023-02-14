@@ -14,8 +14,8 @@ fun ProductRoomEntity.toDomain(): ProductDomainModel {
         name = this.name,
         price = this.price,
         currency = this.currency,
-        unit = ProductUnit::class.nestedClasses.map { it.objectInstance as ProductUnit }
-            .find { it.symbol == this.unit } ?: ProductUnit.Default,
+        unit = ProductUnit.values().find { it.symbol == this.unit }
+            ?: ProductUnit.Default,
         details = this.details,
         imageUri = this.imageUri
     )

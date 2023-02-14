@@ -5,7 +5,7 @@ import com.imecatro.demosales.domain.products.model.ProductUnit
 class GetListOfUnitsUseCase() {
     operator fun invoke(): List<String> {
 
-        val list = ProductUnit::class.nestedClasses.map { it.objectInstance as ProductUnit }
+        val list: Array<ProductUnit> = ProductUnit.values()
         return list.map { it.symbol }
     }
 }
