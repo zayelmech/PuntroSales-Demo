@@ -43,7 +43,7 @@ fun CreateTicketComposable(
     onDeleteProduct: (Int) -> Unit,
     onProductPlusClicked: (Int) -> Unit,
     onProductMinusClicked: (Int) -> Unit,
-    onQtyValueChange: (Int, Float) -> Unit,
+    onQtyValueChange: (Int, String) -> Unit,
     onAddProductClicked: () -> Unit
 ) {
     Scaffold(floatingActionButton = {
@@ -123,7 +123,7 @@ fun CreateTicketComposable(
                         productPosition = index,
                         onPlusClicked = onProductPlusClicked,
                         onMinusClick = onProductMinusClicked,
-                        onQtyValueChange = { onQtyValueChange(index, it.toFloat()) },
+                        onQtyValueChange = { onQtyValueChange(index, it) },
                     )
                     //TODO implement onDelete
                 }
