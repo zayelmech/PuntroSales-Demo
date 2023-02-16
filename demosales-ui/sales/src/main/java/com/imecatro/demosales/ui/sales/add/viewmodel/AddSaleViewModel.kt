@@ -3,6 +3,7 @@ package com.imecatro.demosales.ui.sales.add.viewmodel
 import android.util.Log
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.mutableStateListOf
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
@@ -69,7 +70,7 @@ class AddSaleViewModel @Inject constructor(
 
             getProductDetailsByIdUseCase(id)?.let {
                 val p = it.toCartUiModel()
-                lista.add(p.apply { qty = 1f;subtotal = product.price?:0f })
+                lista.add(p.apply { qty = 1f;subtotal = product.price ?: 0f })
                 _cartList.emit(lista)
 
                 //addProductToCartUseCase(p.toOrderDomainModel())
@@ -109,12 +110,18 @@ class AddSaleViewModel @Inject constructor(
     }
 
 
-    fun onQtyValueChangeAtPos(pos: Int, qtyValue: Float) {
+    fun onQtyValueChangeAtPos(pos: Int, qtyValue: String) {
         val element = lista.elementAt(pos)
-        lista[pos] =
-            element.copy(qty = qtyValue) //copy notify an update was made, this is needed because
-
-        onCalculateSubtotalAtPos(pos, qtyValue)
+        //next block must evaluate the qty value in order to confirm is a float digit
+        if (qtyValue.isNotEmpty() && qtyValue.count { it == '.' } <= 1 && qtyValue.contains(Regex("\\d"))) {
+            try {
+                lista[pos] =
+                    element.copy(qty = qtyValue.toFloat()) //copy notify an update was made, this is needed because
+                onCalculateSubtotalAtPos(pos, qtyValue.toFloat())
+            } catch (e: NumberFormatException) {
+                Log.d(TAG, "onQtyValueChangeAtPos: ${e.message}")
+            }
+        }
     }
 
     private fun onCalculateSubtotalAtPos(pos: Int, qtyValue: Float) {
