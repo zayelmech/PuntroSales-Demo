@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
@@ -23,7 +22,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -73,7 +71,8 @@ fun CreateTicketComposable(
                     modifier = Modifier.weight(1f),
                     enabled = productsOnCart.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
-                        BlueTurquoise40),
+                        BlueTurquoise40
+                    ),
                     shape = RoundedCornerShape(20)
                 ) {
                     Text(text = "SAVE", color = Color.White)
@@ -83,11 +82,12 @@ fun CreateTicketComposable(
                     onClick = { /*TODO*/ },
                     enabled = productsOnCart.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
-                        BlueTurquoise40),
+                        BlueTurquoise40
+                    ),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(20)
                 ) {
-                    Text(text = "CHARGE $${0.0}",color = Color.White)
+                    Text(text = "CHARGE $${0.0}", color = Color.White)
                 }
             }
 
@@ -100,9 +100,11 @@ fun CreateTicketComposable(
             ) {
                 if (productsOnCart.isEmpty()) {
                     item {
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp), verticalAlignment = Alignment.CenterVertically
+                        ) {
 
                             Spacer(modifier = Modifier.weight(1f))
                             Icon(
@@ -143,6 +145,9 @@ fun OrderOnCartComposable(
 ) {
 
     val cardTag = "CARD-${product.product.id}"
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
 
     ElevatedCard(
         modifier = Modifier
@@ -157,7 +162,8 @@ fun OrderOnCartComposable(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // TODO add description and implement image by url
 
@@ -186,20 +192,31 @@ fun OrderOnCartComposable(
             }
             Column(
                 modifier = Modifier
-                    .width(100.dp)
+//                    .width(90.dp)
                     .padding(5.dp, 0.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
 
-                OutlinedTextField(
-                    value = "${product.qty}",
-                    onValueChange = onQtyValueChange,
-                    modifier = Modifier.padding(0.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
+//                OutlinedTextField(
+//                    value = "${product.qty}",
+//                    onValueChange = onQtyValueChange,
+//                    modifier = Modifier.padding(0.dp),
+//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+//                )
 
-                Row(Modifier.padding(5.dp)) {
+//                TextButton(onClick = { showDialog = true }) {
+//                    Text(text = "${product.qty}")
+//                }
+
+                if (showDialog) {
+                    InputNumberDialogComposable(
+                        initialValue = "${product.qty}",
+                        onDismissRequest = { showDialog = false },
+                        onConfirmClicked = { onQtyValueChange(it);showDialog = false }
+                    )
+                }
+                Row(Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically) {
 
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_remove_24),
@@ -210,7 +227,10 @@ fun OrderOnCartComposable(
                         tint = Color.White
 
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = { showDialog = true }) {
+                        Text(text = "x ${product.qty}")
+                    }
+//                    Spacer(modifier = Modifier.width(5.dp))
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "Click to add 1 ",
