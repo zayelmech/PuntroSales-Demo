@@ -162,7 +162,8 @@ fun OrderOnCartComposable(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // TODO add description and implement image by url
 
@@ -191,7 +192,7 @@ fun OrderOnCartComposable(
             }
             Column(
                 modifier = Modifier
-                    .width(100.dp)
+//                    .width(90.dp)
                     .padding(5.dp, 0.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -204,9 +205,9 @@ fun OrderOnCartComposable(
 //                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 //                )
 
-                TextButton(onClick = { showDialog = true }) {
-                    Text(text = "${product.qty}")
-                }
+//                TextButton(onClick = { showDialog = true }) {
+//                    Text(text = "${product.qty}")
+//                }
 
                 if (showDialog) {
                     InputNumberDialogComposable(
@@ -215,7 +216,7 @@ fun OrderOnCartComposable(
                         onConfirmClicked = { onQtyValueChange(it);showDialog = false }
                     )
                 }
-                Row(Modifier.padding(5.dp)) {
+                Row(Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically) {
 
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_remove_24),
@@ -226,7 +227,10 @@ fun OrderOnCartComposable(
                         tint = Color.White
 
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = { showDialog = true }) {
+                        Text(text = "x ${product.qty}")
+                    }
+//                    Spacer(modifier = Modifier.width(5.dp))
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "Click to add 1 ",
