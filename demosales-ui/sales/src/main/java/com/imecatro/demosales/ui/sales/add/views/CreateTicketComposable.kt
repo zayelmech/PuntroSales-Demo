@@ -11,18 +11,21 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -38,7 +41,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateTicketComposable(
     productsOnCart: List<ProductOnCartUiModel>,
-    ticketSubtotal : String,
+    ticketSubtotal: String,
     onDeleteProduct: (Int) -> Unit,
     onProductPlusClicked: (Int) -> Unit,
     onProductMinusClicked: (Int) -> Unit,
@@ -96,8 +99,6 @@ fun CreateTicketComposable(
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
-//            modifier = Modifier.consumeWindowInsets(innerPadding),
-//            contentPadding = innerPadding
             ) {
                 if (productsOnCart.isEmpty()) {
                     item {
@@ -121,21 +122,59 @@ fun CreateTicketComposable(
                     }
                 }
                 itemsIndexed(productsOnCart) { index, item ->
-                    OrderOnCartComposable(
-                        product = item,
-                        productPosition = index,
-                        onPlusClicked = onProductPlusClicked,
-                        onMinusClick = onProductMinusClicked,
-                        onQtyValueChange = { onQtyValueChange(index, it) },
-                    )
-                    //TODO implement onDelete
+                    val dismissState = rememberDismissState()
+                    val scope = rememberCoroutineScope()
+
+                    if (dismissState.isDismissed(DismissDirection.EndToStart)) {
+                        OnDeleteItemDialog(item.product.name ?: "unknown", {
+                            scope.launch {
+                                dismissState.reset()
+                            }
+                        }) {
+                            scope.launch {
+                                onDeleteProduct(index)
+                                dismissState.reset()
+                            }
+                        }
+                    }
+
+                    SwipeToDismiss(
+                        state = dismissState,
+                        modifier = Modifier
+                            .padding(vertical = Dp(1f)),
+                        directions = setOf(
+                            DismissDirection.EndToStart
+                        ),
+                        background = {
+//                            Box(
+//                                Modifier
+//                                    .fillMaxSize()
+//                                    .background(Color.White)
+//                                    .padding(horizontal = Dp(20f)),
+//                                contentAlignment = Alignment.CenterEnd
+//                            ) {
+//                                Icon(
+//                                    Icons.Filled.Delete,
+//                                    contentDescription = "Delete Icon",
+//                                    modifier = Modifier.scale(1f)
+//                                )
+//                            }
+                        },
+                        dismissContent = {
+                            OrderOnCartComposable(
+                                product = item,
+                                productPosition = index,
+                                onPlusClicked = onProductPlusClicked,
+                                onMinusClick = onProductMinusClicked,
+                                onQtyValueChange = { onQtyValueChange(index, it) },
+                            )
+                        })
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderOnCartComposable(
     product: ProductOnCartUiModel,
@@ -287,8 +326,8 @@ fun CreateTicketComposableStateImpl(
     ) {
         CreateTicketComposable(
             productsOnCart = productsOnCart.toMutableStateList(),
-            ticketSubtotal =ticketSubtotal ,
-            onDeleteProduct = {/*TODO */ },
+            ticketSubtotal = ticketSubtotal,
+            onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
             onProductMinusClicked = {
                 addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
             },

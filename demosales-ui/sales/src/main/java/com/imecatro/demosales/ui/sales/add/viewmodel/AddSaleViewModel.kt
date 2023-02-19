@@ -81,6 +81,11 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
+    fun onDeleteProductFromTicketAction(index : Int){
+        lista.removeAt(index)
+        calculateSubtotal()
+    }
+
     private val lista = mutableStateListOf<ProductOnCartUiModel>()
     fun onGetCacheTicketAction() {
 
