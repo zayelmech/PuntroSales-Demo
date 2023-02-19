@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateTicketComposable(
     productsOnCart: List<ProductOnCartUiModel>,
+    ticketSubtotal : String,
     onDeleteProduct: (Int) -> Unit,
     onProductPlusClicked: (Int) -> Unit,
     onProductMinusClicked: (Int) -> Unit,
@@ -87,7 +88,7 @@ fun CreateTicketComposable(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(20)
                 ) {
-                    Text(text = "CHARGE $${0.0}", color = Color.White)
+                    Text(text = "CHARGE $${ticketSubtotal}", color = Color.White)
                 }
             }
 
@@ -257,15 +258,10 @@ fun CreateTicketComposableStateImpl(
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
     val productsOnCart by addSaleViewModel.cartList.collectAsState()
+    val ticketSubtotal by addSaleViewModel.ticketSubtotal.collectAsState()
 
     var query by remember {
         mutableStateOf("")
-    }
-//    var qtyValue by remember {
-//        mutableStateOf(0f)
-//    }
-    var subTotalProduct by remember {
-        mutableStateOf(0f)
     }
 
     val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
@@ -291,6 +287,7 @@ fun CreateTicketComposableStateImpl(
     ) {
         CreateTicketComposable(
             productsOnCart = productsOnCart.toMutableStateList(),
+            ticketSubtotal =ticketSubtotal ,
             onDeleteProduct = {/*TODO */ },
             onProductMinusClicked = {
                 addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
@@ -344,11 +341,12 @@ fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
 fun PreviewCreateTicketComposable() {
     PuntroSalesDemoTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(),
+//            modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             CreateTicketComposable(
                 createFakeListOfProductsOnCart(5),
+                "",
                 {},
                 {},
                 {},
