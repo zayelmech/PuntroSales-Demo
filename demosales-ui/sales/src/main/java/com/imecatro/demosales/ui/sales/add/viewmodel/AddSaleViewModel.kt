@@ -42,10 +42,6 @@ class AddSaleViewModel @Inject constructor(
     private val _results: MutableStateFlow<List<ProductResultUiModel>> = MutableStateFlow(listOf())
     val productsFound: StateFlow<List<ProductResultUiModel>> = _results.asStateFlow()
 
-//    val observer = getCartFlowUseCase().onEach {
-//        _cartList.emit(saleDomainToListProductOnCartUiMapper.toUiModel(it))
-//    }
-
     private val _ticketState: MutableStateFlow<TicketUiState> =
         MutableStateFlow(TicketUiState.Initialized)
     val ticketState: StateFlow<TicketUiState> = _ticketState.asStateFlow()
@@ -53,6 +49,9 @@ class AddSaleViewModel @Inject constructor(
     private val _cartList: MutableStateFlow<List<ProductOnCartUiModel>> =
         MutableStateFlow(listOf())
     val cartList: StateFlow<List<ProductOnCartUiModel>> = _cartList.asStateFlow()
+
+    private val _ticketSubtotal: MutableStateFlow<String> = MutableStateFlow("0.0")
+    val ticketSubtotal: StateFlow<String> = _ticketSubtotal.asStateFlow()
 
     fun onSearchAction(query: String) {
         viewModelScope.launch(dispatcher) {
@@ -71,15 +70,20 @@ class AddSaleViewModel @Inject constructor(
             getProductDetailsByIdUseCase(id)?.let {
                 val p = it.toCartUiModel()
                 lista.add(p.apply { qty = 1f;subtotal = product.price ?: 0f })
+
                 _cartList.emit(lista)
 
-                //addProductToCartUseCase(p.toOrderDomainModel())
             }
             Log.d(TAG, "onAddProductToCartAction: ADDED")
 
         }.invokeOnCompletion {
-            //onGetCacheTicketAction() //Uncomment in case data is not being update
+            calculateSubtotal()
         }
+    }
+
+    fun onDeleteProductFromTicketAction(index : Int){
+        lista.removeAt(index)
+        calculateSubtotal()
     }
 
     private val lista = mutableStateListOf<ProductOnCartUiModel>()
@@ -130,10 +134,16 @@ class AddSaleViewModel @Inject constructor(
             subtotal = product.price?.times(qtyValue) ?: 10f
         }
         viewModelScope.launch(dispatcher) {
-//            _cartList.tryEmit(lista.apply { add(element);remove(element)})
 
-            _cartList.tryEmit(lista.apply { size })
+            _cartList.emit(lista.apply { size })
+            calculateSubtotal()
+
         }
+    }
+
+    private fun calculateSubtotal() {
+        val total = lista.fold(0f) { acc, value -> acc + value.subtotal }
+        _ticketSubtotal.tryEmit(total.toString())
     }
 
     fun onQtyValueIncreaseAtPos(pos: Int, i: Int) {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,6 +54,42 @@ fun InputNumberDialogComposable(
                 }
                 TextButton(onClick = { onConfirmClicked(qty) }) {
                     Text(text = "Confirm")
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OnDeleteItemDialog(
+    productName: String,
+    onDismissRequest: () -> Unit,
+    onConfirmClicked: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest, modifier = Modifier
+            .background(
+                Color.White,
+                RoundedCornerShape(10)
+            )
+            .padding(10.dp)
+    ) {
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
+
+            Text(text = "Do you want to remove $productName from list", color = Color.Black)
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                TextButton(onClick = onDismissRequest) {
+                    Text(text = "Cancel")
+                }
+                TextButton(onClick = { onConfirmClicked() }) {
+                    Text(text = "Remove")
                 }
             }
         }
