@@ -3,9 +3,9 @@ package com.imecatro.demosales.domain.sales.model
 data class SaleModelDomain(
     val id: Int,
     val clientId : Int,
-    val date: String, //date when ticket was created
+    var date: String, //date when ticket was created
     var productsList: List<Order>, //contains the id of all products
-    val total: Double,
+    var total: Double,
     val status: OrderStatus = OrderStatus.PENDING
 )
 

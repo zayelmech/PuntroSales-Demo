@@ -25,7 +25,7 @@ internal fun ProductDomainModel.toCartUiModel(): ProductOnCartUiModel {
     return ProductOnCartUiModel(
         product = this.toAddSaleUi(),
         qty = 0f,
-        subtotal = 0f
+        subtotal = 0f.toBigDecimal()
     )
 }
 

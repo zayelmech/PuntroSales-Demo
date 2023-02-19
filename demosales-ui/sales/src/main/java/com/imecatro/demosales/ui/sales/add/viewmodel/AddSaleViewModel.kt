@@ -12,10 +12,9 @@ import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseC
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.model.SaleModelDomain
-import com.imecatro.demosales.ui.sales.add.mappers.SaleDomainToListProductOnCartUiMapper
+import com.imecatro.demosales.ui.sales.add.mappers.*
 import com.imecatro.demosales.ui.sales.add.mappers.toCartUiModel
 import com.imecatro.demosales.ui.sales.add.mappers.toListAddSaleUi
-import com.imecatro.demosales.ui.sales.add.mappers.toOrderDomainModel
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
@@ -24,6 +23,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import okhttp3.internal.notifyAll
+import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val TAG = "AddSaleViewModel"
@@ -33,7 +33,7 @@ class AddSaleViewModel @Inject constructor(
     private val addNewSaleToDatabaseUseCase: AddNewSaleToDatabaseUseCase,
     private val addProductToCartUseCase: AddProductToCartUseCase,
     private val getCartFlowUseCase: GetCartFlowUseCase,
-    private val saleDomainToListProductOnCartUiMapper: SaleDomainToListProductOnCartUiMapper,
+//    private val saleDomainToListProductOnCartUiMapper: SaleDomainToListProductOnCartUiMapper,
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
     private val dispatcher: CoroutineDispatcher
@@ -69,7 +69,9 @@ class AddSaleViewModel @Inject constructor(
 
             getProductDetailsByIdUseCase(id)?.let {
                 val p = it.toCartUiModel()
-                lista.add(p.apply { qty = 1f;subtotal = product.price ?: 0f })
+                lista.add(p.apply {
+                    qty = 1f;subtotal = product.price?.toBigDecimal() ?: 0f.toBigDecimal()
+                })
 
                 _cartList.emit(lista)
 
@@ -81,7 +83,7 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteProductFromTicketAction(index : Int){
+    fun onDeleteProductFromTicketAction(index: Int) {
         lista.removeAt(index)
         calculateSubtotal()
     }
@@ -100,7 +102,12 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
-    fun onSaveTicketAction(saleModelDomain: SaleModelDomain) {
+    fun onSaveTicketAction() {
+
+        val saleModelDomain: SaleModelDomain = _cartList.value.toDomainModel().apply {
+            date = System.currentTimeMillis().toString()
+            total = _ticketSubtotal.value.toDouble()
+        }
         viewModelScope.launch(dispatcher) {
             val response = addNewSaleToDatabaseUseCase(saleModelDomain)
             response.onSuccess {
@@ -110,6 +117,9 @@ class AddSaleViewModel @Inject constructor(
                 _ticketState.value = TicketUiState.Error(it.message ?: "Error on saving data")
             }
         }
+    }
+
+    fun onCheckedOutTickedAction() {
 
     }
 
@@ -131,7 +141,7 @@ class AddSaleViewModel @Inject constructor(
     private fun onCalculateSubtotalAtPos(pos: Int, qtyValue: Float) {
         val element = lista.elementAt(pos)
         lista[pos] = element.apply {
-            subtotal = product.price?.times(qtyValue) ?: 10f
+            subtotal = (product.price?.toBigDecimal()?:0f.toBigDecimal()) * qtyValue.toBigDecimal()//product.price?.times(qtyValue)?.toBigDecimal() ?: 0f.toBigDecimal()
         }
         viewModelScope.launch(dispatcher) {
 
@@ -142,7 +152,7 @@ class AddSaleViewModel @Inject constructor(
     }
 
     private fun calculateSubtotal() {
-        val total = lista.fold(0f) { acc, value -> acc + value.subtotal }
+        val total = lista.fold(BigDecimal(0)) { acc, value -> acc + value.subtotal }
         _ticketSubtotal.tryEmit(total.toString())
     }
 
