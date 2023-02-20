@@ -11,14 +11,12 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +44,8 @@ fun CreateTicketComposable(
     onProductPlusClicked: (Int) -> Unit,
     onProductMinusClicked: (Int) -> Unit,
     onQtyValueChange: (Int, String) -> Unit,
+    onSaveTicketClicked: () -> Unit,
+    onCheckoutClicked: () -> Unit,
     onAddProductClicked: () -> Unit
 ) {
     Scaffold(floatingActionButton = {
@@ -71,7 +71,7 @@ fun CreateTicketComposable(
             ) {
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = onSaveTicketClicked,
                     modifier = Modifier.weight(1f),
                     enabled = productsOnCart.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
@@ -83,7 +83,7 @@ fun CreateTicketComposable(
                 }
                 Spacer(modifier = Modifier.width(5.dp))
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = onCheckoutClicked,
                     enabled = productsOnCart.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
                         BlueTurquoise40
@@ -319,6 +319,7 @@ fun CreateTicketComposableStateImpl(
                 onProductClicked = {
                     addSaleViewModel.onAddProductToCartAction(it)
                     scope.launch { state.hide() }
+
                     //TODO hide keyboard
                 }
             )
@@ -336,12 +337,20 @@ fun CreateTicketComposableStateImpl(
             },
             onQtyValueChange = { pos, number ->
                 addSaleViewModel.onQtyValueChangeAtPos(pos, number)
+            },
+            onSaveTicketClicked = {addSaleViewModel.onSaveTicketAction()},
+            onCheckoutClicked = {
+                /* Cliente */
+                /* Total  */
+                /* */
+
             }
         ) {
             scope.launch { state.show() }
         }
     }
     val ticketState by addSaleViewModel.ticketState.collectAsState()
+
     when (ticketState) {
         is TicketUiState.Initialized -> {
             addSaleViewModel.onGetCacheTicketAction()
@@ -368,7 +377,7 @@ fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
             price = 1f,
             imageUri = null
         )
-        val new2 = ProductOnCartUiModel(new, 0f, 0f)
+        val new2 = ProductOnCartUiModel(new, 0f, 0f.toBigDecimal())
 
         list.add(new2)
     }
@@ -389,7 +398,7 @@ fun PreviewCreateTicketComposable() {
                 {},
                 {},
                 {},
-                { _, _ -> }
+                { _, _ -> },{},{}
             ) {}
 
         }

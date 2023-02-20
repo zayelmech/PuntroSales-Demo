@@ -100,15 +100,22 @@ fun OnDeleteItemDialog(
 @Composable
 fun PreviewInputNumberDialogComposable() {
     PuntroSalesDemoTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
+        Surface{
             InputNumberDialogComposable(
                 initialValue = "1.0",
                 onDismissRequest = {},
                 onConfirmClicked = {}
             )
+        }
+    }
+}
+
+@Preview(showBackground = false)
+@Composable
+fun PreviewOnDeleteItemDialog() {
+    PuntroSalesDemoTheme {
+        Surface {
+            OnDeleteItemDialog("PRODUCT", {}, {})
         }
     }
 }

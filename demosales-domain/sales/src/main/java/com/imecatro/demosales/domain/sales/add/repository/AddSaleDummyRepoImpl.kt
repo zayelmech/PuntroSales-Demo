@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 
 class AddSaleDummyRepoImpl : AddSaleRepository {
 
-    //val sales = mutableListOf<SaleModelDomain>()
+    val sales = mutableListOf<SaleModelDomain>()
 
     private val cartList = mutableListOf<Order>()
 
@@ -32,7 +32,7 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
     private val ticketOnCache: MutableSharedFlow<SaleModelDomain> = MutableStateFlow(currentTicket)
 
     override suspend fun createNewSale(sale: SaleModelDomain) {
-//        sales.add(sale)
+        sales.add(sale)
     }
 
     override suspend fun addProductToCart(order: Order) {
