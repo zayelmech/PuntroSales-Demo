@@ -319,6 +319,7 @@ fun CreateTicketComposableStateImpl(
                 onProductClicked = {
                     addSaleViewModel.onAddProductToCartAction(it)
                     scope.launch { state.hide() }
+
                     //TODO hide keyboard
                 }
             )
@@ -338,7 +339,12 @@ fun CreateTicketComposableStateImpl(
                 addSaleViewModel.onQtyValueChangeAtPos(pos, number)
             },
             onSaveTicketClicked = {addSaleViewModel.onSaveTicketAction()},
-            onCheckoutClicked = {}
+            onCheckoutClicked = {
+                /* Cliente */
+                /* Total  */
+                /* */
+
+            }
         ) {
             scope.launch { state.show() }
         }
