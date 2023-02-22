@@ -91,6 +91,7 @@ class AddSaleViewModel @Inject constructor(
     private val lista = mutableStateListOf<ProductOnCartUiModel>()
     fun onGetCacheTicketAction() {
 
+        _ticketState.value = TicketUiState.OnCache(listOf())
         viewModelScope.launch(dispatcher) {
 //            observer.collect {
 //                val productsOnCart = saleDomainToListProductOnCartUiMapper.toUiModel(it)
@@ -141,7 +142,8 @@ class AddSaleViewModel @Inject constructor(
     private fun onCalculateSubtotalAtPos(pos: Int, qtyValue: Float) {
         val element = lista.elementAt(pos)
         lista[pos] = element.apply {
-            subtotal = (product.price?.toBigDecimal()?:0f.toBigDecimal()) * qtyValue.toBigDecimal()//product.price?.times(qtyValue)?.toBigDecimal() ?: 0f.toBigDecimal()
+            subtotal = (product.price?.toBigDecimal()
+                ?: 0f.toBigDecimal()) * qtyValue.toBigDecimal()//product.price?.times(qtyValue)?.toBigDecimal() ?: 0f.toBigDecimal()
         }
         viewModelScope.launch(dispatcher) {
 
@@ -161,5 +163,9 @@ class AddSaleViewModel @Inject constructor(
         lista[pos] = element.copy(qty = element.qty + i)
 
         onCalculateSubtotalAtPos(pos, element.qty + i)
+    }
+
+    fun onNavigateToCheckout() {
+        _ticketState.value = TicketUiState.Checkout
     }
 }
