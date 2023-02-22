@@ -175,121 +175,6 @@ fun CreateTicketComposable(
     }
 }
 
-@Composable
-fun OrderOnCartComposable(
-    product: ProductOnCartUiModel,
-    productPosition: Int,
-    onPlusClicked: (Int) -> Unit,
-    onMinusClick: (Int) -> Unit,
-    onQtyValueChange: (String) -> Unit,
-) {
-
-    val cardTag = "CARD-${product.product.id}"
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ElevatedCard(
-        modifier = Modifier
-            .padding(2.dp, 2.dp)
-            .fillMaxWidth()
-//            .height(120.dp)
-//        .clickable { onCardClicked() }
-            .testTag(cardTag),
-        elevation = CardDefaults.cardElevation(0.5.dp),
-        colors = CardDefaults.cardColors(Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // TODO add description and implement image by url
-
-            Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(product.product.imageUri)
-                        .error(R.drawable.baseline_insert_photo_24)
-                        .crossfade(true)
-                        .build()
-
-                ),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-//                    .padding(5.dp)
-                    .clip(RoundedCornerShape(50)),
-                contentScale = ContentScale.FillBounds
-            )
-
-            Column(Modifier.weight(1f)) {
-                Text(text = product.product.name ?: "Product name", style = Typography.titleMedium)
-//                Text(text = " x ${product.product.unit}", fontSize = 18.sp)
-                Text(text = "$${product.product.price ?: 0.00}", style = Typography.titleMedium)
-
-            }
-            Column(
-                modifier = Modifier
-//                    .width(90.dp)
-                    .padding(5.dp, 0.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-
-//                OutlinedTextField(
-//                    value = "${product.qty}",
-//                    onValueChange = onQtyValueChange,
-//                    modifier = Modifier.padding(0.dp),
-//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-//                )
-
-//                TextButton(onClick = { showDialog = true }) {
-//                    Text(text = "${product.qty}")
-//                }
-
-                if (showDialog) {
-                    InputNumberDialogComposable(
-                        initialValue = "${product.qty}",
-                        onDismissRequest = { showDialog = false },
-                        onConfirmClicked = { onQtyValueChange(it);showDialog = false }
-                    )
-                }
-                Row(Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically) {
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_remove_24),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clickable { onMinusClick(productPosition) }
-                            .background(GreenTurquoise, RoundedCornerShape(50)),
-                        tint = Color.White
-
-                    )
-                    TextButton(onClick = { showDialog = true }) {
-                        Text(text = "x ${product.qty}")
-                    }
-//                    Spacer(modifier = Modifier.width(5.dp))
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Click to add 1 ",
-                        modifier = Modifier
-                            .clickable { onPlusClicked(productPosition) }
-                            .background(GreenTurquoise, RoundedCornerShape(50)),
-                        tint = Color.White
-                    )
-
-
-                }
-            }
-            Text(text = "$${product.subtotal}", style = Typography.titleMedium)
-
-        }
-    }
-}
-
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreateTicketComposableStateImpl(
@@ -299,6 +184,7 @@ fun CreateTicketComposableStateImpl(
     val productsOnCart by addSaleViewModel.cartList.collectAsState()
     val ticketSubtotal by addSaleViewModel.ticketSubtotal.collectAsState()
 
+    val ticketState by addSaleViewModel.ticketState.collectAsState()
     var query by remember {
         mutableStateOf("")
     }
@@ -325,47 +211,42 @@ fun CreateTicketComposableStateImpl(
             )
         }
     ) {
-        CreateTicketComposable(
-            productsOnCart = productsOnCart.toMutableStateList(),
-            ticketSubtotal = ticketSubtotal,
-            onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
-            onProductMinusClicked = {
-                addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
-            },
-            onProductPlusClicked = {
-                addSaleViewModel.onQtyValueIncreaseAtPos(it, 1)
-            },
-            onQtyValueChange = { pos, number ->
-                addSaleViewModel.onQtyValueChangeAtPos(pos, number)
-            },
-            onSaveTicketClicked = {addSaleViewModel.onSaveTicketAction()},
-            onCheckoutClicked = {
-                /* Cliente */
-                /* Total  */
-                /* */
 
+        when (ticketState) {
+            is TicketUiState.Initialized -> {
+                addSaleViewModel.onGetCacheTicketAction()
             }
-        ) {
-            scope.launch { state.show() }
+            is TicketUiState.OnCache -> {
+                CreateTicketComposable(
+                    productsOnCart = productsOnCart.toMutableStateList(),
+                    ticketSubtotal = ticketSubtotal,
+                    onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
+                    onProductMinusClicked = {
+                        addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
+                    },
+                    onProductPlusClicked = {
+                        addSaleViewModel.onQtyValueIncreaseAtPos(it, 1)
+                    },
+                    onQtyValueChange = { pos, number ->
+                        addSaleViewModel.onQtyValueChangeAtPos(pos, number)
+                    },
+                    onSaveTicketClicked = { addSaleViewModel.onSaveTicketAction() },
+                    onCheckoutClicked = {
+                        addSaleViewModel.onNavigateToCheckout()
+                    },
+                    onAddProductClicked = { scope.launch { state.show() } })
+//            Log.d(
+//                "TAG",
+//                "CreateTicketComposableStateImpl: ${(ticketState as TicketUiState.OnCache).cart.size}"
+//            )
+            }
+            is TicketUiState.Saved -> {}
+            is TicketUiState.Error -> {}
+            is TicketUiState.Checkout -> {
+                CheckoutTicketComposable(list = productsOnCart)
+            }
         }
     }
-    val ticketState by addSaleViewModel.ticketState.collectAsState()
-
-    when (ticketState) {
-        is TicketUiState.Initialized -> {
-            addSaleViewModel.onGetCacheTicketAction()
-        }
-        is TicketUiState.OnCache -> {
-
-            Log.d(
-                "TAG",
-                "CreateTicketComposableStateImpl: ${(ticketState as TicketUiState.OnCache).cart.size}"
-            )
-        }
-        is TicketUiState.Saved -> {}
-        is TicketUiState.Error -> {}
-    }
-
 }
 
 fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
@@ -398,7 +279,7 @@ fun PreviewCreateTicketComposable() {
                 {},
                 {},
                 {},
-                { _, _ -> },{},{}
+                { _, _ -> }, {}, {}
             ) {}
 
         }
