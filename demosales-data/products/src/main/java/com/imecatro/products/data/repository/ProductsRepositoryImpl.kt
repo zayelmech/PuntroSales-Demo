@@ -1,14 +1,14 @@
-package com.imecatro.demosales.datasource.room
+package com.imecatro.products.data.repository
 
 import androidx.annotation.WorkerThread
-import com.imecatro.demosales.datasource.room.mappers.toData
-import com.imecatro.demosales.datasource.room.mappers.toDomain
-import com.imecatro.demosales.datasource.room.mappers.toListDomain
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
-import kotlinx.coroutines.flow.*
-
-private const val TAG = "ProductsRepositoryImpl"
+import com.imecatro.products.data.datasource.ProductsDao
+import com.imecatro.products.data.mappers.toData
+import com.imecatro.products.data.mappers.toDomain
+import com.imecatro.products.data.mappers.toListDomain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class ProductsRepositoryImpl(
     private val productsDao: ProductsDao?
@@ -60,11 +60,10 @@ class ProductsRepositoryImpl(
 
     override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
         return flow {
-            productsDao?.searchProducts(letter)?.collect{
+            productsDao?.searchProducts(letter)?.collect {
                 emit(it.toListDomain())
             }
             //TODO implement error null
         }
     }
 }
-

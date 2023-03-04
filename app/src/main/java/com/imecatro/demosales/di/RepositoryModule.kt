@@ -1,6 +1,6 @@
 package com.imecatro.demosales.di
 
-import com.imecatro.demosales.datasource.room.ProductsRepositoryImpl
+import com.imecatro.products.data.repository.ProductsRepositoryImpl
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleDummyRepoImpl
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository

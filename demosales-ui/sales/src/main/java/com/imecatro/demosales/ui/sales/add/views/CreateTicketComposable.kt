@@ -235,16 +235,13 @@ fun CreateTicketComposableStateImpl(
                         addSaleViewModel.onNavigateToCheckout()
                     },
                     onAddProductClicked = { scope.launch { state.show() } })
-//            Log.d(
-//                "TAG",
-//                "CreateTicketComposableStateImpl: ${(ticketState as TicketUiState.OnCache).cart.size}"
-//            )
             }
-            is TicketUiState.Saved -> {}
-            is TicketUiState.Error -> {}
             is TicketUiState.Checkout -> {
-                CheckoutTicketComposable(list = productsOnCart)
+
+               //TODO Impl next -> CheckoutTicketComposableImpl(productsOnCart)
             }
+            is TicketUiState.Error -> {}
+            is TicketUiState.Saved -> {}
         }
     }
 }

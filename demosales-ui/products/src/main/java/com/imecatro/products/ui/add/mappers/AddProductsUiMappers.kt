@@ -4,6 +4,7 @@ import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.model.ProductUnit
 import com.imecatro.products.ui.add.model.AddProductUiModel
 
+//Design patter : Adapter
 fun AddProductUiModel.toDomain(): ProductDomainModel? {
     return ProductDomainModel(
         id = null,

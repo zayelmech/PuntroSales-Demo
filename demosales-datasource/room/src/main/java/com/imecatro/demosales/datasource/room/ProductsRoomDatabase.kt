@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.imecatro.demosales.datasource.room.entities.ProductRoomEntity
+import com.imecatro.products.data.datasource.ProductsDao
+import com.imecatro.products.data.model.ProductRoomEntity
 
 @Database(entities = [ProductRoomEntity::class], version = 1)
 abstract class ProductsRoomDatabase : RoomDatabase() {

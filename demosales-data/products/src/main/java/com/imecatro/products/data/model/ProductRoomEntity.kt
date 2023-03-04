@@ -1,4 +1,4 @@
-package com.imecatro.demosales.datasource.room.entities
+package com.imecatro.products.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
