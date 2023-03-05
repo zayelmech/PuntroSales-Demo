@@ -23,6 +23,14 @@ Generally, we can follow next structured pattern
 
 <feature|bugfix>/<package|layer>/<description>
 
+## Screenshots
+
+* Normal phone (Portrait)
+
+<p align="center">
+  <img width="514" height="406" src="doc/img/DetailsProduct.png">
+</p>
+
 ## UI Layer
 
 ### Libraries
