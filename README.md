@@ -12,6 +12,13 @@ This file must include
 - A call to action encouraging people to try out the app and contact me if they have any questions or feedback.
 
 
+
+### Features
+
+- Create, delete and update your products from inventory
+- Create tickets
+
+
 ## Branching Strategy
 
 ### Main branches
