@@ -9,7 +9,7 @@ fun SaleModelDomain.toData(): SaleDataRoomModel {
     return SaleDataRoomModel(
         id = 0,
         clientId = this.clientId,
-        creationDateMillis = this.date,
+        creationDateMillis = this.date.toLong(),
         status = this.status.str,
     )
 }
