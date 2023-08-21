@@ -42,6 +42,7 @@ fun SearchBottomSheetComposable(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(5.dp)
     ) {
         OutlinedTextField(

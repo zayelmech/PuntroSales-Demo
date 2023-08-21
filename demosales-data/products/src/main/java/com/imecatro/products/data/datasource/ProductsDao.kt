@@ -23,6 +23,6 @@ interface ProductsDao {
     @Query("SELECT * FROM products_table WHERE id = :id ")
     fun getProductDetailsById(id: Int): ProductRoomEntity
 
-    @Query("SELECT * FROM products_table WHERE name LIKE :productName")
+    @Query("SELECT * FROM products_table WHERE name LIKE :productName || '%'")
     fun searchProducts(productName: String): Flow<List<ProductRoomEntity>>
 }
