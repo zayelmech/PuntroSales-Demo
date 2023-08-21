@@ -56,7 +56,7 @@ class AddSaleViewModel @Inject constructor(
     fun onSearchAction(query: String) {
         viewModelScope.launch(dispatcher) {
             getProductsLikeUseCase(query).collect { results ->
-                _results.emit(results.toListAddSaleUi())
+                _results.update {results.toListAddSaleUi()}
                 Log.d(TAG, "onSearchAction: ${results.firstOrNull()?.name ?: "Nothing"}")
             }
         }
