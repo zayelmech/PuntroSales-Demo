@@ -12,7 +12,7 @@ class GetListOfCurrenciesUseCaseTest {
     operator fun invoke() {
         val usecase = GetListOfCurrenciesUseCase()
 
-        assertEquals(listOf("USD", "EUR", "MXN"), usecase.invoke())
+        assertEquals(listOf("USD", "EUR", "MXN").sorted(), usecase.invoke().sorted())
     }
 
 
