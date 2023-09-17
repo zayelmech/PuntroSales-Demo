@@ -1,6 +1,6 @@
 package com.imecatro.demosales.domain.sales.model
 
-data class SaleModelDomain(
+data class SaleDomainModel(
     val id: Int,
     val clientId : Int,
     var date: String, //date when ticket was created

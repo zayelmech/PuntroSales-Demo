@@ -4,6 +4,8 @@ import com.imecatro.products.data.repository.ProductsRepositoryImpl
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleDummyRepoImpl
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
+import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
+import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepositoryDummy
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

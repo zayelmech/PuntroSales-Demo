@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.imecatro.demosales.ui.sales.add.views.CreateTicketComposable
 import com.imecatro.demosales.ui.sales.add.views.CreateTicketComposableStateImpl
 import com.imecatro.demosales.ui.sales.add.views.createFakeListOfProductsOnCart
+import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl
 
 @Composable
 fun SalesNavigation(
@@ -15,10 +16,12 @@ fun SalesNavigation(
 ) {
     NavHost(navController = navController, startDestination = SalesDestinations.List.route) {
         composable(SalesDestinations.List.route) {
-            CreateTicketComposableStateImpl(addSaleViewModel = hiltViewModel())
+            SalesListComposableStateImpl(salesListViewModel = hiltViewModel()){
+
+            }
         }
         composable(SalesDestinations.Add.route) {
-            //TODO add sales route
+            CreateTicketComposableStateImpl(addSaleViewModel = hiltViewModel())
         }
         composable(SalesDestinations.Edit.route) {
             //TODO edit sales route

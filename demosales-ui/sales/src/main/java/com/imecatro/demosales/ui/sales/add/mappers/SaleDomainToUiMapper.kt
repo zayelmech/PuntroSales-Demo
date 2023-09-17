@@ -1,12 +1,8 @@
 package com.imecatro.demosales.ui.sales.add.mappers
 
-import android.net.Uri
-import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
-import com.imecatro.demosales.domain.sales.model.SaleModelDomain
+import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
-import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import javax.inject.Inject
 
 
 //class SaleDomainToListProductOnCartUiMapper @Inject constructor(
@@ -39,9 +35,9 @@ import javax.inject.Inject
 //
 //}
 
-fun List<ProductOnCartUiModel>.toDomainModel(): SaleModelDomain {
+fun List<ProductOnCartUiModel>.toDomainModel(): SaleDomainModel {
 
-    return SaleModelDomain(
+    return SaleDomainModel(
         id = 0,
         clientId = 0,
         date = "",

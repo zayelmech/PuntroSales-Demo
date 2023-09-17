@@ -26,17 +26,21 @@ fun MainScaffoldApp() {
             )
         }
     ) {
-        Column(modifier = Modifier
-            .consumeWindowInsets(it)
-            .padding(it)) {
+        Column(
+            modifier = Modifier
+                .consumeWindowInsets(it)
+                .padding(it)
+        ) {
 
             when (featureSelected) {
                 NavigationDirections.PRODUCTS -> {
                     ProductsNavigation(productsNavController)
                 }
+
                 NavigationDirections.SALES -> {
                     SalesNavigation(salesNavController)
                 }
+
                 NavigationDirections.CLIENTS -> {
                     //TODO feature CLIENTS
                 }

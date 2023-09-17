@@ -1,9 +1,7 @@
 package com.imecatro.demosales.ui.sales.add.viewmodel
 
 import android.util.Log
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.mutableStateListOf
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
@@ -11,7 +9,7 @@ import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseC
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
-import com.imecatro.demosales.domain.sales.model.SaleModelDomain
+import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.*
 import com.imecatro.demosales.ui.sales.add.mappers.toCartUiModel
 import com.imecatro.demosales.ui.sales.add.mappers.toListAddSaleUi
@@ -22,7 +20,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import okhttp3.internal.notifyAll
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -105,7 +102,7 @@ class AddSaleViewModel @Inject constructor(
 
     fun onSaveTicketAction() {
 
-        val saleModelDomain: SaleModelDomain = _cartList.value.toDomainModel().apply {
+        val saleModelDomain: SaleDomainModel = _cartList.value.toDomainModel().apply {
             date = System.currentTimeMillis().toString()
             total = _ticketSubtotal.value.toDouble()
         }

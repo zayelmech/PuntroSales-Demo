@@ -1,10 +1,10 @@
 package com.imecatro.demosales.data.sales.add.mappers
 
 import com.imecatro.demosales.data.sales.model.SaleDataRoomModel
-import com.imecatro.demosales.domain.sales.model.SaleModelDomain
+import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 
 
-fun SaleModelDomain.toData(): SaleDataRoomModel {
+fun SaleDomainModel.toData(): SaleDataRoomModel {
 
     return SaleDataRoomModel(
         id = 0,

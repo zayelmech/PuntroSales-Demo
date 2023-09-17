@@ -3,7 +3,7 @@ package com.imecatro.demosales.domain.sales.add.usecases
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleDummyRepoImpl
 import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.OrderStatus
-import com.imecatro.demosales.domain.sales.model.SaleModelDomain
+import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,7 +42,7 @@ class AddNewSaleToDatabaseUseCaseTest {
         val fakeRepo = AddSaleDummyRepoImpl()
 
         val useCase = AddNewSaleToDatabaseUseCase(fakeRepo,mainThreadSurrogate)
-        val sale = SaleModelDomain(
+        val sale = SaleDomainModel(
             id = 0,
             clientId = 1,
             date = "today",
