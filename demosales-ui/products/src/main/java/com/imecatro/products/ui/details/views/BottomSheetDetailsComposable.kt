@@ -27,7 +27,7 @@ import com.imecatro.demosales.ui.theme.PurpleGrey40
 import com.imecatro.demosales.ui.theme.PurpleRed
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.products.ui.R
-import com.imecatro.products.ui.common.ButtonFancy
+import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 
@@ -117,6 +117,7 @@ fun DetailsComposable(
             //button edit
             ButtonFancy(
                 text = "EDIT",
+                color = MaterialTheme.colorScheme.primary,
                 paddingX = paddingX,
                 icon = Icons.Filled.Edit,
                 onClicked = onEditClicked
@@ -124,7 +125,7 @@ fun DetailsComposable(
             //button delete
             ButtonFancy(
                 text = "DELETE",
-                color = PurpleRed,
+                color = MaterialTheme.colorScheme.secondary,
                 paddingX = paddingX,
                 icon = Icons.Filled.Delete,
                 onClicked = onDeleteClicked

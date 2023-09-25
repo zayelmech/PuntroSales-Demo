@@ -3,7 +3,7 @@ package com.imecatro.demosales.domain.sales.list.model
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 
 data class SaleOnListDomainModel(
-    val id: Int,
+    val id: Long,
     val clientName: String,
     var date: String, //date when ticket was created
     var total: Double,

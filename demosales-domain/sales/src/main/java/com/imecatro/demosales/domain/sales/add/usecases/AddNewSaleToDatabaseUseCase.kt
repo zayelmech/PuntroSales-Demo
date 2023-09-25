@@ -14,7 +14,7 @@ class AddNewSaleToDatabaseUseCase(
     suspend operator fun invoke(saleModelDomain: SaleDomainModel): Result<ResultDomainCodes> =
         withContext(dispatcher) {
             return@withContext try {
-                addSaleRepository.createNewSale(saleModelDomain)
+                addSaleRepository.saveSale(saleModelDomain)
                 Result.success(ResultDomainCodes.SUCCESS)
             } catch (e: Exception) {
                 Result.failure(Throwable(e))

@@ -37,7 +37,7 @@ fun SearchBottomSheetComposable(
     list: List<ProductResultUiModel>,
     query: String,
     onQueryChange: (String) -> Unit,
-    onProductClicked: (Int) -> Unit
+    onProductClicked: (ProductResultUiModel) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -56,8 +56,8 @@ fun SearchBottomSheetComposable(
                 )
             })
         LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier.height(300.dp)) {
-            items(list) {
-                ProductResultCardComposable(product = it, onProductClicked = onProductClicked)
+            items(list) { product ->
+                ProductResultCardComposable(product = product, onProductClicked = {onProductClicked(product)})
             }
         }
     }

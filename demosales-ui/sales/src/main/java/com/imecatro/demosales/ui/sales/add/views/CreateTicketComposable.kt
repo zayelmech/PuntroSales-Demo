@@ -11,6 +11,7 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -146,19 +147,19 @@ fun CreateTicketComposable(
                             DismissDirection.EndToStart
                         ),
                         background = {
-//                            Box(
-//                                Modifier
-//                                    .fillMaxSize()
-//                                    .background(Color.White)
-//                                    .padding(horizontal = Dp(20f)),
-//                                contentAlignment = Alignment.CenterEnd
-//                            ) {
-//                                Icon(
-//                                    Icons.Filled.Delete,
-//                                    contentDescription = "Delete Icon",
-//                                    modifier = Modifier.scale(1f)
-//                                )
-//                            }
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(Color.White)
+                                    .padding(horizontal = Dp(20f)),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    contentDescription = "Delete Icon",
+                                    //modifier = Modifier.scale(1f)
+                                )
+                            }
                         },
                         dismissContent = {
                             OrderOnCartComposable(
@@ -178,7 +179,9 @@ fun CreateTicketComposable(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreateTicketComposableStateImpl(
-    addSaleViewModel: AddSaleViewModel
+    addSaleViewModel: AddSaleViewModel,
+    onSavedTicked: () -> Unit,
+    onNavigateToCheckout: () -> Unit
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
     val productsOnCart by addSaleViewModel.cartList.collectAsState()
@@ -211,37 +214,45 @@ fun CreateTicketComposableStateImpl(
             )
         }
     ) {
+        CreateTicketComposable(
+            productsOnCart = productsOnCart.toMutableStateList(),
+            ticketSubtotal = ticketSubtotal,
+            onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
+            onProductMinusClicked = {
+                addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
+            },
+            onProductPlusClicked = {
+                addSaleViewModel.onQtyValueIncreaseAtPos(it, 1)
+            },
+            onQtyValueChange = { pos, number ->
+                addSaleViewModel.onQtyValueChangeAtPos(pos, number)
+            },
+            onSaveTicketClicked = { addSaleViewModel.onSaveTicketAction() },
+            onCheckoutClicked = onNavigateToCheckout,
+            onAddProductClicked = { scope.launch { state.show() } })
+
 
         when (ticketState) {
             is TicketUiState.Initialized -> {
                 addSaleViewModel.onGetCacheTicketAction()
             }
+
             is TicketUiState.OnCache -> {
-                CreateTicketComposable(
-                    productsOnCart = productsOnCart.toMutableStateList(),
-                    ticketSubtotal = ticketSubtotal,
-                    onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
-                    onProductMinusClicked = {
-                        addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
-                    },
-                    onProductPlusClicked = {
-                        addSaleViewModel.onQtyValueIncreaseAtPos(it, 1)
-                    },
-                    onQtyValueChange = { pos, number ->
-                        addSaleViewModel.onQtyValueChangeAtPos(pos, number)
-                    },
-                    onSaveTicketClicked = { addSaleViewModel.onSaveTicketAction() },
-                    onCheckoutClicked = {
-                        addSaleViewModel.onNavigateToCheckout()
-                    },
-                    onAddProductClicked = { scope.launch { state.show() } })
+
             }
+
             is TicketUiState.Checkout -> {
 
-               //TODO Impl next -> CheckoutTicketComposableImpl(productsOnCart)
+                //TODO Impl next -> CheckoutTicketComposableImpl(productsOnCart)
             }
-            is TicketUiState.Error -> {}
-            is TicketUiState.Saved -> {}
+
+            is TicketUiState.Error -> {
+
+            }
+
+            is TicketUiState.Saved -> {
+                onSavedTicked()
+            }
         }
     }
 }

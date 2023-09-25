@@ -25,7 +25,7 @@ import com.imecatro.demosales.ui.theme.BlueTurquoise80
 @Composable
 fun SalesListComposable(
     list: List<SaleOnListUiModel> = fakelist,
-    onCardClicked: (Int?) -> Unit = {},
+    onCardClicked: (id : Long?) -> Unit = {},
     onAddNewSale: () -> Unit = {}
 ) {
     Scaffold(floatingActionButton = {
@@ -59,7 +59,7 @@ private val fakelist = listOf(
 @Composable
 fun SalesListComposableStateImpl(
     salesListViewModel: SalesListViewModel,
-    onNavigate: (Int?) -> Unit
+    onNavigate: (Long?) -> Unit
 ) {
 
     val listUiState by salesListViewModel.salesListUiState.collectAsState()

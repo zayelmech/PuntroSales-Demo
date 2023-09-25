@@ -31,7 +31,9 @@ internal fun ProductDomainModel.toCartUiModel(): ProductOnCartUiModel {
 
 internal fun ProductOnCartUiModel.toOrderDomainModel(): Order {
     return Order(
-        this.product.id ?: 0,
-        this.qty
+        productId = product.id?: 0,
+        productName = this.product.name ?: "unknown",
+        productPrice = this.product.price ?: 0f,
+        qty = this.qty
     )
 }

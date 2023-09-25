@@ -31,7 +31,7 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
 
     private val ticketOnCache: MutableSharedFlow<SaleDomainModel> = MutableStateFlow(currentTicket)
 
-    override suspend fun createNewSale(sale: SaleDomainModel) {
+    override suspend fun saveSale(sale: SaleDomainModel) {
         sales.add(sale)
     }
 
@@ -40,7 +40,7 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         ticketOnCache.emit(currentTicket.apply { productsList = cartList.apply { add(order) } })
     }
 
-    override fun getCartFlow(): Flow<SaleDomainModel> {
+    override suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel> {
         return ticketOnCache
     }
 

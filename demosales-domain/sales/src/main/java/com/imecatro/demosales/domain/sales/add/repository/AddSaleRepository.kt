@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface AddSaleRepository {
-    suspend fun createNewSale(sale: SaleDomainModel)
+    suspend fun saveSale(sale: SaleDomainModel)
    suspend fun addProductToCart(order: Order)
 
-   fun getCartFlow(): Flow<SaleDomainModel>
+   suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel>
 }

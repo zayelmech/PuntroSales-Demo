@@ -1,4 +1,4 @@
-package com.imecatro.products.ui.common
+package com.imecatro.demosales.ui.theme
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,13 +13,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.imecatro.demosales.ui.theme.BlueTurquoise80
-import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
-fun TextFieldCompose(value: String, listener: (String) -> Unit, prompt: String = "") {
+fun TextFieldCompose(
+    value: String = "Write here!",
+    listener: (String) -> Unit = {},
+    prompt: String = ""
+) {
 
     OutlinedTextField(
         value = value,
@@ -37,14 +39,15 @@ fun TextFieldCompose(value: String, listener: (String) -> Unit, prompt: String =
     )
 }
 
+@Preview(showBackground = true)
 @Composable
 fun ButtonFancy(
-    text: String,
+    text: String = "Click here!",
     color: Color = BlueTurquoise80,
     paddingX: Dp = 10.dp,
-    icon: ImageVector? = null,
+    icon: ImageVector? = Icons.Filled.Edit,
     enable: Boolean = true,
-    onClicked: () -> Unit
+    onClicked: () -> Unit = {}
 ) {
     Button(
         onClick = { onClicked() },
@@ -68,13 +71,14 @@ fun ButtonFancy(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
 fun DropListPicker(
-    list: List<String>,
-    itemSelected : String,
+    list: List<String> = listOf(),
+    itemSelected: String = "hey",
     // expanded: Boolean = false,
 //    onExpanded: () -> Unit,
-    onItemClicked: (String) -> Unit
+    onItemClicked: (String) -> Unit = {}
 ) {
 
 
@@ -127,33 +131,6 @@ fun DropListPicker(
                 )
                 if (name != list.last()) {
                     Divider()
-                }
-
-            }
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun AtomsPreview() {
-    PuntroSalesDemoTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
- 
-
-            Column {
-                 TextFieldCompose("", {}, "text")
-//                var expanded by remember { mutableStateOf(true) }
-
-                DropListPicker(
-                    listOf("lb", "pz", "m", "cm", "kg"),"pz"
-                ) {}
-                ButtonFancy(text = "Click me") {
-
                 }
 
             }

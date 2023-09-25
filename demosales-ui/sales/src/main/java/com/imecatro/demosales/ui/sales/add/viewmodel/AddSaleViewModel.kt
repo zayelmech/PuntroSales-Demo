@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
+import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.*
 import com.imecatro.demosales.ui.sales.add.mappers.toCartUiModel
@@ -18,8 +20,12 @@ import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -30,7 +36,6 @@ class AddSaleViewModel @Inject constructor(
     private val addNewSaleToDatabaseUseCase: AddNewSaleToDatabaseUseCase,
     private val addProductToCartUseCase: AddProductToCartUseCase,
     private val getCartFlowUseCase: GetCartFlowUseCase,
-//    private val saleDomainToListProductOnCartUiMapper: SaleDomainToListProductOnCartUiMapper,
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
     private val dispatcher: CoroutineDispatcher
@@ -43,9 +48,16 @@ class AddSaleViewModel @Inject constructor(
         MutableStateFlow(TicketUiState.Initialized)
     val ticketState: StateFlow<TicketUiState> = _ticketState.asStateFlow()
 
-    private val _cartList: MutableStateFlow<List<ProductOnCartUiModel>> =
-        MutableStateFlow(listOf())
-    val cartList: StateFlow<List<ProductOnCartUiModel>> = _cartList.asStateFlow()
+
+    val cartList: StateFlow<List<ProductOnCartUiModel>> = channelFlow {
+        getCartFlowUseCase.invoke().collectLatest { ticket ->
+            val list = ticket.productsList.map { order ->
+                val product = getProductDetailsByIdUseCase(order.productId)
+                order.toUi(product?.toAddSaleUi()!!  )
+            }
+            send(list)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     private val _ticketSubtotal: MutableStateFlow<String> = MutableStateFlow("0.0")
     val ticketSubtotal: StateFlow<String> = _ticketSubtotal.asStateFlow()
@@ -53,28 +65,18 @@ class AddSaleViewModel @Inject constructor(
     fun onSearchAction(query: String) {
         viewModelScope.launch(dispatcher) {
             getProductsLikeUseCase(query).collect { results ->
-                _results.update {results.toListAddSaleUi()}
+                _results.update { results.toListAddSaleUi() }
                 Log.d(TAG, "onSearchAction: ${results.firstOrNull()?.name ?: "Nothing"}")
             }
         }
     }
 
-    fun onAddProductToCartAction(id: Int) {
-        Log.d(TAG, "onAddProductToCartAction: $id")
-
+    fun onAddProductToCartAction(product: ProductResultUiModel) {
         viewModelScope.launch(dispatcher) {
+            addProductToCartUseCase.invoke(
+                product.toDomain()
 
-            getProductDetailsByIdUseCase(id)?.let {
-                val p = it.toCartUiModel()
-                lista.add(p.apply {
-                    qty = 1f;subtotal = product.price?.toBigDecimal() ?: 0f.toBigDecimal()
-                })
-
-                _cartList.emit(lista)
-
-            }
-            Log.d(TAG, "onAddProductToCartAction: ADDED")
-
+            )
         }.invokeOnCompletion {
             calculateSubtotal()
         }
@@ -102,7 +104,7 @@ class AddSaleViewModel @Inject constructor(
 
     fun onSaveTicketAction() {
 
-        val saleModelDomain: SaleDomainModel = _cartList.value.toDomainModel().apply {
+        val saleModelDomain: SaleDomainModel = cartList.value.toDomainModel().apply {
             date = System.currentTimeMillis().toString()
             total = _ticketSubtotal.value.toDouble()
         }
@@ -144,7 +146,7 @@ class AddSaleViewModel @Inject constructor(
         }
         viewModelScope.launch(dispatcher) {
 
-            _cartList.emit(lista.apply { size })
+            // _cartList.emit(lista.apply { size })
             calculateSubtotal()
 
         }
@@ -166,3 +168,21 @@ class AddSaleViewModel @Inject constructor(
         _ticketState.value = TicketUiState.Checkout
     }
 }
+
+private fun ProductResultUiModel.toDomain(): Order {
+    return Order(
+        productId = id ?: 0,
+        productName = name ?: "",
+        productPrice = price ?: 0f,
+        1f
+    )
+}
+
+
+private fun Order.toUi(product: ProductResultUiModel): ProductOnCartUiModel =
+    ProductOnCartUiModel(
+        product = product,
+        qty = qty,
+        subtotal = (qty * (product.price ?: 0f)).toBigDecimal()
+    )
+

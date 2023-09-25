@@ -17,14 +17,14 @@ interface CoreModule
 
 @Module
 @InstallIn(SingletonComponent::class)
-class FakeRepoImpl(){
-    @Provides
-    fun provideAddSaleDummyRepoImpl(): AddSaleDummyRepoImpl = AddSaleDummyRepoImpl()
+class FakeRepoImpl() {
+//    @Provides
+//    fun provideAddSaleDummyRepoImpl(): AddSaleDummyRepoImpl = AddSaleDummyRepoImpl()
+//
+//    @Provides
+//    fun provideRoomRepositoryImplementation(dao: ProductsDao): ProductsRepositoryImpl =
+//        ProductsRepositoryImpl(dao)
 
-    @Provides
-    fun provideRoomRepositoryImplementation(dao : ProductsDao) : ProductsRepositoryImpl =
-        ProductsRepositoryImpl(dao)
-
-    @Provides
-    fun provideAllSalesDummyImpl() : AllSalesRepository = AllSalesRepositoryDummy()
+//    @Provides
+//    fun provideAllSalesDummyImpl(): AllSalesRepository = AllSalesRepositoryDummy()
 }
