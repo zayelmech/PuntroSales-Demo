@@ -11,13 +11,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.Typography
+import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
 
 @Preview(showBackground = true)
 @Composable
@@ -108,17 +111,13 @@ fun TicketDetailsComposable(
         }
 
         ButtonFancy(
-            text = "Edit",
-            color = MaterialTheme.colorScheme.primary,
-            icon = Icons.Filled.Edit
+            text = "Edit", color = MaterialTheme.colorScheme.primary, icon = Icons.Filled.Edit
         ) {
             onEditClick()
         }
 
         ButtonFancy(
-            text = "Delete",
-            color = MaterialTheme.colorScheme.secondary,
-            icon = Icons.Filled.Delete
+            text = "Delete", color = MaterialTheme.colorScheme.secondary, icon = Icons.Filled.Delete
         ) {
             onDeleteClick()
         }
@@ -127,19 +126,33 @@ fun TicketDetailsComposable(
 
 @Composable
 fun TicketDetailsComposableImpl(
-    ticketDetailsVM: TicketDetailsViewModel,
-    saleId: Long
+    ticketDetailsVM: TicketDetailsViewModel, saleId: Long, onNavigateAction: (Long?) -> Unit
 ) {
 
     val saleSelected by ticketDetailsVM.sale.collectAsState()
-
+    var showDeleteTicketDialog by remember {
+        mutableStateOf(false)
+    }
     SideEffect {
         ticketDetailsVM.onGetDetailsAction(saleId)
     }
 
-    TicketDetailsComposable(
-        ticketDetails = saleSelected
-    )
+    TicketDetailsComposable(ticketDetails = saleSelected,
+        onDeleteClick = { showDeleteTicketDialog = true },
+        onEditClick = { onNavigateAction(saleId) })
+
+    if (showDeleteTicketDialog) {
+        OnDeleteItemDialog(
+            message = stringResource(id = R.string.delete_ticket),
+            onDismissRequest = { showDeleteTicketDialog = false },
+            onConfirmClicked = {
+                ticketDetailsVM.onDeleteTicketAction(saleId)
+                onNavigateAction(null)
+            }
+        )
+    }
+
+
 }
 
 

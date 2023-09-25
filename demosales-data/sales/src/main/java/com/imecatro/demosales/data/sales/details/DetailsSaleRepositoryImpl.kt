@@ -32,4 +32,10 @@ class DetailsSaleRepositoryImpl(
                 total = ordersRoomDao.calculateTotalForSale(id) + 0 //TODO
             )
         }
+
+    override suspend fun deleteSaleWithId(id: Long) {
+        withContext(Dispatchers.IO) {
+            salesRoomDao.deleteSaleWithId(id)
+        }
+    }
 }

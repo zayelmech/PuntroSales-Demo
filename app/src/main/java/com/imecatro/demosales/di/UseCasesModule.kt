@@ -9,6 +9,7 @@ import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
+import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
@@ -68,5 +69,10 @@ class UseCasesModule {
 
 
     @Provides
-    fun providesGetDetailsSaleUseCase(repo : DetailsSaleRepository) = GetDetailsOfSaleByIdUseCase(repo)
+    fun providesGetDetailsSaleUseCase(repo: DetailsSaleRepository) =
+        GetDetailsOfSaleByIdUseCase(repo)
+
+    @Provides
+    fun providesDeleteTicketByIdUseCase(repo: DetailsSaleRepository) =
+        DeleteTicketByIdUseCase(repo)
 }

@@ -21,4 +21,8 @@ interface SalesRoomDao {
 
     @Query("SELECT * FROM sales_table WHERE id = :id")
     suspend fun getSaleById(id : Long): SaleDataRoomModel
+
+
+    @Query("DELETE FROM sales_table WHERE id = :id")
+    suspend fun deleteSaleWithId(id : Long)
 }

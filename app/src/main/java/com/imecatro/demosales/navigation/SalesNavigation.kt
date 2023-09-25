@@ -47,7 +47,17 @@ fun SalesNavigation(
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("productId")
 
-            TicketDetailsComposableImpl(ticketDetailsVM = hiltViewModel(), saleId = id!!.toLong())
+            TicketDetailsComposableImpl(ticketDetailsVM = hiltViewModel(), saleId = id!!.toLong()) {
+                it?.let {
+                    navController.navigate(SalesDestinations.Add.route) {
+                        popUpTo("${SalesDestinations.Details.route}/${id}"){inclusive = true}
+                    }
+                } ?: run {
+                    navController.navigate(SalesDestinations.List.route) {
+                        popUpTo("${SalesDestinations.Details.route}/${id}"){inclusive = true}
+                    }
+                }
+            }
         }
     }
 }

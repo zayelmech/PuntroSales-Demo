@@ -2,6 +2,7 @@ package com.imecatro.demosales.ui.sales.details.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.details.SaleDetailsDomainModel
 import com.imecatro.demosales.domain.sales.model.Order
@@ -19,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TicketDetailsViewModel @Inject constructor(
-    private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase
+    private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
+    private val deleteTicketByIdUseCase : DeleteTicketByIdUseCase
 ) : ViewModel() {
 
     private val _sale: MutableStateFlow<TicketDetailsUiModel> =
@@ -30,6 +32,12 @@ class TicketDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             val details = getDetailsOfSaleByIdUseCase.invoke(id)
             _sale.update { details.toUi() }
+        }
+    }
+
+    fun onDeleteTicketAction(id: Long){
+        viewModelScope.launch {
+            deleteTicketByIdUseCase.invoke(id)
         }
     }
 }
