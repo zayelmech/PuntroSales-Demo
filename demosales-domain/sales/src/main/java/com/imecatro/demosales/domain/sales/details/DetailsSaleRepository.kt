@@ -2,6 +2,9 @@ package com.imecatro.demosales.domain.sales.details
 
 interface DetailsSaleRepository {
     //details
-    fun getDetailsById(id: Int)
+    suspend fun getSaleDetailsById(id: Long) : SaleDetailsDomainModel
+    suspend fun deleteSaleWithId(id: Long)
 
 }
+
+

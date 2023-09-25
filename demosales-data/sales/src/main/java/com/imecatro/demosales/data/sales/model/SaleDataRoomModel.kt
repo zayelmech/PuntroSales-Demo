@@ -6,18 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "sales_table")
 data class SaleDataRoomModel(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    val clientId: Int,
-    val creationDateMillis: Long,
-    val status: String
-)
-
-@Entity(tableName = "order_table")
-data class OrderDataRoomModel(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    val saleId: Int,
-    val ticketOrder: Int,
-    val productId: Int,
-    val qty: Float
+    val id: Long = 0,
+    val clientId: Int = 0,
+    val creationDateMillis: Long = 0,
+    val status: String = ""
 )

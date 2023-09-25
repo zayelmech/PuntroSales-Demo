@@ -32,8 +32,8 @@ import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
-import com.imecatro.products.ui.common.ButtonFancy
-import com.imecatro.products.ui.common.DropListPicker
+import com.imecatro.demosales.ui.theme.ButtonFancy
+import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.products.ui.common.saveMediaToStorage
 
 

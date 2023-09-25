@@ -1,6 +1,8 @@
 package com.imecatro.demosales.datasource.room.di
 
 import android.app.Application
+import com.imecatro.demosales.data.sales.datasource.OrdersRoomDao
+import com.imecatro.demosales.data.sales.datasource.SalesRoomDao
 import com.imecatro.products.data.datasource.ProductsDao
 import com.imecatro.demosales.datasource.room.ProductsRoomDatabase
 import dagger.Module
@@ -18,12 +20,16 @@ class RoomModule {
     }
 
     @Provides
-    fun provideLaunchDao(appDatabase: ProductsRoomDatabase): ProductsDao {
+    fun providesProductsDao(appDatabase: ProductsRoomDatabase): ProductsDao {
         return appDatabase.productsRoomDao()
     }
-//
-//    @Provides
-//    fun provideRoomRepositoryImplementation(dao : ProductsDao) : ProductsRepositoryImpl =
-//        ProductsRepositoryImpl(dao)
+    @Provides
+    fun providesSalessDao(appDatabase: ProductsRoomDatabase): SalesRoomDao {
+        return appDatabase.salesRoomDao()
+    }
 
+    @Provides
+    fun providesOrdersDao(appDatabase: ProductsRoomDatabase): OrdersRoomDao {
+        return appDatabase.ordersRoomDao()
+    }
 }

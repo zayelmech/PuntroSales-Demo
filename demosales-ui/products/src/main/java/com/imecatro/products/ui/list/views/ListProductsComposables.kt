@@ -155,19 +155,25 @@ fun ListOfProductsStateImpl(
         mutableStateOf(true)
     }
 
-    when (uiState) {
-        is ListProductsUiState.Initialized -> {
-            productsViewModel.getAllProducts()
-        }
-        is ListProductsUiState.Loading -> {/*TODO */
-        }
-        is ListProductsUiState.Success -> {
-            isLoading = false
-        }
-        is ListProductsUiState.Error -> {
-            isLoading = false
+    LaunchedEffect(key1 = uiState) {
+        when (uiState) {
+            is ListProductsUiState.Initialized -> {
+                productsViewModel.getAllProducts()
+            }
+
+            is ListProductsUiState.Loading -> {/*TODO */
+            }
+
+            is ListProductsUiState.Success -> {
+                isLoading = false
+            }
+
+            is ListProductsUiState.Error -> {
+                isLoading = false
+            }
         }
     }
+
 
 
     ListOfProducts(

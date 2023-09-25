@@ -9,6 +9,11 @@ import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
+import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
+import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
+import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
+import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
+import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,14 +43,36 @@ class UseCasesModule {
     }
 
     @Provides
-    fun providesGetProductDetailsByIdUseCase(productsRepository: ProductsRepository, ioDispatcher: CoroutineDispatcher): GetProductDetailsByIdUseCase =
-        GetProductDetailsByIdUseCase(productsRepository,ioDispatcher)
+    fun providesGetProductDetailsByIdUseCase(
+        productsRepository: ProductsRepository,
+        ioDispatcher: CoroutineDispatcher
+    ): GetProductDetailsByIdUseCase =
+        GetProductDetailsByIdUseCase(productsRepository, ioDispatcher)
 
     @Provides
-    fun provideAddProductToCartUseCase(addSaleRepository: AddSaleRepository) : AddProductToCartUseCase = AddProductToCartUseCase(addSaleRepository)
+    fun provideAddProductToCartUseCase(addSaleRepository: AddSaleRepository): AddProductToCartUseCase =
+        AddProductToCartUseCase(addSaleRepository)
 
     @Provides
-    fun providesGetCartFlowUseCase(addSaleRepository: AddSaleRepository) : GetCartFlowUseCase = GetCartFlowUseCase(addSaleRepository)
+    fun providesGetCartFlowUseCase(addSaleRepository: AddSaleRepository): GetCartFlowUseCase =
+        GetCartFlowUseCase(addSaleRepository)
+
     @Provides
     fun provideDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @Provides
+    fun provideGetAllSalesUseCase(
+        allSalesRepository: AllSalesRepository,
+        //dispatcher: CoroutineDispatcher
+    ) =
+        GetAllSalesUseCase(allSalesRepository)
+
+
+    @Provides
+    fun providesGetDetailsSaleUseCase(repo: DetailsSaleRepository) =
+        GetDetailsOfSaleByIdUseCase(repo)
+
+    @Provides
+    fun providesDeleteTicketByIdUseCase(repo: DetailsSaleRepository) =
+        DeleteTicketByIdUseCase(repo)
 }

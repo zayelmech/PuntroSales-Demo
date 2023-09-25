@@ -2,16 +2,16 @@ package com.imecatro.demosales.domain.sales.add.repository
 
 import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.OrderStatus
-import com.imecatro.demosales.domain.sales.model.SaleModelDomain
+import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import kotlinx.coroutines.flow.*
 
 class AddSaleDummyRepoImpl : AddSaleRepository {
 
-    val sales = mutableListOf<SaleModelDomain>()
+    val sales = mutableListOf<SaleDomainModel>()
 
     private val cartList = mutableListOf<Order>()
 
-    private val currentTicket = SaleModelDomain(
+    private val currentTicket = SaleDomainModel(
         id = 0,
         clientId = 0,
         date = "",
@@ -29,9 +29,9 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
 //            }
 //        }
 
-    private val ticketOnCache: MutableSharedFlow<SaleModelDomain> = MutableStateFlow(currentTicket)
+    private val ticketOnCache: MutableSharedFlow<SaleDomainModel> = MutableStateFlow(currentTicket)
 
-    override suspend fun createNewSale(sale: SaleModelDomain) {
+    override suspend fun saveSale(sale: SaleDomainModel) {
         sales.add(sale)
     }
 
@@ -40,7 +40,7 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         ticketOnCache.emit(currentTicket.apply { productsList = cartList.apply { add(order) } })
     }
 
-    override fun getCartFlow(): Flow<SaleModelDomain> {
+    override suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel> {
         return ticketOnCache
     }
 
