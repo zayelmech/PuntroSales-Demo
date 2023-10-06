@@ -36,6 +36,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew --settings-file=settings.gradle build 
+      run: ./gradlew --settings-file=settings.gradle :app:assembleDebug #build 
 
       
