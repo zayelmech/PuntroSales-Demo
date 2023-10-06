@@ -20,12 +20,19 @@ jobs:
         distribution: 'temurin'
         cache: gradle
     
-    - name: Gradle Build Action
-      # You may pin to the exact commit or the version.
-      # uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
-      uses: gradle/gradle-build-action@v2.9.0
+    # - name: Gradle Build Action
+    #   # You may pin to the exact commit or the version.
+    #   # uses: gradle/gradle-build-action@842c587ad8aa4c68eeba24c396e15af4c2e9f30a
+    #   uses: gradle/gradle-build-action@v2.9.0
+    #   with:
+    #     cache-disabled: true
+        
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
       with:
-        cache-disabled: true
+        sdk-platform: '33'
+        # ndk-version: '21.3.6528147'
+        
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
