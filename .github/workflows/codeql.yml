@@ -76,6 +76,12 @@ jobs:
     #     echo "Run, Build Application using script"
     #     ./location_of_script_within_repo/buildscript.sh
 
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        sdk-platform: '33'
+        # ndk-version: '21.3.6528147'
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       with:
