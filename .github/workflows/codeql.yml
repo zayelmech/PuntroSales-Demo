@@ -85,9 +85,13 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
       with:
-        sdk-platform: '33'
+        sdk-platform: 33
         # ndk-version: '21.3.6528147'
-
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew --settings-file=settings.gradle :app:assembleDebug #build 
+      
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       with:
