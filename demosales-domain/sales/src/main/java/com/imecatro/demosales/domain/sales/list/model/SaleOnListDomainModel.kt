@@ -5,7 +5,7 @@ import com.imecatro.demosales.domain.sales.model.OrderStatus
 data class SaleOnListDomainModel(
     val id: Long,
     val clientName: String,
-    var date: String, //date when ticket was created
+    var date: Long, //date when ticket was created
     var total: Double,
     val status: OrderStatus
 )

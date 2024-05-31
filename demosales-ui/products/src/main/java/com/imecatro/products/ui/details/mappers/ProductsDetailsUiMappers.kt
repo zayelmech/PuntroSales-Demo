@@ -9,7 +9,7 @@ fun ProductDomainModel.toUiModel(): ProductDetailsUiModel {
         name = this.name,
         price = this.price.toString(),
         currency = this.currency,
-        unit = this.unit.symbol,
+        unit = this.unit,
         imageUrl = this.imageUri,
         details = this.details
     )

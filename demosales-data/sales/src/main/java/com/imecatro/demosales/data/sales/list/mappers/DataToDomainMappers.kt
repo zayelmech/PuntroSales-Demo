@@ -12,7 +12,7 @@ internal fun SaleDataRoomModel.toDomain(
     SaleOnListDomainModel(
         id = id,
         clientName = clientName, //TODO add functionality
-        date = creationDateMillis.toString(), //TODO add functionality
+        date = creationDateMillis, //TODO add functionality
         total = total,
         status = status.toOrderStatus()
     )

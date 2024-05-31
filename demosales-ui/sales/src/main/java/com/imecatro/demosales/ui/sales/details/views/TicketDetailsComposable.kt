@@ -1,5 +1,6 @@
 package com.imecatro.demosales.ui.sales.details.views
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,7 +23,7 @@ import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = false)
 @Composable
 fun TicketDetailsComposable(
     ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(listOf()),
@@ -33,6 +34,7 @@ fun TicketDetailsComposable(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
+            //.background(MaterialTheme.colorScheme.background)
     ) {
 
         //Client
@@ -56,7 +58,7 @@ fun TicketDetailsComposable(
                 .weight(1f)
                 .padding(5.dp),
             elevation = CardDefaults.cardElevation(0.5.dp),
-            colors = CardDefaults.cardColors(Color.White)
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -81,7 +83,7 @@ fun TicketDetailsComposable(
                 .fillMaxWidth()
                 .padding(5.dp),
             elevation = CardDefaults.cardElevation(0.5.dp),
-            colors = CardDefaults.cardColors(Color.White)
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
         ) {
             //Shipping cost
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -89,12 +91,12 @@ fun TicketDetailsComposable(
                 Spacer(modifier = Modifier.weight(1f))
                 Text(text = "$${ticketDetails.shippingCost}")
             }
-            //Tax
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Tax 16%")
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = "$${ticketDetails.tax}")
-            }
+//            //Tax
+//            Row(verticalAlignment = Alignment.CenterVertically) {
+//                Text(text = "Tax 16%")
+//                Spacer(modifier = Modifier.weight(1f))
+//                Text(text = "$${ticketDetails.tax}")
+//            }
             //Extra
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Extra")

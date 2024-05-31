@@ -1,6 +1,7 @@
 package com.imecatro.demosales.domain.products.usecases
 
-import com.imecatro.demosales.domain.products.model.Currencies
+import com.imecatro.demosales.domain.core.model.Currencies
+
 
 class GetListOfCurrenciesUseCase() {
     operator fun invoke(): List<String> {

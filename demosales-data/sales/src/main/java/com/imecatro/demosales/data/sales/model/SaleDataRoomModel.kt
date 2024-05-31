@@ -9,5 +9,6 @@ data class SaleDataRoomModel(
     val id: Long = 0,
     val clientId: Int = 0,
     val creationDateMillis: Long = 0,
-    val status: String = ""
+    val status: String = "",
+    val note: String = ""
 )

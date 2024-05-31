@@ -1,51 +1,37 @@
 package com.imecatro.demosales.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.imecatro.demosales.navigation.ProductsNavigation
-import com.imecatro.demosales.navigation.SalesNavigation
+import com.imecatro.demosales.navigation.clients.clientsNavigation
+import com.imecatro.demosales.navigation.products.productsNavigation
+import com.imecatro.demosales.navigation.sales.salesFeature
 
-
-@OptIn(ExperimentalLayoutApi::class)
+@Preview(showBackground = true)
 @Composable
 fun MainScaffoldApp() {
-    var featureSelected by remember {
-        mutableStateOf(NavigationDirections.SALES)
-    }
-    val productsNavController = rememberNavController()
-    val salesNavController = rememberNavController()
+
+    // navController
+    val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = {
-            MainNavBar(
-                onNavigateToRoute = { featureSelected = it },
-                featureSelected
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .consumeWindowInsets(it)
-                .padding(it)
+        bottomBar = { MainBottomBar(navController) }
+    ) { padding ->
+        NavHost(
+            navController = navController,
+            startDestination = NavigationDirections.PRODUCTS.route,
+            modifier = Modifier.padding(paddingValues = padding)
         ) {
-
-            when (featureSelected) {
-                NavigationDirections.PRODUCTS -> {
-                    ProductsNavigation(productsNavController)
-                }
-
-                NavigationDirections.SALES -> {
-                    SalesNavigation(salesNavController)
-                }
-
-                NavigationDirections.CLIENTS -> {
-                    //TODO feature CLIENTS
-                }
-            }
+            // We can add, see, edit or delete any product
+            productsNavigation(navController, featureRoute = NavigationDirections.PRODUCTS.route)
+            // We can add, see, edit or delete any sale
+            salesFeature(navController, featureRoute = NavigationDirections.SALES.route)
+            // We can add, see, edit or delete any client
+            clientsNavigation(navController, featureRoute = NavigationDirections.CLIENTS.route)
         }
-
     }
 }

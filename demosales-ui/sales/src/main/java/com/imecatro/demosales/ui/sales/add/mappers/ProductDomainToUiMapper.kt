@@ -8,9 +8,9 @@ import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 
 internal fun ProductDomainModel.toAddSaleUi(): ProductResultUiModel {
     return ProductResultUiModel(
-        id = this.id,
-        name = this.name,
-        price = this.price,
+        id = this.id?:0,
+        name = this.name?:"",
+        price = this.price?:0f,
         imageUri = Uri.parse(this.imageUri)
     )
 }
@@ -21,19 +21,24 @@ internal fun List<ProductDomainModel>.toListAddSaleUi(): List<ProductResultUiMod
     }
 }
 
-internal fun ProductDomainModel.toCartUiModel(): ProductOnCartUiModel {
-    return ProductOnCartUiModel(
-        product = this.toAddSaleUi(),
-        qty = 0f,
-        subtotal = 0f.toBigDecimal()
-    )
-}
 
-internal fun ProductOnCartUiModel.toOrderDomainModel(): Order {
+internal fun ProductOnCartUiModel.toOrderDomainModel(id: Long = 0): Order {
     return Order(
-        productId = product.id?: 0,
+        id = id,
+        productId = product.id ?: 0,
         productName = this.product.name ?: "unknown",
         productPrice = this.product.price ?: 0f,
         qty = this.qty
     )
 }
+
+internal fun ProductResultUiModel.toDomain(id: Long = 0): Order {
+    return Order(
+        id = id,
+        productId = this.id ?: 0,
+        productName = name ?: "",
+        productPrice = price ?: 0f,
+        1f
+    )
+}
+

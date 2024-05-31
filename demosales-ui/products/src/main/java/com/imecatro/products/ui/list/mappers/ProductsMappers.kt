@@ -10,7 +10,7 @@ fun List<ProductDomainModel>.toProductUiModel(): List<ProductUiModel> {
             id = it.id,
             name = it.name,
             price = it.price?.toString() ?: "0.00",
-            unit = it.unit.symbol,
+            unit = it.unit,
             imageUrl = Uri.parse(it.imageUri)
         )
     }

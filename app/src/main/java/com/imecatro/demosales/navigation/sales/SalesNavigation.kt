@@ -1,21 +1,19 @@
-package com.imecatro.demosales.navigation
+package com.imecatro.demosales.navigation.sales
 
-import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.imecatro.demosales.ui.sales.add.views.CheckoutTicketComposableImpl
 import com.imecatro.demosales.ui.sales.add.views.CreateTicketComposableStateImpl
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
 import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl
 
-@Composable
-fun SalesNavigation(
-    navController: NavHostController
-) {
-    NavHost(navController = navController, startDestination = SalesDestinations.List.route) {
+fun NavGraphBuilder.salesFeature(navController: NavHostController, featureRoute: String) {
+    navigation(startDestination = SalesDestinations.List.route, route = featureRoute) {
         composable(SalesDestinations.List.route) {
             SalesListComposableStateImpl(salesListViewModel = hiltViewModel()) {
                 it?.let {
@@ -30,9 +28,20 @@ fun SalesNavigation(
         composable(SalesDestinations.Add.route) {
 
             CreateTicketComposableStateImpl(addSaleViewModel = hiltViewModel(), onSavedTicked = {
+                navController.navigate(SalesDestinations.List.route) {
+                    popUpTo(SalesDestinations.List.route) { inclusive = true }
+                }
+            }, onNavigateToCheckout = {
+                navController.navigate(SalesDestinations.Checkout.route)
+            })
+        }
 
-            }) {
-                //Create Request Update Delete
+        composable(SalesDestinations.Checkout.route) {
+
+            CheckoutTicketComposableImpl(checkoutViewModel = hiltViewModel()) {
+                navController.navigate(SalesDestinations.List.route) {
+                    popUpTo(SalesDestinations.List.route) { inclusive = true }
+                }
             }
         }
         composable(SalesDestinations.Edit.route) {
@@ -50,21 +59,14 @@ fun SalesNavigation(
             TicketDetailsComposableImpl(ticketDetailsVM = hiltViewModel(), saleId = id!!.toLong()) {
                 it?.let {
                     navController.navigate(SalesDestinations.Add.route) {
-                        popUpTo("${SalesDestinations.Details.route}/${id}"){inclusive = true}
+                        popUpTo("${SalesDestinations.Details.route}/${id}") { inclusive = true }
                     }
                 } ?: run {
                     navController.navigate(SalesDestinations.List.route) {
-                        popUpTo("${SalesDestinations.Details.route}/${id}"){inclusive = true}
+                        popUpTo(SalesDestinations.List.route) { inclusive = true }
                     }
                 }
             }
         }
     }
-}
-
-sealed class SalesDestinations(val route: String) {
-    object List : SalesDestinations("List")
-    object Add : SalesDestinations("Add")
-    object Edit : SalesDestinations("Edit")
-    object Details : SalesDestinations("Details")
 }

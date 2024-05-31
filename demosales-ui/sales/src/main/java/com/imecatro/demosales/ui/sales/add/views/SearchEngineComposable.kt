@@ -3,18 +3,29 @@ package com.imecatro.demosales.ui.sales.add.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -26,18 +37,13 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.theme.BlueTurquoise80
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBottomSheetComposable(
-    list: List<ProductResultUiModel>,
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onProductClicked: (ProductResultUiModel) -> Unit
+    searchEngineUiModel: SearchEngineUiModel = SearchEngineUiModel()
 ) {
     Column(
         modifier = Modifier
@@ -46,8 +52,9 @@ fun SearchBottomSheetComposable(
             .padding(5.dp)
     ) {
         OutlinedTextField(
-            value = query,
-            onValueChange = onQueryChange,
+            value = searchEngineUiModel.query,
+            onValueChange = searchEngineUiModel.onQueryChange,
+            placeholder = { Text(text = "Search")},
             modifier = Modifier.fillMaxWidth(),
             leadingIcon = {
                 Icon(
@@ -55,14 +62,25 @@ fun SearchBottomSheetComposable(
                     contentDescription = null
                 )
             })
-        LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier.height(300.dp)) {
-            items(list) { product ->
-                ProductResultCardComposable(product = product, onProductClicked = {onProductClicked(product)})
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 128.dp),
+            modifier = Modifier.height(400.dp)
+        ) {
+            items(searchEngineUiModel.list) { product ->
+                ProductResultCardComposable(
+                    product = product,
+                    onProductClicked = { searchEngineUiModel.onProductClicked(product) })
             }
         }
     }
 }
 
+data class SearchEngineUiModel(
+    val list: List<ProductResultUiModel> = listOf(),
+    val query: String = "",
+    val onQueryChange: (String) -> Unit = {},
+    val onProductClicked: (ProductResultUiModel) -> Unit = {}
+)
 
 @Composable
 fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked: (Int) -> Unit) {
@@ -136,7 +154,8 @@ fun PreviewSearchBottomSheetComposable() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            SearchBottomSheetComposable(createFakeList(20), "a", {}, {})
+            val x =SearchEngineUiModel(createFakeList(20), "a", {}, {})
+            SearchBottomSheetComposable(x)
         }
     }
 }

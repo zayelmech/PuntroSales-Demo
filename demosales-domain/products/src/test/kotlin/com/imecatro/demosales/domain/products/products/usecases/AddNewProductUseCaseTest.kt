@@ -1,7 +1,7 @@
 package com.imecatro.demosales.domain.products.products.usecases
 
+import com.imecatro.demosales.domain.core.model.ProductUnit
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
-import com.imecatro.demosales.domain.products.model.ProductUnit
 import com.imecatro.demosales.domain.products.repository.ProductsRepositoryDummyImpl
 import com.imecatro.demosales.domain.products.usecases.AddNewProductUseCase
 import com.imecatro.demosales.domain.products.usecases.State
@@ -45,7 +45,7 @@ class AddNewProductUseCaseTest {
             name = "Some",
             currency = "USD",
             price = 1f,
-            unit = ProductUnit.Default,
+            unit = ProductUnit.Default.symbol,
             details = "Info here",
             imageUri = "/data/0"
 

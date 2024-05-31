@@ -1,182 +1,158 @@
 package com.imecatro.demosales.ui.sales.add.views
 
-import android.util.Log
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
-import com.imecatro.demosales.ui.theme.*
+import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTicketComposable(
     productsOnCart: List<ProductOnCartUiModel>,
     ticketSubtotal: String,
-    onDeleteProduct: (Int) -> Unit,
-    onProductPlusClicked: (Int) -> Unit,
-    onProductMinusClicked: (Int) -> Unit,
-    onQtyValueChange: (Int, String) -> Unit,
+    onDeleteProduct: (Long) -> Unit,
+    onProductPlusClicked: (ProductOnCartUiModel) -> Unit,
+    onProductMinusClicked: (ProductOnCartUiModel) -> Unit,
+    onQtyValueChange: (ProductOnCartUiModel, String) -> Unit,
     onSaveTicketClicked: () -> Unit,
     onCheckoutClicked: () -> Unit,
-    onAddProductClicked: () -> Unit
+    productsContent: @Composable LazyItemScope.() -> Unit
 ) {
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(
-            onClick = onAddProductClicked,
-            containerColor = BlueTurquoise80,
-            contentColor = Color.White
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-        }
-    }) { innerPadding ->
-        Column(
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+    ) {
+
+        Row(
             modifier = Modifier
-                .consumeWindowInsets(innerPadding)
-                .padding(innerPadding)
+                .fillMaxWidth(0.9f)
+                .padding(10.dp)
+                .align(Alignment.CenterHorizontally)
         ) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .padding(10.dp)
-                    .align(Alignment.CenterHorizontally)
+            Button(
+                onClick = onSaveTicketClicked,
+                modifier = Modifier.weight(1f),
+                enabled = productsOnCart.isNotEmpty(),
+                shape = RoundedCornerShape(20)
             ) {
-
-                Button(
-                    onClick = onSaveTicketClicked,
-                    modifier = Modifier.weight(1f),
-                    enabled = productsOnCart.isNotEmpty(),
-                    colors = ButtonDefaults.buttonColors(
-                        BlueTurquoise40
-                    ),
-                    shape = RoundedCornerShape(20)
-                ) {
-                    Text(text = "SAVE", color = Color.White)
-                }
-                Spacer(modifier = Modifier.width(5.dp))
-                Button(
-                    onClick = onCheckoutClicked,
-                    enabled = productsOnCart.isNotEmpty(),
-                    colors = ButtonDefaults.buttonColors(
-                        BlueTurquoise40
-                    ),
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(20)
-                ) {
-                    Text(text = "CHARGE $${ticketSubtotal}", color = Color.White)
-                }
+                Text(text = "SAVE", color = Color.White)
             }
-
-            Divider(color = Color.LightGray, thickness = 1.dp)
-
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.width(5.dp))
+            Button(
+                onClick = onCheckoutClicked,
+                enabled = productsOnCart.isNotEmpty(),
+                colors = ButtonDefaults.buttonColors(
+                    MaterialTheme.colorScheme.secondary
+                ),
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(20)
             ) {
-                if (productsOnCart.isEmpty()) {
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(300.dp), verticalAlignment = Alignment.CenterVertically
+                Text(text = "CHARGE $${ticketSubtotal}", color = Color.White)
+            }
+        }
+
+        Divider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
+
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            itemsIndexed(productsOnCart) { index, item ->
+                val dismissState = rememberSwipeToDismissBoxState()
+                val scope = rememberCoroutineScope()
+
+                if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                    OnDeleteItemDialog(item.product.name ?: "unknown", {
+                        scope.launch {
+                            dismissState.reset()
+                        }
+                    }) {
+                        scope.launch {
+                            onDeleteProduct(item.orderId)
+                            dismissState.reset()
+                        }
+                    }
+                }
+
+                SwipeToDismissBox(
+                    state = dismissState,
+                    modifier = Modifier
+                        .padding(vertical = Dp(1f)),
+                    enableDismissFromEndToStart = true,
+                    backgroundContent = {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = Dp(20f)),
+                            contentAlignment = Alignment.CenterEnd
                         ) {
-
-                            Spacer(modifier = Modifier.weight(1f))
                             Icon(
-                                painter = painterResource(id = R.drawable.baseline_playlist_add_24),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .clickable { onAddProductClicked() },
-                                tint = Color.LightGray
+                                Icons.Filled.Delete,
+                                contentDescription = "Delete Icon",
+                                //modifier = Modifier.scale(1f)
                             )
-                            Spacer(modifier = Modifier.weight(1f))
                         }
-                    }
-                }
-                itemsIndexed(productsOnCart) { index, item ->
-                    val dismissState = rememberDismissState()
-                    val scope = rememberCoroutineScope()
-
-                    if (dismissState.isDismissed(DismissDirection.EndToStart)) {
-                        OnDeleteItemDialog(item.product.name ?: "unknown", {
-                            scope.launch {
-                                dismissState.reset()
-                            }
-                        }) {
-                            scope.launch {
-                                onDeleteProduct(index)
-                                dismissState.reset()
-                            }
-                        }
-                    }
-
-                    SwipeToDismiss(
-                        state = dismissState,
-                        modifier = Modifier
-                            .padding(vertical = Dp(1f)),
-                        directions = setOf(
-                            DismissDirection.EndToStart
-                        ),
-                        background = {
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(Color.White)
-                                    .padding(horizontal = Dp(20f)),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                Icon(
-                                    Icons.Filled.Delete,
-                                    contentDescription = "Delete Icon",
-                                    //modifier = Modifier.scale(1f)
-                                )
-                            }
-                        },
-                        dismissContent = {
-                            OrderOnCartComposable(
-                                product = item,
-                                productPosition = index,
-                                onPlusClicked = onProductPlusClicked,
-                                onMinusClick = onProductMinusClicked,
-                                onQtyValueChange = { onQtyValueChange(index, it) },
-                            )
-                        })
-                }
+                    },
+                    content = {
+                        OrderOnCartComposable(
+                            product = item,
+                            productPosition = index,
+                            onPlusClicked = { onProductPlusClicked(item) },
+                            onMinusClick = { onProductMinusClicked(item) },
+                            onQtyValueChange = { newQty -> onQtyValueChange(item, newQty) },
+                        )
+                    })
+            }
+            item {
+                productsContent()
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreateTicketComposableStateImpl(
     addSaleViewModel: AddSaleViewModel,
@@ -192,67 +168,40 @@ fun CreateTicketComposableStateImpl(
         mutableStateOf("")
     }
 
-    val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
-    val scope = rememberCoroutineScope()
-
-    ModalBottomSheetLayout(
-        sheetState = state,
-        sheetContent = {
-            SearchBottomSheetComposable(
-                list = resultsList.toMutableStateList(),
-                query = query,
-                onQueryChange = {
-                    query = it
-                    addSaleViewModel.onSearchAction(query)
-                },
-                onProductClicked = {
-                    addSaleViewModel.onAddProductToCartAction(it)
-                    scope.launch { state.hide() }
-
-                    //TODO hide keyboard
-                }
-            )
-        }
+    CreateTicketComposable(
+        productsOnCart = productsOnCart.toMutableStateList(),
+        ticketSubtotal = ticketSubtotal,
+        onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
+        onProductMinusClicked = { product ->
+            addSaleViewModel.onQtyValueChangeAtPos(product, "-1")
+        },
+        onProductPlusClicked = { product ->
+            addSaleViewModel.onQtyValueChangeAtPos(product, "+1")
+        },
+        onQtyValueChange = { product, number ->
+            addSaleViewModel.onQtyValueChangeAtPos(product, number)
+        },
+        onSaveTicketClicked = { addSaleViewModel.onSaveTicketAction(); onSavedTicked() },
+        onCheckoutClicked = onNavigateToCheckout
     ) {
-        CreateTicketComposable(
-            productsOnCart = productsOnCart.toMutableStateList(),
-            ticketSubtotal = ticketSubtotal,
-            onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
-            onProductMinusClicked = {
-                addSaleViewModel.onQtyValueIncreaseAtPos(it, -1)
+        val searchUiState = SearchEngineUiModel(
+            list = resultsList.toMutableStateList(),
+            query = query,
+            onQueryChange = {
+                query = it
+                addSaleViewModel.onSearchProductAction(query)
             },
-            onProductPlusClicked = {
-                addSaleViewModel.onQtyValueIncreaseAtPos(it, 1)
-            },
-            onQtyValueChange = { pos, number ->
-                addSaleViewModel.onQtyValueChangeAtPos(pos, number)
-            },
-            onSaveTicketClicked = { addSaleViewModel.onSaveTicketAction() },
-            onCheckoutClicked = onNavigateToCheckout,
-            onAddProductClicked = { scope.launch { state.show() } })
-
-
-        when (ticketState) {
-            is TicketUiState.Initialized -> {
-                addSaleViewModel.onGetCacheTicketAction()
+            onProductClicked = {
+                addSaleViewModel.onAddProductToCartAction(it)
             }
+        )
+        SearchBottomSheetComposable(searchUiState)
+    }
 
-            is TicketUiState.OnCache -> {
-
-            }
-
-            is TicketUiState.Checkout -> {
-
-                //TODO Impl next -> CheckoutTicketComposableImpl(productsOnCart)
-            }
-
-            is TicketUiState.Error -> {
-
-            }
-
-            is TicketUiState.Saved -> {
-                onSavedTicked()
-            }
+    DisposableEffect(key1 = Unit) {
+        onDispose {
+            if (productsOnCart.isEmpty()) addSaleViewModel.onCancelTicketAction()
+            else addSaleViewModel.onSaveTicketAction()
         }
     }
 }
@@ -266,17 +215,18 @@ fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
             price = 1f,
             imageUri = null
         )
-        val new2 = ProductOnCartUiModel(new, 0f, 0f.toBigDecimal())
+        val new2 =
+            ProductOnCartUiModel(orderId = 0, product = new, qty = 0f, subtotal = 0f.toBigDecimal())
 
         list.add(new2)
     }
     return list
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:width=1080px,height=2340px,dpi=440")
 @Composable
 fun PreviewCreateTicketComposable() {
-    PuntroSalesDemoTheme {
+    PuntroSalesDemoTheme(darkTheme = false) {
         Surface(
 //            modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -288,7 +238,9 @@ fun PreviewCreateTicketComposable() {
                 {},
                 {},
                 { _, _ -> }, {}, {}
-            ) {}
+            ) {
+                SearchBottomSheetComposable()
+            }
 
         }
     }

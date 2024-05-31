@@ -18,9 +18,11 @@ fun SaleDomainModel.toData(id: Long): SaleDataRoomModel {
 
 internal fun Order.toDataSource(saleId: Long): OrderDataRoomModel =
     OrderDataRoomModel(
+        id=id,
         saleId = saleId,
         productId = productId,
         productName = productName,
         productPrice = productPrice,
-        qty = qty
+        qty = qty,
+        productImage = ""
     )

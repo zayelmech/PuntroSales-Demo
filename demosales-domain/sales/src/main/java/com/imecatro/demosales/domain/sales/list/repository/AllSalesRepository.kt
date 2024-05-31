@@ -18,7 +18,7 @@ class AllSalesRepositoryDummy : AllSalesRepository {
                 SaleOnListDomainModel(
                     id = 2,
                     "Abdiel",
-                    "05/12/2023",
+                    1,
                     200.0,
                     OrderStatus.PENDING
                 )

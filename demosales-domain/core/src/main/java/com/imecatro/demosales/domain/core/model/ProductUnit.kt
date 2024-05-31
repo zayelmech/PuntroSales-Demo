@@ -1,4 +1,4 @@
-package com.imecatro.demosales.domain.products.model
+package com.imecatro.demosales.domain.core.model
 
 
 enum class ProductUnit(val symbol: String) {

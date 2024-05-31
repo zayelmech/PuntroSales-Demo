@@ -40,8 +40,20 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         ticketOnCache.emit(currentTicket.apply { productsList = cartList.apply { add(order) } })
     }
 
+    override suspend fun updateProductQtyOnCart(order: Order) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteProductOnCart(id: Long) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel> {
         return ticketOnCache
+    }
+
+    override suspend fun filterPopularProducts(n: Int): List<Int> {
+        TODO("Not yet implemented")
     }
 
 

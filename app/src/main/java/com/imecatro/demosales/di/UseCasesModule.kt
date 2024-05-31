@@ -8,7 +8,10 @@ import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseC
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
@@ -38,6 +41,10 @@ class UseCasesModule {
     }
 
     @Provides
+    fun providesGetMostPopularProductsUseCase(addSaleRepository: AddSaleRepository): GetMostPopularProductsUseCase {
+        return GetMostPopularProductsUseCase(addSaleRepository)
+    }
+    @Provides
     fun providesAddNewSaleToDatabaseUseCase(addSaleRepository: AddSaleRepository): AddNewSaleToDatabaseUseCase {
         return AddNewSaleToDatabaseUseCase(addSaleRepository)
     }
@@ -52,6 +59,10 @@ class UseCasesModule {
     @Provides
     fun provideAddProductToCartUseCase(addSaleRepository: AddSaleRepository): AddProductToCartUseCase =
         AddProductToCartUseCase(addSaleRepository)
+
+    @Provides
+    fun provideUpdateProductToCartUseCase(addSaleRepository: AddSaleRepository): UpdateProductOnCartUseCase =
+        UpdateProductOnCartUseCase(addSaleRepository)
 
     @Provides
     fun providesGetCartFlowUseCase(addSaleRepository: AddSaleRepository): GetCartFlowUseCase =
@@ -75,4 +86,9 @@ class UseCasesModule {
     @Provides
     fun providesDeleteTicketByIdUseCase(repo: DetailsSaleRepository) =
         DeleteTicketByIdUseCase(repo)
+
+
+    @Provides
+    fun providesDeleteProductOnCartUseCase(addSaleRepository: AddSaleRepository) =
+        DeleteProductOnCartUseCase(addSaleRepository)
 }

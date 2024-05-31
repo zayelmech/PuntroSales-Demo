@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,7 +32,7 @@ fun SalesListComposable(
     Scaffold(floatingActionButton = {
         FloatingActionButton(
             onClick = { onAddNewSale() },
-            containerColor = BlueTurquoise80,
+            containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)

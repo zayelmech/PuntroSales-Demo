@@ -224,7 +224,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         productName = productName,
         onProductNameChange = { productName = it },
         productPrice = productPrice,
-        onProductPriceChange = { productPrice = it },
+        onProductPriceChange = { productPrice = it.filter { c -> c.isDigit() || c == '.' } },
         currencyList = addViewModel.getCurrencies(),
         currencyPicked = currencySelected,
         onCurrencyChange = { currencySelected = it },

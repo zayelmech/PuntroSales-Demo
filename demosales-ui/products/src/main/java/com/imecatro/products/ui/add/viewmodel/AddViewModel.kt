@@ -14,11 +14,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "AddViewModel"
+
 @HiltViewModel
 class AddViewModel @Inject constructor(
     private val productsRepository: ProductsRepository,
-    private val getListOfCurrenciesUseCase: GetListOfCurrenciesUseCase = GetListOfCurrenciesUseCase(),
-    private val getListOfUnitsUseCase: GetListOfUnitsUseCase = GetListOfUnitsUseCase()
+    private val getListOfCurrenciesUseCase: GetListOfCurrenciesUseCase,
+    private val getListOfUnitsUseCase: GetListOfUnitsUseCase
 ) : ViewModel() {
 
     fun onSaveAction(addProductUiModel: AddProductUiModel) {

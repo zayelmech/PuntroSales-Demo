@@ -26,7 +26,7 @@ class AddSaleRepositoryImpl(
 
     private var ticketId: Long? = null
     override suspend fun saveSale(sale: SaleDomainModel) {
-        val id = salesRoomDao.insertSaleOnLocalDatabase(sale = sale.toData(ticketId ?: 0))
+        val id = salesRoomDao.saveSaleState(sale = sale.toData(ticketId ?: 0))
         Log.d(TAG, "createNewSale: $id")
     }
 
@@ -37,6 +37,19 @@ class AddSaleRepositoryImpl(
             Log.e(TAG, "addProductToCart: ", Throwable("Missing ticket id $ticketId"))
         }
     }
+
+    override suspend fun updateProductQtyOnCart(order: Order) {
+        withContext(Dispatchers.IO) {
+            ordersRoomDao.updateOrderQty(order.id, order.qty)
+        }
+    }
+
+    override suspend fun deleteProductOnCart(id: Long) {
+        withContext(Dispatchers.IO) {
+            ordersRoomDao.deleteOrderById(id)
+        }
+    }
+
 
     override suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel> {
         val id: Long =
@@ -55,15 +68,23 @@ class AddSaleRepositoryImpl(
                 date = sale.creationDateMillis.toString(),//TODO
                 productsList = products.map {
                     Order(
-                        productId =  it.productId,
+                        id = it.id,
+                        productId = it.productId,
                         productName = it.productName,
                         productPrice = it.productPrice,
-                        qty = it.qty)
+                        qty = it.qty
+                    )
                 },
                 total = total,
                 status = sale.status.toOrderStatus()
             )
         }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun filterPopularProducts(n: Int): List<Int> {
+        return withContext(Dispatchers.IO) {
+            ordersRoomDao.getMostPopularProducts(n)
+        }
     }
 
     private fun calculateTotal(products: List<OrderDataRoomModel>): Double {

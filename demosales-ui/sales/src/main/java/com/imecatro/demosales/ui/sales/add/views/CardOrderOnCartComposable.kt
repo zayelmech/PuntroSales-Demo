@@ -3,12 +3,24 @@ package com.imecatro.demosales.ui.sales.add.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,16 +37,26 @@ import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.theme.GreenTurquoise
-import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
+import java.math.BigDecimal
 
+
+private val dummyProduct =
+    ProductOnCartUiModel(
+        orderId = 0,
+        product = ProductResultUiModel(),
+        qty = 0f,
+        subtotal = BigDecimal(0)
+    )
+
+@Preview(showBackground = true)
 @Composable
 fun OrderOnCartComposable(
-    product: ProductOnCartUiModel,
-    productPosition: Int,
-    onPlusClicked: (Int) -> Unit,
-    onMinusClick: (Int) -> Unit,
-    onQtyValueChange: (String) -> Unit,
+    product: ProductOnCartUiModel = dummyProduct,
+    productPosition: Int = 0,
+    onPlusClicked: (Int) -> Unit = {},
+    onMinusClick: (Int) -> Unit = {},
+    onQtyValueChange: (String) -> Unit = {},
 ) {
 
     val cardTag = "CARD-${product.product.id}"
@@ -90,23 +112,14 @@ fun OrderOnCartComposable(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-
-//                OutlinedTextField(
-//                    value = "${product.qty}",
-//                    onValueChange = onQtyValueChange,
-//                    modifier = Modifier.padding(0.dp),
-//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-//                )
-
-//                TextButton(onClick = { showDialog = true }) {
-//                    Text(text = "${product.qty}")
-//                }
-
                 if (showDialog) {
                     InputNumberDialogComposable(
                         initialValue = "${product.qty}",
                         onDismissRequest = { showDialog = false },
-                        onConfirmClicked = { onQtyValueChange(it);showDialog = false }
+                        onConfirmClicked = { newQty ->
+                            onQtyValueChange(newQty)
+                            showDialog = false
+                        }
                     )
                 }
                 Row(Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -138,27 +151,6 @@ fun OrderOnCartComposable(
             }
             Text(text = "$${product.subtotal}", style = Typography.titleMedium)
 
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewOrderOnCartComposable() {
-    PuntroSalesDemoTheme {
-        Surface {
-            OrderOnCartComposable(
-                product = ProductOnCartUiModel(
-                    product = ProductResultUiModel(id=1, name = "product", price = 3f, imageUri = null),
-                    qty = 1f,
-                    subtotal = 23f.toBigDecimal()
-                ),
-                productPosition = 0,
-                onPlusClicked = {},
-                onMinusClick = {},
-                onQtyValueChange = {},
-            )
         }
     }
 }

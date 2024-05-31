@@ -17,12 +17,12 @@ class DetailsSaleRepositoryImpl(
     override suspend fun getSaleDetailsById(id: Long): SaleDetailsDomainModel =
         withContext(Dispatchers.IO) {
 
-            val list = async { ordersRoomDao.getListOfProductsBySaleId(id) }
-            val sale = salesRoomDao.getSaleById(id)
+            val list = async { ordersRoomDao.getListOfProductsBySaleId(id) }.await()
+            val sale = async { salesRoomDao.getSaleById(id) }.await()
 
             return@withContext SaleDetailsDomainModel(
-                list = list.await().map {
-                    Order(it.productId, it.productName, it.productPrice, it.qty)
+                list = list.map {
+                    Order(it.id, it.productId, it.productName, it.productPrice, it.qty)
                 },
                 clientName = "UNKNOWN",
                 note = "...",

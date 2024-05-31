@@ -23,6 +23,7 @@ data class OrderDataRoomModel(
     val productId: Int,
     val productName: String,
     val productPrice: Float,
-    val qty: Float
+    val qty: Float,
+    val productImage : String
 )
 

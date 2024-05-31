@@ -44,7 +44,7 @@ fun InputNumberDialogComposable(
             Spacer(modifier = Modifier.height(20.dp))
             OutlinedTextField(
                 value = qty,
-                onValueChange = { qty = it },
+                onValueChange = { qty = it.filter{c -> c.isDigit() || c == '.'} },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             Row {

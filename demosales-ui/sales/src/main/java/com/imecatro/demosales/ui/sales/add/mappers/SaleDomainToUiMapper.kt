@@ -1,39 +1,33 @@
 package com.imecatro.demosales.ui.sales.add.mappers
 
+import androidx.core.net.toUri
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
+import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 
 
-//class SaleDomainToListProductOnCartUiMapper @Inject constructor(
-//    private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase
-//) {
-//
-//    suspend fun toUiModel(saleModelDomain: SaleModelDomain): List<ProductOnCartUiModel> {
-//
-//        val li = mutableListOf<ProductOnCartUiModel>()
-//        saleModelDomain.productsList.forEach {
-//
-//            val productDetails = getProductDetailsByIdUseCase(it.productId)
-//            //TODO optimize performance
-//
-//            li.add(
-//                ProductOnCartUiModel(
-//                    product = ProductResultUiModel(
-//                        id = saleModelDomain.id,
-//                        name = productDetails?.name ?: "",
-//                        price = productDetails?.price ?: 0f,
-//                        imageUri = Uri.parse(productDetails?.imageUri),
-//                    ),
-//                    qty = it.qty,
-//                    subtotal = productDetails?.price?.times(it.qty) ?: 0f
-//                )
-//            )
-//        }
-//        return li
-//    }
-//
-//}
+internal fun SaleDomainModel.toUi(): List<ProductOnCartUiModel> {
+    return this.productsList.map { orderDomain ->
+        ProductOnCartUiModel(
+            orderId = orderDomain.id,
+            product = orderDomain.toUi(),
+            qty = orderDomain.qty,
+            subtotal = (orderDomain.qty * (orderDomain.productPrice)).toBigDecimal()
+        )
+    }
+} 
+
+
+internal fun Order.toUi(): ProductResultUiModel =
+    ProductResultUiModel(
+        id = this.productId,
+        name = this.productName,
+        price = this.productPrice,
+        imageUri = this.imgUri?.toUri()
+    )
 
 fun List<ProductOnCartUiModel>.toDomainModel(): SaleDomainModel {
 
@@ -44,5 +38,14 @@ fun List<ProductOnCartUiModel>.toDomainModel(): SaleDomainModel {
         productsList = map { it.toOrderDomainModel() },
         total = 0.0,
         status = OrderStatus.PENDING
+    )
+}
+
+internal fun ProductDomainModel.toCartUiModel(): ProductOnCartUiModel {
+    return ProductOnCartUiModel(
+        orderId = 0,
+        product = this.toAddSaleUi(),
+        qty = 0f,
+        subtotal = 0f.toBigDecimal()
     )
 }

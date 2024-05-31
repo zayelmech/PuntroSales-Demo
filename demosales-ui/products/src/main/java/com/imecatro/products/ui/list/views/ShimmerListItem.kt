@@ -67,11 +67,11 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
-    val transition = rememberInfiniteTransition()
+    val transition = rememberInfiniteTransition(label = "")
     val startOffsetX by transition.animateFloat(
         initialValue = -2 * size.width.toFloat(),
         targetValue = 2 * size.width.toFloat(),
-        animationSpec = infiniteRepeatable(animation = tween(durationMillis = 1000))
+        animationSpec = infiniteRepeatable(animation = tween(durationMillis = 1000)), label = ""
     )
     background(
         brush = Brush.linearGradient(
