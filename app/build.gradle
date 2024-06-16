@@ -68,6 +68,9 @@ dependencies {
     implementation project(path: ':demosales-datasource:room')
     implementation project(path: ':demosales-domain:products')
     implementation project(path: ':demosales-domain:sales')
+    implementation project(':demosales-ui:clients')
+    implementation project(':demosales-domain:clients')
+    implementation project(':demosales-domain:core')
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

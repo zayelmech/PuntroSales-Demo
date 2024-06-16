@@ -125,10 +125,10 @@ fun AddProductComposable(
 
                 //Details
                 Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
-                Divider(
-                    color = Color.LightGray,
+                HorizontalDivider(
+                    modifier = Modifier.padding(0.dp, 5.dp),
                     thickness = 2.dp,
-                    modifier = Modifier.padding(0.dp, 5.dp)
+                    color = Color.LightGray
                 )
 
 

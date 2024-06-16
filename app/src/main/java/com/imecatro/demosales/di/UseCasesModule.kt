@@ -1,5 +1,8 @@
 package com.imecatro.demosales.di
 
+import com.imecatro.demosales.domain.clients.repository.ClientsRepository
+import com.imecatro.demosales.domain.clients.usecases.AddClientUseCase
+import com.imecatro.demosales.domain.clients.usecases.GetAllClientsUseCase
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
@@ -44,6 +47,7 @@ class UseCasesModule {
     fun providesGetMostPopularProductsUseCase(addSaleRepository: AddSaleRepository): GetMostPopularProductsUseCase {
         return GetMostPopularProductsUseCase(addSaleRepository)
     }
+
     @Provides
     fun providesAddNewSaleToDatabaseUseCase(addSaleRepository: AddSaleRepository): AddNewSaleToDatabaseUseCase {
         return AddNewSaleToDatabaseUseCase(addSaleRepository)
@@ -91,4 +95,21 @@ class UseCasesModule {
     @Provides
     fun providesDeleteProductOnCartUseCase(addSaleRepository: AddSaleRepository) =
         DeleteProductOnCartUseCase(addSaleRepository)
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
+class ClientsFeaturesModule {
+
+    @Provides
+    fun providesGetListOfClientsUseCase(
+        clientsRepository: ClientsRepository,
+        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
+    ): GetAllClientsUseCase = GetAllClientsUseCase(clientsRepository, coroutineDispatcher)
+
+    @Provides
+    fun providesAddClientUseCase(
+        clientsRepository: ClientsRepository,
+        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
+    ): AddClientUseCase = AddClientUseCase(clientsRepository, coroutineDispatcher)
 }

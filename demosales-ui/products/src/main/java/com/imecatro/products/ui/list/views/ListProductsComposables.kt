@@ -35,7 +35,6 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "ListProductsComposables"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListOfProducts(
     list: List<ProductUiModel>,
@@ -89,8 +88,8 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
 //            .width(350.dp)
         .clickable { onCardClicked() }
         .testTag(cardTag),
-        elevation = CardDefaults.cardElevation(0.5.dp),
-        colors = CardDefaults.cardColors(Color.White)) {
+        elevation = CardDefaults.cardElevation(0.5.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

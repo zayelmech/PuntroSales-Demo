@@ -6,7 +6,7 @@ import kotlin.coroutines.coroutineContext
 
 abstract class BackgroundUseCase<INPUT, OUTPUT>(coroutineContext: CoroutineDispatcher) {
 
-    suspend fun execute(input: INPUT): Result<OUTPUT> {
+    public suspend fun execute(input: INPUT): Result<OUTPUT> {
         return try {
             withContext(coroutineContext) {
                 val result = doInBackground(input)

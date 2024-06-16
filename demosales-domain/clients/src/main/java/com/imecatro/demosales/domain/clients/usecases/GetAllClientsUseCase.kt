@@ -15,6 +15,7 @@ class GetAllClientsUseCase(
     private val clientsRepository: ClientsRepository,
     coroutineContext: CoroutineDispatcher
 ) : BackgroundUseCase<Unit, ClientsFlow>(coroutineContext) {
+
     override suspend fun doInBackground(input: Unit): ClientsFlow =
         clientsRepository.getAllClients()
 }

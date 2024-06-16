@@ -14,7 +14,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * @param value: String
+ * @param listener: (String) -> Unit
+ * @param prompt: String
+ */
 @Preview(showBackground = true)
 @Composable
 fun TextFieldCompose(
@@ -70,7 +74,6 @@ fun ButtonFancy(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun DropListPicker(
@@ -113,7 +116,7 @@ fun DropListPicker(
             expanded = expanded,
             onDismissRequest = {
                 expanded = false
-                onItemClicked(list.first())
+                //onItemClicked(list.first())
             },
             modifier = Modifier
                 .width(150.dp)
@@ -130,7 +133,7 @@ fun DropListPicker(
                     modifier = Modifier.padding(0.5.dp)
                 )
                 if (name != list.last()) {
-                    Divider()
+                    HorizontalDivider()
                 }
 
             }

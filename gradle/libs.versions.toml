@@ -25,6 +25,8 @@ roomKtx = "2.6.1"
 uiTestManifest = "1.6.7"
 uiTooling = "1.6.7"
 jetbrainsKotlinJvm = "1.9.23"
+agp = "8.4.1"
+kotlin = "1.9.23"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -70,4 +72,6 @@ ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 
 [plugins]
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
