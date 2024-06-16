@@ -46,7 +46,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.add.model.AddClientUiModel
-import com.imecatro.demosales.ui.clients.add.model.canSaveClient
+import com.imecatro.demosales.ui.clients.add.model.isFormValid
 import com.imecatro.demosales.ui.clients.add.model.isLoading
 import com.imecatro.demosales.ui.clients.add.model.isSaved
 import com.imecatro.demosales.ui.clients.add.viewmodel.AddClientViewModel
@@ -192,7 +192,7 @@ fun AddClientComposableImpl(addClientViewModel: AddClientViewModel, onClientSave
         onPhoneNumberChange = { formState = formState.copy(phoneNumber = it) },
         clientAddress = formState.clientAddress,
         onClientAddressChange = { formState = formState.copy(clientAddress = it) },
-        buttonSaveState = formState.canSaveClient,
+        buttonSaveState = (formState.isFormValid && !uiState.isLoading),
         onSaveButtonClicked = { addClientViewModel.saveClient(formState) }
     )
 
@@ -201,6 +201,10 @@ fun AddClientComposableImpl(addClientViewModel: AddClientViewModel, onClientSave
         if (uiState.isSaved) {
             onClientSaved()
         }
+    }
+
+    LaunchedEffect(key1 = formState) {
+        addClientViewModel.onFormStateChangedAction(formState)
     }
 }
 

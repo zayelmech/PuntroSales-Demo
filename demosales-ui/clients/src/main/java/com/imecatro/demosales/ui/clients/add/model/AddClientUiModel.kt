@@ -26,6 +26,5 @@ val AddClientUiModel.isSaved get() = isClientSaved
  *
  * We cannot save a client without name and phone number
  *
- * We cannot save client during loading
  */
-val AddClientUiModel.canSaveClient get() = clientName.isNotEmpty() && phoneNumber.isNotEmpty() || !isSavingClient
+val AddClientUiModel.isFormValid get() = (clientName.isNotBlank() && phoneNumber.isNotBlank())

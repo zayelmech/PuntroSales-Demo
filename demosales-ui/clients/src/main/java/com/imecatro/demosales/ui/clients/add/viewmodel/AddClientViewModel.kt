@@ -41,6 +41,17 @@ class AddClientViewModel @Inject constructor(
         }
     }
 
+    fun onFormStateChangedAction(formState: AddClientUiModel) {
+        _uiSate.update { c ->
+            c.copy(
+                clientName = formState.clientName,
+                phoneNumber = formState.phoneNumber,
+                clientAddress = formState.clientAddress,
+                imageUri = formState.imageUri
+            )
+        }
+    }
+
 
 }
 
