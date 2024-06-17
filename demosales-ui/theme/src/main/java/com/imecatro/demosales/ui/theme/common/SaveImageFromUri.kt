@@ -1,4 +1,4 @@
-package com.imecatro.products.ui.common
+package com.imecatro.demosales.ui.theme.common
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,21 +6,20 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.core.graphics.scale
 import java.io.File
 import java.io.OutputStream
 
-fun saveMediaToStorage(context: Context, uriPicked: Uri, onUri: (Uri) -> Unit) {
+inline fun Context.saveMediaToStorage(uriPicked: Uri, crossinline onUri: (Uri) -> Unit) {
 
     lateinit var bitmap: Bitmap
 
     if (Build.VERSION.SDK_INT < 28) {
         bitmap = MediaStore.Images
-            .Media.getBitmap(context.contentResolver, uriPicked)
+            .Media.getBitmap(contentResolver, uriPicked)
 
     } else {
         val source = ImageDecoder
-            .createSource(context.contentResolver, uriPicked)
+            .createSource(contentResolver, uriPicked)
         bitmap = ImageDecoder.decodeBitmap(source) //.scale(500, 500)
     }
 
@@ -31,7 +30,7 @@ fun saveMediaToStorage(context: Context, uriPicked: Uri, onUri: (Uri) -> Unit) {
     //Output stream
 
     val file = File(
-        context.filesDir,
+        this.filesDir,
         filename
     )
 

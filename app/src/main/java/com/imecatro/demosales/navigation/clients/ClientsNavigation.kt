@@ -1,38 +1,58 @@
 package com.imecatro.demosales.navigation.clients
 
-import androidx.compose.material3.Text
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.imecatro.demosales.ui.clients.add.views.AddClientComposableImpl
+import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
+import com.imecatro.demosales.ui.clients.details.views.ClientDetailsComposableImpl
+import com.imecatro.demosales.ui.clients.edit.viewmodel.EditClientViewModel
+import com.imecatro.demosales.ui.clients.edit.views.EditClientComposableImpl
 import com.imecatro.demosales.ui.clients.list.views.ClientListImpl
 
-fun NavGraphBuilder.clientsNavigation(navController: NavHostController, featureRoute: String) {
-    navigation(startDestination = ClientsDestinations.List.route, route = featureRoute) {
+inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: NavHostController) {
+    navigation<T>(startDestination = ClientsList) {
 
-        composable(route = ClientsDestinations.List.route) {
+        composable<ClientsList> {
             ClientListImpl(hiltViewModel()) { clientId ->
                 clientId?.let {
-                   navController.navigate(ClientsDestinations.Details.route)
-                }?:run {
-                    navController.navigate(ClientsDestinations.Add.route)
+                    navController.navigate(ClientDetails(clientId))
+                } ?: run {
+                    navController.navigate(AddClient)
                 }
             }
         }
-        composable(route = ClientsDestinations.Details.route) {
-            Text(text = "In progress...")
-            //TODO
+        composable<ClientDetails> { backStackEntry ->
+            val navArgs: ClientDetails = backStackEntry.toRoute()
+            val viewModel: ClientDetailsViewModel =
+                hiltViewModel(creationCallback = { factory: ClientDetailsViewModel.Factory ->
+                    factory.create(navArgs.id)
+                })
+
+            ClientDetailsComposableImpl(
+                viewModel,
+                onClientDeleted = { navController.navigate(ClientsList) },
+                onEditClicked = { navController.navigate(EditClient(navArgs.id)) })
         }
-        composable(route = ClientsDestinations.Add.route) {
-            AddClientComposableImpl(hiltViewModel()){
-                navController.navigate(ClientsDestinations.List.route)
+        composable<AddClient> {
+            AddClientComposableImpl(hiltViewModel()) {
+                navController.navigate(ClientsList)
             }
         }
-        composable(route = ClientsDestinations.Edit.route) {
-            Text(text = "In progress...")
-            //TODO
+        composable<EditClient> { backStackEntry ->
+            val navArgs: EditClient = backStackEntry.toRoute()
+
+            val viewModel: EditClientViewModel =
+                hiltViewModel(creationCallback = { factory: EditClientViewModel.Factory ->
+                    factory.create(navArgs.id)
+                })
+
+            EditClientComposableImpl(viewModel) {
+                navController.navigate(ClientsList)
+            }
         }
 
     }

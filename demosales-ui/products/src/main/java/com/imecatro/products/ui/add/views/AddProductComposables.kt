@@ -34,7 +34,7 @@ import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.DropListPicker
-import com.imecatro.products.ui.common.saveMediaToStorage
+import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,19 +155,6 @@ fun AddProductComposable(
 
 }
 
-private fun decoupledConstraints(margin: Dp): ConstraintSet {
-    return ConstraintSet {
-        val button = createRefFor("button")
-        val text = createRefFor("text")
-
-        constrain(button) {
-            top.linkTo(parent.top, margin = margin)
-        }
-        constrain(text) {
-            top.linkTo(button.bottom, margin)
-        }
-    }
-}
 
 
 @Composable
@@ -184,7 +171,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
     ) { uriPicked: Uri? ->
 
         uriPicked?.let {
-            saveMediaToStorage(context, it) { uri ->
+            context.saveMediaToStorage(it) { uri ->
                 imageUri = uri
             }
         }

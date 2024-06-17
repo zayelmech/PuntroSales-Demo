@@ -51,10 +51,11 @@ import com.imecatro.demosales.ui.clients.add.model.isLoading
 import com.imecatro.demosales.ui.clients.add.model.isSaved
 import com.imecatro.demosales.ui.clients.add.viewmodel.AddClientViewModel
 import com.imecatro.demosales.ui.theme.ButtonFancy
+import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 
 @Preview(showBackground = true)
 @Composable
-private fun AddClientComposable(
+internal fun AddClientComposable(
     isLoading: Boolean = false,
     uri: Uri? = null,
     onPickImage: () -> Unit = {},
@@ -158,13 +159,17 @@ private fun AddClientComposable(
  *
  * This composable is the implementation of the [AddClientComposable]
  *
- * It will holds the state of the form and will call the [AddClientViewModel] in order to save the client
+ * It will holds the state of the form and will call the [AddClientViewModel.saveClient] in order to save the client
  *
  * @param addClientViewModel The [AddClientViewModel] that will be used to save the client
  * @param onClientSaved This lambda will be called when the client is saved
  */
 @Composable
 fun AddClientComposableImpl(addClientViewModel: AddClientViewModel, onClientSaved: () -> Unit) {
+
+
+    val uiState by addClientViewModel.uiState.collectAsState()
+    var formState by remember { mutableStateOf(AddClientUiModel()) }
 
     val context = LocalContext.current
 
@@ -173,15 +178,12 @@ fun AddClientComposableImpl(addClientViewModel: AddClientViewModel, onClientSave
         ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
-//        uriPicked?.let {
-//            saveMediaToStorage(context, it) { uri ->
-//                imageUri = uri
-//            }
-//        }
+        uriPicked?.let {
+            context.saveMediaToStorage(it) { uri ->
+                formState = formState.copy(imageUri = uri)
+            }
+        }
     }
-    val uiState by addClientViewModel.uiState.collectAsState()
-    var formState by remember { mutableStateOf(AddClientUiModel()) }
-
     AddClientComposable(
         isLoading = uiState.isLoading,
         uri = formState.imageUri,

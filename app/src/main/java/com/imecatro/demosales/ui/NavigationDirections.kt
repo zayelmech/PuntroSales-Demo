@@ -3,7 +3,9 @@ package com.imecatro.demosales.ui
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.imecatro.demosales.R
+import kotlinx.serialization.Serializable
 
+@Deprecated(message = "Use Type Safe Navigation instead of this")
 sealed class NavigationDirections(
     val route: String,
     @StringRes val resourceId: Int,
@@ -18,3 +20,6 @@ sealed class NavigationDirections(
     object CLIENTS :
         NavigationDirections("clients_feature", R.string.clients, R.drawable.round_account_circle_24)
 }
+
+@Serializable
+object ClientsFeature

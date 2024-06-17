@@ -38,7 +38,7 @@ fun MainScaffoldApp() {
             // We can add, see, edit or delete any sale
             salesFeature(navController, featureRoute = NavigationDirections.SALES.route)
             // We can add, see, edit or delete any client
-            clientsNavigation(navController, featureRoute = NavigationDirections.CLIENTS.route)
+            clientsNavigation<ClientsFeature>(navController)
         }
     }
 }

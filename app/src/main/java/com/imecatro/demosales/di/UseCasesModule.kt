@@ -2,7 +2,10 @@ package com.imecatro.demosales.di
 
 import com.imecatro.demosales.domain.clients.repository.ClientsRepository
 import com.imecatro.demosales.domain.clients.usecases.AddClientUseCase
+import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetAllClientsUseCase
+import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
+import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
@@ -112,4 +115,25 @@ class ClientsFeaturesModule {
         clientsRepository: ClientsRepository,
         coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
     ): AddClientUseCase = AddClientUseCase(clientsRepository, coroutineDispatcher)
+
+    @Provides
+    fun providesClientDetailsByIdUseCase(
+        clientsRepository: ClientsRepository,
+        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
+    ): GetClientDetailsByIdUseCase =
+        GetClientDetailsByIdUseCase(clientsRepository, coroutineDispatcher)
+
+
+    @Provides
+    fun providesDeleteClientByIdUseCase(
+        clientsRepository: ClientsRepository,
+        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
+    ): DeleteClientByIdUseCase = DeleteClientByIdUseCase(clientsRepository, coroutineDispatcher)
+
+    @Provides
+    fun providesUpdateClientUseCase(
+        clientsRepository: ClientsRepository,
+        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
+    ): UpdateClientUseCase = UpdateClientUseCase(clientsRepository, coroutineDispatcher)
+
 }

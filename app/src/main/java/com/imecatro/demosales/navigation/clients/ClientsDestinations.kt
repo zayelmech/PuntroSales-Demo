@@ -1,9 +1,16 @@
 package com.imecatro.demosales.navigation.clients
 
-sealed class ClientsDestinations(val route: String) {
-    object List : ClientsDestinations("GetListClientsRoute")
-    object Add : ClientsDestinations("AddClientsRoute")
-    object Edit : ClientsDestinations("EditClientsRoute")
-    object Details : ClientsDestinations("DetailsClientsRoute")
-}
+import kotlinx.serialization.Serializable
 
+
+@Serializable
+object ClientsList
+
+@Serializable
+object AddClient
+
+@Serializable
+data class EditClient(val id: Int)
+
+@Serializable
+data class ClientDetails(val id: Int)

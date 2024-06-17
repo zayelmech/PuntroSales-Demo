@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
-
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -81,6 +81,7 @@ dependencies {
 
     //NAV
     implementation libs.androidx.navigation.compose
+    implementation(libs.kotlinx.serialization.json)
 
     //hilt for dependency injection
     implementation libs.hilt.android

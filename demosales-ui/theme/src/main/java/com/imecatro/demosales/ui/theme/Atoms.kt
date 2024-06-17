@@ -47,7 +47,7 @@ fun TextFieldCompose(
 @Composable
 fun ButtonFancy(
     text: String = "Click here!",
-    color: Color = BlueTurquoise80,
+    color: Color = MaterialTheme.colorScheme.primary,
     paddingX: Dp = 10.dp,
     icon: ImageVector? = Icons.Filled.Edit,
     enable: Boolean = true,
@@ -70,7 +70,7 @@ fun ButtonFancy(
                 modifier = Modifier.padding(4.dp)
             )
         }
-        Text(text = text, style = Typography.titleMedium, color = Color.White)
+        Text(text = text, style = MaterialTheme.typography.titleMedium)
     }
 }
 
