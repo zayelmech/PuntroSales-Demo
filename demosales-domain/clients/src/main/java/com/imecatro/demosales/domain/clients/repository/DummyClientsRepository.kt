@@ -6,11 +6,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
-class DummyClientsRepositoryImpl : ClientsRepository {
 
-    private val clients = mutableListOf<ClientDomainModel>(ClientDomainModel(1, "Client", "91111", "street",""))
+internal class DummyClientsRepositoryImpl : ClientsRepository {
 
-    override fun addClient(client: ClientDomainModel?) {
+    private val clients =
+        mutableListOf<ClientDomainModel>(ClientDomainModel(1, "Client", "91111", "street", ""))
+
+    override fun addClient(client: ClientDomainModel) {
         clients.add(client!!)
     }
 
@@ -18,15 +20,15 @@ class DummyClientsRepositoryImpl : ClientsRepository {
         return flowOf(clients)
     }
 
-    override fun deleteClientById(id: Int?) {
+    override fun deleteClientById(id: Int) {
         clients.removeAt(id!!)
     }
 
-    override fun updateClient(client: ClientDomainModel?) {
+    override fun updateClient(client: ClientDomainModel) {
         clients.set(client!!.id, client!!)
     }
 
-    override fun getClientDetailsById(id: Int?): ClientDomainModel {
+    override fun getClientDetailsById(id: Int): ClientDomainModel {
         return clients.find { it.id == id } ?: throw ClientNotFoundException()
     }
 

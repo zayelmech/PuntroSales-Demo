@@ -34,7 +34,6 @@ class ClientsListViewModel @Inject constructor(
             getAllClientsUseCase.execute(Unit).onSuccess { clientsFlow ->
 
                 clientsFlow.collectLatest {
-                    Log.e(TAG, ":$it ")
                     _uiState.update { currentState ->
                         currentState.copy(
                             clients = it.toUiModel(),

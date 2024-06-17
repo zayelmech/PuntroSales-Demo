@@ -1,13 +1,11 @@
 package com.imecatro.demosales.navigation.products
 
-import android.util.Log
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
 import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
 import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
@@ -15,64 +13,53 @@ import com.imecatro.products.ui.update.views.UpdateProductComposableStateImpl
 
 private const val TAG = "ProductsNavigation"
 
-fun NavGraphBuilder.productsNavigation(navController: NavHostController, featureRoute: String) {
-    navigation(startDestination = ProductsDestinations.List.route, route = featureRoute) {
-        composable(ProductsDestinations.List.route) {
+inline fun <reified T: Any> NavGraphBuilder.productsNavigation(navController: NavHostController) {
+    navigation<T>(startDestination = ProductsDestinations.List) {
+        composable<ProductsDestinations.List> {
             ListOfProductsStateImpl(productsViewModel = hiltViewModel()) {
                 it?.let {
-                    navController.navigate(ProductsDestinations.Details.route + "/" + it) {
-                        popUpTo(ProductsDestinations.List.route)
+                    navController.navigate(ProductsDestinations.Details(it)) {
+                        popUpTo(ProductsDestinations.List)
                     }
-                    Log.d(TAG, "Product ID: $it --EDIT REQUEST")
                 } ?: run {
-                    navController.navigate(ProductsDestinations.Add.route)
-                    Log.d(TAG, "Product ID: --ADD REQUEST")
+                    navController.navigate(ProductsDestinations.Add)
                 }
             }
         }
-        composable(
-            "${ProductsDestinations.Details.route}/{productId}",
-            arguments = listOf(navArgument("productId") {
-                type = NavType.IntType
-            })
-        ) { backStackEntry ->
+        composable<ProductsDestinations.Details> { backStackEntry ->
+            val navArgs = backStackEntry.toRoute<ProductsDestinations.Details>()
             DetailsComposableStateImpl(
                 hiltViewModel(),
-                backStackEntry.arguments?.getInt("productId")
+                navArgs.id
             ) {
                 it?.let {
-                    navController.navigate(ProductsDestinations.Edit.route + "/" + it)
+                    navController.navigate(ProductsDestinations.Edit(it))
                 } ?: run {
-                    navController.navigate(ProductsDestinations.List.route) {
-                        popUpTo(ProductsDestinations.List.route) { inclusive = true }
+                    navController.navigate(ProductsDestinations.List) {
+                        popUpTo(ProductsDestinations.List) { inclusive = true }
                     }
                 }
 
             }
 
         }
-        composable(ProductsDestinations.Add.route) {
+        composable<ProductsDestinations.Add> {
 
             AddProductComposableStateImpl(hiltViewModel()) {
-                navController.navigate(ProductsDestinations.List.route) {
-                    popUpTo(ProductsDestinations.List.route)
+                navController.navigate(ProductsDestinations.List) {
+                    popUpTo(ProductsDestinations.List)
                 }
             }
         }
 
-        composable(
-            "${ProductsDestinations.Edit.route}/{productId}",
-            arguments = listOf(navArgument("productId") {
-                type = NavType.IntType
-            })
-        ) { backStackEntry ->
-
+        composable<ProductsDestinations.Edit> { backStackEntry ->
+            val navArgs = backStackEntry.toRoute<ProductsDestinations.Edit>()
             UpdateProductComposableStateImpl(
                 updateProductViewModel = hiltViewModel(),
-                productId = backStackEntry.arguments?.getInt("productId")
+                productId = navArgs.id
             ) {
-                navController.navigate(ProductsDestinations.List.route) {
-                    popUpTo(ProductsDestinations.List.route)
+                navController.navigate(ProductsDestinations.List) {
+                    popUpTo(ProductsDestinations.List)
                 }
             }
         }

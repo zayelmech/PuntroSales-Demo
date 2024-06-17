@@ -6,7 +6,7 @@ import kotlin.coroutines.CoroutineContext
  * Since we work with coroutine specific use cases
  *
  */
-interface CoroutineDispatcher {
+interface AppCoroutineDispatcher {
     val io: CoroutineContext
     val main: CoroutineContext
 }

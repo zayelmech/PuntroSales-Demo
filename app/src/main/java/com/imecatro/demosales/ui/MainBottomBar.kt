@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 
 
 val appFeatures =
-    listOf(NavigationDirections.PRODUCTS, NavigationDirections.SALES, NavigationDirections.CLIENTS)
+    listOf(NavigationDirections.ProductsFeature, NavigationDirections.SalesFeature, NavigationDirections.ClientsFeature)
 
 @Preview(showBackground = true)
 @Composable
@@ -33,42 +33,26 @@ fun MainBottomBar(
                 icon = {
                     Icon(
                         painter = painterResource(id = screen.icon),
-                        contentDescription = screen.route
+                        contentDescription = null
                     )
                 },
-                label = { Text(text = stringResource(id = screen.resourceId)) },
-                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                label = { Text(text = stringResource(id = screen.tittle)) },
+                selected = currentDestination?.hierarchy?.any { it == screen } == true,
                 onClick = {
-                    if (screen.route !== NavigationDirections.CLIENTS.route)
-                        navController.navigate(screen.route) {
-                            // Pop up to the start destination of the graph to
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // re-selecting the same item
-                            launchSingleTop = true
-                            // Restore state when re-selecting a previously selected item
-                            restoreState = true
-
+                    navController.navigate(screen) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
-                    else
-                        navController.navigate(ClientsFeature) {
-                            // Pop up to the start destination of the graph to
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // re-selecting the same item
-                            launchSingleTop = true
-                            // Restore state when re-selecting a previously selected item
-                            restoreState = true
+                        // Avoid multiple copies of the same destination when
+                        // re-selecting the same item
+                        launchSingleTop = true
+                        // Restore state when re-selecting a previously selected item
+                        restoreState = true
 
-                        }
+                    }
 
                 }
             )

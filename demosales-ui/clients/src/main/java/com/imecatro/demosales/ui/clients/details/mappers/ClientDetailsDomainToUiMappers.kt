@@ -6,9 +6,10 @@ import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
 
 internal fun ClientDomainModel.toUi(current: ClientDetailsUiModel): ClientDetailsUiModel {
     return current.copy(
+        clientId = this.id,
         clientName = this.name,
         phoneNumber = this.phoneNumber,
         clientAddress = this.shipping,
-        imageUri = Uri.parse(this.avatarUri)
+        imageUri = Uri.parse(this.avatarUri?:"")
     )
 }

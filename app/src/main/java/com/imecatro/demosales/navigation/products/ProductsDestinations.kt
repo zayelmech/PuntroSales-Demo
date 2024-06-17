@@ -1,9 +1,18 @@
 package com.imecatro.demosales.navigation.products
 
-sealed class ProductsDestinations(val route: String) {
-    object List : ProductsDestinations("GetListProductsRoute")
-    object Add : ProductsDestinations("AddProductsRoute")
-    object Edit : ProductsDestinations("EditProductsRoute")
-    object Details : ProductsDestinations("DetailsProductsRoute")
+import kotlinx.serialization.Serializable
+
+sealed class ProductsDestinations {
+    @Serializable
+    object List
+
+    @Serializable
+    object Add
+
+    @Serializable
+    data class Edit(val id: Int)
+
+    @Serializable
+    data class Details(val id: Int)
 }
 

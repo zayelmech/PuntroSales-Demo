@@ -38,6 +38,7 @@ dependencies {
     implementation project(path: ':demosales-data:products')
     implementation libs.androidx.junit.ktx
     implementation project(path: ':demosales-data:sales')
+    implementation project(':demosales-data:clients')
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core

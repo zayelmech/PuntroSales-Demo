@@ -1,25 +1,37 @@
 package com.imecatro.demosales.ui
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import com.imecatro.demosales.R
 import kotlinx.serialization.Serializable
 
-@Deprecated(message = "Use Type Safe Navigation instead of this")
-sealed class NavigationDirections(
-    val route: String,
-    @StringRes val resourceId: Int,
-    @DrawableRes val icon: Int
-) {
-    object PRODUCTS :
-        NavigationDirections("products_feature", R.string.products, R.drawable.baseline_art_track_24)
+sealed class NavigationDirections {
 
-    object SALES :
-        NavigationDirections("sales_feature", R.string.sales, R.drawable.outline_attach_money_24)
+    @Serializable
+    object ProductsFeature : ParentFeature() {
+        override val icon: Int
+            get() = R.drawable.baseline_art_track_24
+        override val tittle: Int
+            get() = R.string.products
+    }
 
-    object CLIENTS :
-        NavigationDirections("clients_feature", R.string.clients, R.drawable.round_account_circle_24)
+    @Serializable
+    object SalesFeature : ParentFeature() {
+        override val icon: Int
+            get() = R.drawable.outline_attach_money_24
+        override val tittle: Int
+            get() = R.string.sales
+    }
+
+    @Serializable
+    object ClientsFeature : ParentFeature() {
+        override val icon: Int
+            get() = R.drawable.round_account_circle_24
+        override val tittle: Int
+            get() = R.string.clients
+    }
+
 }
 
-@Serializable
-object ClientsFeature
+abstract class ParentFeature {
+    abstract val icon: Int
+    abstract val tittle: Int
+}

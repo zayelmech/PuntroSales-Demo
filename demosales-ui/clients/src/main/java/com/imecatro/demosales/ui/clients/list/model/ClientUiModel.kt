@@ -24,4 +24,4 @@ class ClientUiModel(
 
 
 internal val ClientUiModel.imageUrl: Uri
-    get() = Uri.parse(this.image)
+    get() = Uri.parse(this.image?:"")

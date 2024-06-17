@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.imecatro.demosales.navigation.products.ProductsDestinations
 import com.imecatro.demosales.ui.clients.add.views.AddClientComposableImpl
 import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
 import com.imecatro.demosales.ui.clients.details.views.ClientDetailsComposableImpl
@@ -19,7 +20,9 @@ inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: Na
         composable<ClientsList> {
             ClientListImpl(hiltViewModel()) { clientId ->
                 clientId?.let {
-                    navController.navigate(ClientDetails(clientId))
+                    navController.navigate(ClientDetails(clientId)) {
+                        popUpTo(ClientsList)
+                    }
                 } ?: run {
                     navController.navigate(AddClient)
                 }
@@ -34,12 +37,18 @@ inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: Na
 
             ClientDetailsComposableImpl(
                 viewModel,
-                onClientDeleted = { navController.navigate(ClientsList) },
+                onClientDeleted = {
+                    navController.navigate(ClientsList) {
+                        popUpTo(ClientsList) { inclusive = true }
+                    }
+                },
                 onEditClicked = { navController.navigate(EditClient(navArgs.id)) })
         }
         composable<AddClient> {
             AddClientComposableImpl(hiltViewModel()) {
-                navController.navigate(ClientsList)
+                navController.navigate(ClientsList){
+                    popUpTo(ClientsList) { inclusive = true }
+                }
             }
         }
         composable<EditClient> { backStackEntry ->
@@ -51,7 +60,9 @@ inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: Na
                 })
 
             EditClientComposableImpl(viewModel) {
-                navController.navigate(ClientsList)
+                navController.navigate(ClientsList){
+                    popUpTo(ClientsList){ inclusive = true }
+                }
             }
         }
 

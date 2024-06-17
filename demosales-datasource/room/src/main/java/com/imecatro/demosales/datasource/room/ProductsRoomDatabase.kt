@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.imecatro.demosales.data.clients.datasource.ClientsDao
+import com.imecatro.demosales.data.clients.model.ClientRoomEntity
 import com.imecatro.demosales.data.sales.datasource.OrdersRoomDao
 import com.imecatro.demosales.data.sales.datasource.SalesRoomDao
 import com.imecatro.demosales.data.sales.model.OrderDataRoomModel
@@ -12,8 +14,8 @@ import com.imecatro.products.data.datasource.ProductsDao
 import com.imecatro.products.data.model.ProductRoomEntity
 
 @Database(
-    entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class],
-    version = 3
+    entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class],
+    version = 4
 )
 abstract class ProductsRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -21,11 +23,14 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
 
     abstract fun ordersRoomDao(): OrdersRoomDao
 
+    abstract fun clientsRoomDao(): ClientsDao
+
     companion object {
 
         private var productsDao: ProductsDao? = null
         private var salesDao: SalesRoomDao? = null
         private var ordersDao: OrdersRoomDao? = null
+        private var clientsDao: ClientsDao? = null
 
         fun initDatabase(context: Context): ProductsRoomDatabase {
             val db = Room.databaseBuilder(
@@ -37,6 +42,7 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
             productsDao = db.productsRoomDao()
             salesDao = db.salesRoomDao()
             ordersDao = db.ordersRoomDao()
+            clientsDao = db.clientsRoomDao()
 
             return db
         }

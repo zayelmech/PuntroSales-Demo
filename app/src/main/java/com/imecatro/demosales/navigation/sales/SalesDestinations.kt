@@ -1,15 +1,22 @@
 package com.imecatro.demosales.navigation.sales
 
+import kotlinx.serialization.Serializable
 
-sealed class SalesDestinations(val route: String) {
 
-    object List : SalesDestinations("GetListSalesRoute")
+sealed class SalesDestinations{
 
-    object Add : SalesDestinations("AddSalesRoute")
+    @Serializable
+    object List
 
-    object Edit : SalesDestinations("EditSalesRoute")
+    @Serializable
+    object Add
 
-    object Details : SalesDestinations("DetailsSalesRoute")
+    @Serializable
+    data class Edit(val id: Int)
 
-    object Checkout : SalesDestinations("CheckoutSalesRoute")
+    @Serializable
+    data class Details(val id: Long)
+
+    @Serializable
+    data class Checkout(val id: Int)
 }

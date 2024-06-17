@@ -107,33 +107,33 @@ class ClientsFeaturesModule {
     @Provides
     fun providesGetListOfClientsUseCase(
         clientsRepository: ClientsRepository,
-        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
-    ): GetAllClientsUseCase = GetAllClientsUseCase(clientsRepository, coroutineDispatcher)
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+    ): GetAllClientsUseCase = GetAllClientsUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesAddClientUseCase(
         clientsRepository: ClientsRepository,
-        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
-    ): AddClientUseCase = AddClientUseCase(clientsRepository, coroutineDispatcher)
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+    ): AddClientUseCase = AddClientUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesClientDetailsByIdUseCase(
         clientsRepository: ClientsRepository,
-        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
     ): GetClientDetailsByIdUseCase =
-        GetClientDetailsByIdUseCase(clientsRepository, coroutineDispatcher)
+        GetClientDetailsByIdUseCase(clientsRepository, appCoroutineDispatcher)
 
 
     @Provides
     fun providesDeleteClientByIdUseCase(
         clientsRepository: ClientsRepository,
-        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
-    ): DeleteClientByIdUseCase = DeleteClientByIdUseCase(clientsRepository, coroutineDispatcher)
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+    ): DeleteClientByIdUseCase = DeleteClientByIdUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesUpdateClientUseCase(
         clientsRepository: ClientsRepository,
-        coroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineDispatcher
-    ): UpdateClientUseCase = UpdateClientUseCase(clientsRepository, coroutineDispatcher)
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+    ): UpdateClientUseCase = UpdateClientUseCase(clientsRepository, appCoroutineDispatcher)
 
 }

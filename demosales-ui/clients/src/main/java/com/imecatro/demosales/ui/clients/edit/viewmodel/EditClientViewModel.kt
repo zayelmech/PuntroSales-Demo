@@ -1,6 +1,7 @@
 package com.imecatro.demosales.ui.clients.edit.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
@@ -27,7 +28,7 @@ class EditClientViewModel @AssistedInject constructor(
 
 
     private val _uiState: MutableStateFlow<EditClientUiModel> =
-        MutableStateFlow(EditClientUiModel())
+        MutableStateFlow(EditClientUiModel(0))
 
     val uiState: StateFlow<EditClientUiModel> = _uiState.asStateFlow()
 
@@ -54,6 +55,7 @@ class EditClientViewModel @AssistedInject constructor(
                 _uiState.update { cs -> cs.copy(isEditingClient = false, isClientEdited = true) }
 
             }.onFailure {
+                Log.e(TAG, "onSaveClientAction: $it" )
                 _uiState.update { cs ->
                     cs.copy(
                         isEditingClient = false, error = it.message
@@ -93,3 +95,6 @@ private fun EditClientUiModel.toDomain(): ClientDomainModel {
         avatarUri = this.imageUri?.toString() ?: ""
     )
 }
+
+
+private const val TAG = "EditClientViewModel"

@@ -1,5 +1,6 @@
 package com.imecatro.demosales.ui.clients.add.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.usecases.AddClientUseCase
@@ -31,6 +32,7 @@ class AddClientViewModel @Inject constructor(
             addClientUseCase.execute(client.toDomain()).onSuccess {
                 _uiSate.update { c -> c.copy(isSavingClient = false, isClientSaved = true) }
             }.onFailure {
+                Log.e(TAG, "saveClient: $it" )
                 _uiSate.update { c ->
                     c.copy(
                         isSavingClient = false,
@@ -55,3 +57,4 @@ class AddClientViewModel @Inject constructor(
 
 }
 
+private const val TAG = "AddClientViewModel"

@@ -1,5 +1,6 @@
 package com.imecatro.demosales.ui.clients.details.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
@@ -52,6 +53,7 @@ class ClientDetailsViewModel @AssistedInject constructor(
             deleteClientByIdUseCase.execute(clientId).onSuccess {
                 _uiState.update { cs -> cs.copy(isDeletingClient = false, isClientDeleted = true) }
             }.onFailure {
+                Log.e(TAG, "onDeleteClientAction: $it" )
                 _uiState.update { cs ->
                     cs.copy(
                         isDeletingClient = false,
@@ -68,3 +70,4 @@ class ClientDetailsViewModel @AssistedInject constructor(
     }
 }
 
+private const val TAG = "ClientDetailsViewModel"
