@@ -37,7 +37,7 @@ fun MainBottomBar(
                     )
                 },
                 label = { Text(text = stringResource(id = screen.tittle)) },
-                selected = currentDestination?.hierarchy?.any { it == screen } == true,
+                selected = currentDestination?.hierarchy?.any { it.route?.contains("${screen::class.simpleName}")?:false } == true,
                 onClick = {
                     navController.navigate(screen) {
                         // Pop up to the start destination of the graph to
