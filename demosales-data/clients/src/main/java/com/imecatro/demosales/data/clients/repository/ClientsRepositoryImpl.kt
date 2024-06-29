@@ -8,31 +8,26 @@ import com.imecatro.demosales.data.clients.mappers.toDomain
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.domain.clients.repository.ClientsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 
 class ClientsRepositoryImpl(
     private val clientsDao: ClientsDao
 ) : ClientsRepository {
 
-    val version = 3
+    val version = 4
 
     @WorkerThread
     override fun addClient(client: ClientDomainModel) {
-        clientsDao.addClient(client.toData(4))
+        clientsDao.addClient(client.toData(version))
     }
 
 
     @WorkerThread
     override fun getAllClients(): Flow<List<ClientDomainModel>> {
-        return flow {
-            clientsDao.getAllClients().collect {
-                emit(it.map { client -> client.toDomain() })
-            }
+        return clientsDao.getAllClients().map {
+            it.map { client -> client.toDomain() }
         }
-
     }
 
     @WorkerThread
@@ -53,10 +48,8 @@ class ClientsRepositoryImpl(
     }
 
     override fun searchClient(letter: String): Flow<List<ClientDomainModel>> {
-        return flow {
-            clientsDao.searchClients(letter).collectLatest {
-                emit(it.map { client -> client.toDomain() })
-            }
+        return clientsDao.searchClients(letter).map {
+            it.map { client -> client.toDomain() }
         }
     }
 }
