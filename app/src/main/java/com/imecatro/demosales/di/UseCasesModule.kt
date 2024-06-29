@@ -107,19 +107,19 @@ class ClientsFeaturesModule {
     @Provides
     fun providesGetListOfClientsUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
     ): GetAllClientsUseCase = GetAllClientsUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesAddClientUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
     ): AddClientUseCase = AddClientUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesClientDetailsByIdUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
     ): GetClientDetailsByIdUseCase =
         GetClientDetailsByIdUseCase(clientsRepository, appCoroutineDispatcher)
 
@@ -127,13 +127,13 @@ class ClientsFeaturesModule {
     @Provides
     fun providesDeleteClientByIdUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
     ): DeleteClientByIdUseCase = DeleteClientByIdUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesUpdateClientUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
     ): UpdateClientUseCase = UpdateClientUseCase(clientsRepository, appCoroutineDispatcher)
 
 }

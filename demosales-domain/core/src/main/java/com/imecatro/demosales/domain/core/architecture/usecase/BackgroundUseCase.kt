@@ -1,9 +1,9 @@
 package com.imecatro.demosales.domain.core.architecture.usecase
 
-import com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import kotlinx.coroutines.withContext
 
-abstract class BackgroundUseCase<INPUT, OUTPUT>(private val coroutineContext: AppCoroutineDispatcher) {
+abstract class BackgroundUseCase<INPUT, OUTPUT>(private val coroutineContext: CoroutineProvider) {
 
     public suspend fun execute(input: INPUT): Result<OUTPUT> {
         return try {

@@ -1,7 +1,7 @@
 package com.imecatro.demosales.di
 
 import com.imecatro.demosales.datasource.room.di.RoomModule
-import com.imecatro.demosales.domain.core.architecture.coroutine.AppCoroutineDispatcher
+import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +29,7 @@ class FakeRepoImpl() {
 
 
     @Provides
-    fun providesCoroutineDispatcher(): AppCoroutineDispatcher = CoroutineDispatcherImpl()
+    fun providesCoroutineDispatcher(): CoroutineProvider = CoroutineDispatcherImpl()
 
 //    @Singleton
 //    @Provides
@@ -37,7 +37,7 @@ class FakeRepoImpl() {
 }
 
 
-class CoroutineDispatcherImpl : AppCoroutineDispatcher {
+class CoroutineDispatcherImpl : CoroutineProvider {
     override val io: CoroutineContext
         get() = Job() + Dispatchers.IO
     override val main: CoroutineContext
