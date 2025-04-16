@@ -13,17 +13,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
-    productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl()
-    iODispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl()
+    private val iODispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ListProductsUiState>(ListProductsUiState.idle) {
 
     val productsList: StateFlow<List<ProductUiModel>> =
@@ -41,6 +44,15 @@ class ProductsViewModel @Inject constructor(
             .flowOn(iODispatcher)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
+
+    fun onSearchAction(query: String) {
+        viewModelScope.launch(iODispatcher) {
+
+            val list = productsRepository.searchProducts(query).first()
+            updateState { copy(productsFiltered = list.toProductUiModel()) }
+        }
+
+    }
 
     override fun onStart() = Unit
 }

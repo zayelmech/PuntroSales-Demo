@@ -5,11 +5,16 @@ import com.imecatro.demosales.ui.theme.architect.Idle
 import com.imecatro.demosales.ui.theme.architect.UiState
 import com.imecatro.products.ui.list.model.ProductUiModel
 
+
 data class ListProductsUiState(
     val isFetchingProducts: Boolean,
     val products: List<ProductUiModel>,
-    val errorFetchingProducts: ErrorUiModel?
+    val errorFetchingProducts: ErrorUiModel?,
+
+    val productsFiltered: List<ProductUiModel>,
+    val isSearching: Boolean,
 ) : UiState {
+
     override fun isFetchingOrProcessingData(): Boolean {
         return isFetchingProducts
     }
@@ -23,7 +28,9 @@ data class ListProductsUiState(
             get() = ListProductsUiState(
                 isFetchingProducts = false,
                 products = emptyList(),
-                errorFetchingProducts = null
+                errorFetchingProducts = null,
+                productsFiltered = emptyList(),
+                isSearching = true
             )
     }
 }

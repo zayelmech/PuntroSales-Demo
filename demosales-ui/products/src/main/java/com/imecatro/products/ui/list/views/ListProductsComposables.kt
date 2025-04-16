@@ -3,28 +3,43 @@ package com.imecatro.products.ui.list.views
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,46 +57,111 @@ import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 
 private const val TAG = "ListProductsComposables"
 
+
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun ListOfProducts(
     list: List<ProductUiModel>,
-    isLoading: Boolean,
-    onCardClicked: (Int?) -> Unit,
-    onNavigateAction: () -> Unit
+    isLoading: Boolean = false,
+    onSearchProduct: (String) -> Unit = {},
+    searchList: List<ProductUiModel> = emptyList(),
+    onCardClicked: (Int?) -> Unit = {},
+    onNavigateAction: () -> Unit = {},
 ) {
+    var text by rememberSaveable { mutableStateOf("") }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(text) {
+        snapshotFlow { text }
+            .debounce(1000)
+            .collect {
+                onSearchProduct(it)
+            }
+    }
+
     Scaffold(floatingActionButton = {
         FloatingActionButton(
             onClick = { onNavigateAction() },
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
-    }) { innerPadding ->
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = innerPadding
-        ) {
-            if (isLoading) {
-
-                items(10) {
-                    ShimmerListItem(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
+    },
+        topBar = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                SearchBar(inputField = {
+                    SearchBarDefaults.InputField(
+                        query = text,
+                        onQueryChange = { text = it },
+                        onSearch = { onSearchProduct(text) },
+                        expanded = expanded,
+                        onExpandedChange = { expanded = it },
+                        placeholder = { Text("Search a product") },
+                        leadingIcon = {
+                            if (expanded) {
+                                IconButton(onClick = {
+                                    expanded = false
+                                }) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = null
+                                    )
+                                }
+                            } else {
+                                Icon(Icons.Default.Search, contentDescription = null)
+                            }
+                        }
                     )
-                }
+                }, expanded = expanded, onExpandedChange = { expanded = it },
+                    content = {
+                        LazyColumn(
+                            modifier = Modifier.sizeIn(maxWidth = 411.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            items(searchList) { product ->
+                                ProductCardCompose(product = product) { onCardClicked(product.id) }
+                                HorizontalDivider()
+                            }
+                        }
+                    })
+            }
 
-            } else {
-                items(list) { product ->
+        }) { padding ->
 
-                    ProductCardCompose(product = product) { onCardClicked(product.id) }
-                    HorizontalDivider()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LazyColumn(
+                modifier = Modifier.sizeIn(maxWidth = 411.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (isLoading) {
+
+                    items(10) {
+                        ShimmerListItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                    }
+
+                } else {
+                    items(list) { product ->
+
+                        ProductCardCompose(product = product) { onCardClicked(product.id) }
+                        HorizontalDivider()
+                    }
                 }
             }
         }
@@ -157,6 +237,8 @@ fun ListOfProductsStateImpl(
     ListOfProducts(
         list = productsList.toMutableStateList(),
         isLoading = uiState.isLoading,
+        searchList = uiState.productsFiltered,
+        onSearchProduct = { productsViewModel.onSearchAction(it) },
         onCardClicked = {
             scope.launch { onNavigateAction(it) }
         },
@@ -176,7 +258,7 @@ fun PreviewListOfProducts() {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
 
-            ListOfProducts(list = fakeProductsList(20), false, {}) {
+            ListOfProducts(list = fakeProductsList(20), false) {
                 Log.d(TAG, "PreviewListOfProducts: ")
             }
         }

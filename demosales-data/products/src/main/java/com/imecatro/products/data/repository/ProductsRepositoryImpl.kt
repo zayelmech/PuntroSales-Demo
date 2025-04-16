@@ -28,7 +28,7 @@ class ProductsRepositoryImpl(
 //    private var allProducts: List<ProductDomainModel> = listOf()
 
     override fun getAllProducts(): Flow<List<ProductDomainModel>> {
-       if (productsDao == null) throw IOException("DAO ENGINE NOT INITIALIZED")
+        if (productsDao == null) throw IOException("DAO ENGINE NOT INITIALIZED")
 
         return productsDao.getAllProducts().map { it.toListDomain() }
     }
@@ -58,11 +58,7 @@ class ProductsRepositoryImpl(
     }
 
     override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
-        return flow {
-            productsDao?.searchProducts(letter)?.collect {
-                emit(it.toListDomain())
-            }
-            //TODO implement error null
-        }
+        if (productsDao == null) throw IOException("DAO ENGINE NOT INITIALIZED")
+        return productsDao.searchProducts(letter).map { it.toListDomain() }
     }
 }
