@@ -8,6 +8,7 @@ data class UpdateProductUiModel(
     val price: String?,
     val currency: String?,
     val unit: String?,
+    val stock : Float,
     val imageUri: Uri?,
     val details: String
 )

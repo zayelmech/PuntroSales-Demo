@@ -7,6 +7,7 @@ data class AddProductUiModel(
     val price: String?,
     val currency: String?,
     val unit: String?,
+    val stock: String,
     val imageUri: Uri?,
     val details: String
 )

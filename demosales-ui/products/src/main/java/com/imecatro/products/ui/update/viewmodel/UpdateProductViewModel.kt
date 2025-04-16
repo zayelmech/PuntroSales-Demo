@@ -1,11 +1,10 @@
 package com.imecatro.products.ui.update.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
+import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.products.ui.update.UpdateUiState
 import com.imecatro.products.ui.update.mappers.toDomain
 import com.imecatro.products.ui.update.mappers.toUpdateUiModel
@@ -23,30 +22,29 @@ class UpdateProductViewModel @Inject constructor(
     private val productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl(),
     private val getListOfCurrenciesUseCase: GetListOfCurrenciesUseCase = GetListOfCurrenciesUseCase(),
     private val getListOfUnitsUseCase: GetListOfUnitsUseCase = GetListOfUnitsUseCase()
-) : ViewModel() {
+) : BaseViewModel<UpdateUiState>(UpdateUiState.idle) {
 
     private val _productSelected: MutableStateFlow<UpdateProductUiModel?> = MutableStateFlow(null)
     val productSelected: StateFlow<UpdateProductUiModel?> = _productSelected.asStateFlow()
 
-    private val _uiState: MutableStateFlow<UpdateUiState> = MutableStateFlow(UpdateUiState.Loading)
-    val uiState: StateFlow<UpdateUiState> = _uiState.asStateFlow()
     fun getProductById(productId: Int?) {
         viewModelScope.launch(Dispatchers.IO) {
+            updateState { copy(isFetchingDetails = true) }
             try {
-
                 val response =
-                    productsRepository.getProductDetailsById(productId)!!.toUpdateUiModel()
-                _productSelected.value = response
-                _uiState.value = UpdateUiState.Success(response)
+                    productsRepository.getProductDetailsById(productId)
+
+                updateState { copy(isFetchingDetails = false) }
+                updateState { copy(productDetails = response?.toUpdateUiModel()) }
+                if (response == null)
+                    updateState { copy(errorFetchingDetails = "No data available") }
+
             } catch (e: Exception) {
-                _uiState.value = UpdateUiState.Error(e.message ?: "Error null")
+                updateState { copy(isFetchingDetails = false) }
+                updateState { copy(errorFetchingDetails = e.message) }
             }
         }
 
-    }
-
-    fun onProductLoaded() {
-        _uiState.value = UpdateUiState.Loaded
     }
 
     fun getCurrencies(): List<String> {
@@ -57,23 +55,16 @@ class UpdateProductViewModel @Inject constructor(
         return getListOfUnitsUseCase()
     }
 
-
     fun onSaveAction(updateProductUiModel: UpdateProductUiModel) {
         viewModelScope.launch(Dispatchers.IO) {
+            updateState { copy(isSavingProduct = true) }
             productsRepository.updateProduct(updateProductUiModel.toDomain())
+
+            updateState { copy(isSavingProduct = false) }
+            updateState { copy(productUpdated = true) }
         }
     }
 
-    fun onStop() {
+    override fun onStart() = Unit
 
-        _uiState.value = UpdateUiState.Loading
-        _productSelected.value = null
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d(TAG, "onCleared: ${javaClass.name} was removed")
-    }
 }
-
-private const val TAG = "UpdateProductViewModel"

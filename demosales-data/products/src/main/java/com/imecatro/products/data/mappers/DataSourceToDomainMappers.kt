@@ -15,7 +15,8 @@ fun ProductRoomEntity.toDomain(): ProductDomainModel {
         currency = this.currency,
         unit = this.unit,
         details = this.details,
-        imageUri = this.imageUri
+        imageUri = this.imageUri,
+        stock = this.stock
     )
 }
 
@@ -28,7 +29,8 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
             currency = this.currency ?: "",
             unit = this.unit?:"",
             details = this.details,
-            imageUri = this.imageUri ?: ""
+            imageUri = this.imageUri ?: "",
+            stock = this.stock
         )
     } ?: run {
         ProductRoomEntity(
@@ -37,7 +39,8 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
             currency = this.currency ?: "",
             unit = this.unit?:"",
             details = this.details,
-            imageUri = this.imageUri ?: ""
+            imageUri = this.imageUri ?: "",
+            stock = this.stock
         )
     }
 

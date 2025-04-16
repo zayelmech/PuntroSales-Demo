@@ -13,7 +13,8 @@ internal fun AddProductUiModel.toDomain(): ProductDomainModel? {
         currency = this.currency,
         unit = this.unit,
         details = this.details,
-        imageUri = this.imageUri?.toString()
+        imageUri = this.imageUri?.toString(),
+        stock = this.stock.filter { it.isDigit() || it == '.' }.toFloat()
 
     )
 }

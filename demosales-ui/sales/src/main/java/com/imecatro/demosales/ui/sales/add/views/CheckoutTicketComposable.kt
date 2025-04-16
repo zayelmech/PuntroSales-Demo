@@ -15,6 +15,7 @@ import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.EditDialogUiState
 import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 
 
 @Composable
@@ -148,7 +149,7 @@ fun CheckoutTicketComposableImpl(
 
 
 @Preview(showBackground = true,
-    device = "spec:id=reference_tablet,shape=Normal,width=1280,height=800,unit=dp,dpi=240"
+    device = "spec:width=411dp,height=891dp"
 )
 @Composable
 fun PreviewCheckoutTicketComposable() {

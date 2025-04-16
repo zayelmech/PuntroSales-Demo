@@ -9,6 +9,7 @@ data class ProductDomainModel(
     val price: Float?,
     val currency: String?,
     val unit: String? = ProductUnit.Default.symbol,
+    val stock: Float,
     val details: String,
     val imageUri: String?
 ) {
@@ -19,7 +20,7 @@ data class ProductDomainModel(
 }
 
 private fun String?.toProductUnit(): ProductUnit {
-    return ProductUnit.values().find { it.symbol == this }
+    return ProductUnit.entries.find { it.symbol == this }
         ?: ProductUnit.Default
 }
 

@@ -1,36 +1,50 @@
-package com.imecatro.demosales.ui.sales.add.views
+package com.imecatro.demosales.ui.theme.dialogs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
-fun OnDeleteItemDialog(
-    productName: String,
-    onDismissRequest: () -> Unit,
-    onConfirmClicked: () -> Unit
+fun InputNumberDialogComposable(
+    initialValue: String = "",
+    supportingMessage: String = "Write the new value",
+    extendedContent : @Composable ColumnScope.() -> Unit={},
+    onDismissRequest: () -> Unit = {},
+    onConfirmClicked: (String) -> Unit = {}
 ) {
+
+    var qty by remember {
+        mutableStateOf(initialValue)
+    }
+
     BasicAlertDialog(
         onDismissRequest = onDismissRequest, modifier = Modifier
             .background(
@@ -39,33 +53,28 @@ fun OnDeleteItemDialog(
             )
             .padding(10.dp)
     ) {
-
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(20.dp))
-            Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
-
-            Text(text = "Do you want to remove $productName from list", color = Color.Black)
+            Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+            Text(text = supportingMessage, color = Color.Black)
             Spacer(modifier = Modifier.height(20.dp))
-
+            OutlinedTextField(
+                value = qty,
+                placeholder = { Text("0.0") },
+                onValueChange = { qty = it.filter { c -> c.isDigit() || c == '.' } },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            extendedContent()
+            Spacer(modifier = Modifier.size(20.dp))
             Row {
                 Spacer(modifier = Modifier.weight(1f))
                 TextButton(onClick = onDismissRequest) {
                     Text(text = "Cancel")
                 }
-                TextButton(onClick = { onConfirmClicked() }) {
-                    Text(text = "Remove")
+                TextButton(onClick = { onConfirmClicked(qty) }) {
+                    Text(text = "Confirm")
                 }
             }
-        }
-    }
-}
-
-@Preview(showBackground = false)
-@Composable
-fun PreviewOnDeleteItemDialog() {
-    PuntroSalesDemoTheme {
-        Surface {
-            OnDeleteItemDialog("PRODUCT", {}, {})
         }
     }
 }

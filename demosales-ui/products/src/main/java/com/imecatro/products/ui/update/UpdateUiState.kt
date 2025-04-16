@@ -1,12 +1,35 @@
 package com.imecatro.products.ui.update
 
-import androidx.compose.runtime.Stable
+import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
+import com.imecatro.demosales.ui.theme.architect.Idle
+import com.imecatro.demosales.ui.theme.architect.UiState
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
 
-@Stable
-sealed class UpdateUiState {
-    object Loading : UpdateUiState()
-    data class Success(val product: UpdateProductUiModel) : UpdateUiState()
-    data class Error(val message: String) : UpdateUiState()
-    object Loaded:UpdateUiState()
+data class UpdateUiState(
+    val isFetchingDetails: Boolean,
+    val errorFetchingDetails: String?,
+    val productDetails: UpdateProductUiModel?,
+    val isSavingProduct: Boolean,
+    val productUpdated: Boolean
+) : UiState {
+    override fun isFetchingOrProcessingData(): Boolean {
+        return isFetchingDetails || isSavingProduct
+    }
+
+    override fun getError(): ErrorUiModel? {
+        return errorFetchingDetails?.let {
+            ErrorUiModel("", errorFetchingDetails)
+        }
+    }
+
+    companion object : Idle<UpdateUiState> {
+        override val idle: UpdateUiState
+            get() = UpdateUiState(
+                isFetchingDetails = false,
+                errorFetchingDetails = null,
+                productDetails = null,
+                isSavingProduct = false,
+                productUpdated = false
+            )
+    }
 }

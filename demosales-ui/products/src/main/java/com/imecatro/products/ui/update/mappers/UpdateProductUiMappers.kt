@@ -13,6 +13,7 @@ fun UpdateProductUiModel.toDomain(): ProductDomainModel {
         currency = this.currency,
         unit = this.unit,
         details = this.details,
+        stock = 0f,
         imageUri = this.imageUri?.toString()
     )
 }
@@ -24,6 +25,7 @@ fun ProductDomainModel.toUpdateUiModel(): UpdateProductUiModel {
         price = this.price.toString(),
         currency = this.currency,
         unit = this.unit,
+        stock= 0f,
         details = this.details,
         imageUri = Uri.parse(this.imageUri.toString())
     )

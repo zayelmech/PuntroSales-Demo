@@ -16,6 +16,7 @@ object DummyRepository {
                     3f,
                     "pz",
                     ProductUnit.Default.symbol,
+                    stock = 0f,
                     "This product must contain info here",
                     null
 

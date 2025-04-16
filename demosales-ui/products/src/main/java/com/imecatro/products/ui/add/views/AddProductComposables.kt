@@ -5,14 +5,31 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,23 +38,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintSet
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.imecatro.demosales.ui.theme.ButtonFancy
+import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.PurpleGrey40
 import com.imecatro.demosales.ui.theme.Typography
+import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
-import com.imecatro.demosales.ui.theme.ButtonFancy
-import com.imecatro.demosales.ui.theme.DropListPicker
-import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductComposable(
     uri: Uri?,
@@ -52,6 +66,9 @@ fun AddProductComposable(
     unitList: List<String>,
     unitPicked: String,
     onUnitPicked: (String) -> Unit,
+    stock: String,
+    onStockChange: (String) -> Unit,
+    isEditMode : Boolean,
     detailsText: String,
     onDetailsChange: (String) -> Unit,
     buttonSaveState: Boolean,
@@ -121,7 +138,12 @@ fun AddProductComposable(
                 ) { unitPicked ->
                     onUnitPicked(unitPicked)
                 }
-
+                Text(text = "Stock", style = Typography.labelMedium, color = PurpleGrey40)
+                OutlinedTextField(
+                    value = stock,
+                    onValueChange = onStockChange,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
 
                 //Details
                 Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
@@ -154,7 +176,6 @@ fun AddProductComposable(
     }
 
 }
-
 
 
 @Composable
@@ -195,11 +216,15 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         mutableStateOf("")
     }
 
+    var stock by remember {
+        mutableStateOf("0")
+    }
+
     var buttonEnableState by remember {
         mutableStateOf(false)
     }
 
-    if (productName.isNotEmpty() && productPrice.isNotEmpty()) {
+    if (productName.isNotEmpty() && productPrice.isNotEmpty() && stock.isNotBlank()) {
         buttonEnableState = true
     }
 
@@ -220,7 +245,10 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         onUnitPicked = { unitSelected = it },
         detailsText = details,
         onDetailsChange = { details = it },
-        buttonSaveState = buttonEnableState
+        buttonSaveState = buttonEnableState,
+        stock = stock,
+        isEditMode = false,
+        onStockChange = { stock = it }
     ) {
         addViewModel.onSaveAction(
             AddProductUiModel(
@@ -229,7 +257,8 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
                 currency = currencySelected,
                 unit = unitSelected,
                 imageUri = imageUri,
-                details = details
+                details = details,
+                stock = stock
             )
         )
         onSaveAction()
@@ -260,7 +289,10 @@ fun AddProductComposablePreview() {
                 onUnitPicked = {},
                 detailsText = "",
                 onDetailsChange = {},
-                buttonSaveState = false
+                buttonSaveState = false,
+                stock = "1",
+                onStockChange = {},
+                isEditMode = false
             ) {
 
             }
