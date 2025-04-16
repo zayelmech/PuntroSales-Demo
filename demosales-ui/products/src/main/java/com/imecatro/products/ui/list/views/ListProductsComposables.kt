@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -23,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.imecatro.demosales.ui.theme.BlueTurquoise80
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.products.ui.R
@@ -45,8 +43,6 @@ fun ListOfProducts(
     Scaffold(floatingActionButton = {
         FloatingActionButton(
             onClick = { onNavigateAction() },
-            containerColor = BlueTurquoise80,
-            contentColor = Color.White
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
