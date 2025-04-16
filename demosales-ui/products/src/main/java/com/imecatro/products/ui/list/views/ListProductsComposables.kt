@@ -3,14 +3,29 @@ package com.imecatro.products.ui.list.views
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,14 +34,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.Typography
+import com.imecatro.demosales.ui.theme.architect.UiStateHandler
+import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.model.ProductUiModel
-import com.imecatro.products.ui.list.uistate.ListProductsUiState
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
 import kotlinx.coroutines.launch
 
@@ -67,6 +81,7 @@ fun ListOfProducts(
                 items(list) { product ->
 
                     ProductCardCompose(product = product) { onCardClicked(product.id) }
+                    HorizontalDivider()
                 }
             }
         }
@@ -78,21 +93,13 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
 
     val cardTag = "${ListProductsTestTags.CARD.tag}-${product.id}"
 
-    ElevatedCard(modifier = Modifier
-        .padding(2.dp, 2.dp)
-        .fillMaxWidth(0.9f)
-//            .width(350.dp)
-        .clickable { onCardClicked() }
-        .testTag(cardTag),
-        elevation = CardDefaults.cardElevation(0.5.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            // TODO add description and implement image by url
 
+    Box(
+        modifier = Modifier
+            .clickable { onCardClicked() }
+            .testTag(cardTag),
+    ) {
+        ListItem(leadingContent = {
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
@@ -109,15 +116,15 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
                     .clip(RoundedCornerShape(25)),
                 contentScale = ContentScale.FillWidth
             )
-
-            Column {
-                Text(text = product.name ?: "Product name", style = Typography.titleMedium)
-                Text(text = " x ${product.unit}", fontSize = 18.sp)
-                Text(text = "$${product.price ?: 0.00}", style = Typography.titleMedium)
-
-            }
-        }
+        }, headlineContent = {
+            Text(text = product.name ?: "Product name")
+        }, supportingContent = {
+            Text(text = "$${product.price ?: 0.00}")
+        }, trailingContent = {
+            Text(text = "${product.unit ?: 0.00}")
+        })
     }
+
 }
 
 fun fakeProductsList(qty: Int): List<ProductUiModel> {
@@ -146,39 +153,18 @@ fun ListOfProductsStateImpl(
 
     val productsList by productsViewModel.productsList.collectAsState()
     val uiState by productsViewModel.uiState.collectAsState()
-    var isLoading by remember {
-        mutableStateOf(true)
-    }
-
-    LaunchedEffect(key1 = uiState) {
-        when (uiState) {
-            is ListProductsUiState.Initialized -> {
-                productsViewModel.getAllProducts()
-            }
-
-            is ListProductsUiState.Loading -> {/*TODO */
-            }
-
-            is ListProductsUiState.Success -> {
-                isLoading = false
-            }
-
-            is ListProductsUiState.Error -> {
-                isLoading = false
-            }
-        }
-    }
-
-
 
     ListOfProducts(
         list = productsList.toMutableStateList(),
-        isLoading = isLoading,
+        isLoading = uiState.isLoading,
         onCardClicked = {
             scope.launch { onNavigateAction(it) }
         },
         onNavigateAction = { onNavigateAction(null) })
 
+    UiStateHandler(uiState) {
+
+    }
 }
 
 
