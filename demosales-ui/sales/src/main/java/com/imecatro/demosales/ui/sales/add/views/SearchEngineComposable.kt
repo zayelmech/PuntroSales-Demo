@@ -5,13 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,9 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -52,13 +49,13 @@ fun SearchBottomSheetComposable(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .sizeIn(maxHeight = 300.dp)
+            .sizeIn(minHeight = 300.dp)
             .padding(5.dp)
     ) {
         OutlinedTextField(
             value = searchEngineUiModel.query,
             onValueChange = searchEngineUiModel.onQueryChange,
-            placeholder = { Text(text = "Search")},
+            placeholder = { Text(text = "Search") },
             modifier = Modifier.fillMaxWidth(),
             leadingIcon = {
                 Icon(
@@ -68,12 +65,17 @@ fun SearchBottomSheetComposable(
             })
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 128.dp),
-            //modifier = Modifier.height(400.dp)
         ) {
             items(searchEngineUiModel.list) { product ->
                 ProductResultCardComposable(
                     product = product,
                     onProductClicked = { searchEngineUiModel.onProductClicked(product) })
+            }
+            if (searchEngineUiModel.list.size < 4) {
+                repeat(4){
+                    item {  Box(modifier = Modifier.size(20.dp))}
+                }
+
             }
         }
     }
@@ -98,7 +100,6 @@ fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked:
     ) {
         ElevatedCard(
             modifier = Modifier.fillMaxSize(),
-            colors = CardDefaults.cardColors(Color.White)
         ) {
 
             Image(
@@ -113,8 +114,6 @@ fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked:
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
-//                    .size(128.dp,100.dp)
-//                    .clip(RoundedCornerShape(25)),
                 contentScale = ContentScale.FillWidth
             )
             Column(modifier = Modifier.padding(5.dp)) {
@@ -158,7 +157,7 @@ fun PreviewSearchBottomSheetComposable() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val x =SearchEngineUiModel(createFakeList(4), "a", {}, {})
+            val x = SearchEngineUiModel(createFakeList(4), "a", {}, {})
             SearchBottomSheetComposable(x)
         }
     }

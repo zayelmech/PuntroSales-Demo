@@ -45,14 +45,17 @@ class AddSaleViewModel @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val _results: MutableStateFlow<List<ProductResultUiModel>> = MutableStateFlow(emptyList())
-    val productsFound: StateFlow<List<ProductResultUiModel>> = _results.asStateFlow()
+    private val _results: MutableStateFlow<List<ProductResultUiModel>> =
+        MutableStateFlow(emptyList())
+    val productsFound: StateFlow<List<ProductResultUiModel>> = _results.onStart {
+        fetchMostPopularProducts()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private val _ticketState: MutableStateFlow<TicketUiState> =
         MutableStateFlow(TicketUiState.Initialized)
     val ticketState: StateFlow<TicketUiState> = _ticketState.asStateFlow()
 
-    init {
+    private fun fetchMostPopularProducts() {
         viewModelScope.launch {
             // For some reason product might not exist in database
             // we retrieve the most popular products from Orders table
@@ -62,7 +65,7 @@ class AddSaleViewModel @Inject constructor(
             if (topIds.isEmpty()) return@launch
             val topProducts = topIds.map {
                 val product = getProductDetailsByIdUseCase(it)
-                 product?.toAddSaleUi()
+                product?.toAddSaleUi()
             }
 
             val filtered = topProducts.filterNotNull()

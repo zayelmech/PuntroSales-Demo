@@ -3,10 +3,8 @@ package com.imecatro.demosales.navigation.sales
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.imecatro.demosales.ui.sales.add.views.CheckoutTicketComposableImpl
 import com.imecatro.demosales.ui.sales.add.views.CreateTicketComposableStateImpl
@@ -28,13 +26,10 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
         }
         composable<SalesDestinations.Add> {
 
-            CreateTicketComposableStateImpl(addSaleViewModel = hiltViewModel(), onSavedTicked = {
-                navController.navigate(SalesDestinations.List) {
-                    popUpTo(SalesDestinations.List) { inclusive = true }
-                }
-            }, onNavigateToCheckout = {
-                navController.navigate(SalesDestinations.Checkout(1))
-            })
+            CreateTicketComposableStateImpl(addSaleViewModel = hiltViewModel(),
+                onNavigateToCheckout = {
+                    navController.navigate(SalesDestinations.Checkout(1))
+                })
         }
 
         composable<SalesDestinations.Checkout> {

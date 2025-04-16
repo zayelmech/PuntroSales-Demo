@@ -3,7 +3,7 @@ package com.imecatro.demosales.ui.sales.add.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,7 +37,6 @@ import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.theme.GreenTurquoise
-import com.imecatro.demosales.ui.theme.Typography
 import java.math.BigDecimal
 
 
@@ -64,65 +63,41 @@ fun OrderOnCartComposable(
         mutableStateOf(false)
     }
 
-    ElevatedCard(
+    Box(
         modifier = Modifier
             .padding(2.dp, 2.dp)
             .fillMaxWidth()
-//            .height(120.dp)
-//        .clickable { onCardClicked() }
             .testTag(cardTag),
-        elevation = CardDefaults.cardElevation(0.5.dp),
-        colors = CardDefaults.cardColors(Color.White)
     ) {
-        Row(
+        ListItem(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // TODO add description and implement image by url
+                .fillMaxWidth(),
+            leadingContent = {
+                // TODO add description and implement image by url
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current)
+                            .data(product.product.imageUri)
+                            .error(R.drawable.baseline_insert_photo_24)
+                            .crossfade(true)
+                            .build()
 
-            Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(product.product.imageUri)
-                        .error(R.drawable.baseline_insert_photo_24)
-                        .crossfade(true)
-                        .build()
-
-                ),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-//                    .padding(5.dp)
-                    .clip(RoundedCornerShape(50)),
-                contentScale = ContentScale.FillBounds
-            )
-
-            Column(Modifier.weight(1f)) {
-                Text(text = product.product.name ?: "Product name", style = Typography.titleMedium)
-//                Text(text = " x ${product.product.unit}", fontSize = 18.sp)
-                Text(text = "$${product.product.price ?: 0.00}", style = Typography.titleMedium)
-
-            }
-            Column(
-                modifier = Modifier
-//                    .width(90.dp)
-                    .padding(5.dp, 0.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                if (showDialog) {
-                    InputNumberDialogComposable(
-                        initialValue = "${product.qty}",
-                        onDismissRequest = { showDialog = false },
-                        onConfirmClicked = { newQty ->
-                            onQtyValueChange(newQty)
-                            showDialog = false
-                        }
-                    )
-                }
-                Row(Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(50)),
+                    contentScale = ContentScale.FillBounds
+                )
+            },
+            headlineContent = {
+                Text(text = product.product.name)
+            },
+            supportingContent = {
+                Text(text = "$${product.subtotal}", style = MaterialTheme.typography.bodyLarge)
+                // Text(text = "$${product.product.price ?: 0.00}")
+            }, trailingContent = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
 
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_remove_24),
@@ -136,7 +111,6 @@ fun OrderOnCartComposable(
                     TextButton(onClick = { showDialog = true }) {
                         Text(text = "x ${product.qty}")
                     }
-//                    Spacer(modifier = Modifier.width(5.dp))
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "Click to add 1 ",
@@ -146,11 +120,20 @@ fun OrderOnCartComposable(
                         tint = Color.White
                     )
 
-
                 }
             }
-            Text(text = "$${product.subtotal}", style = Typography.titleMedium)
+        )
 
+        if (showDialog) {
+            InputNumberDialogComposable(
+                initialValue = "${product.qty}",
+                onDismissRequest = { showDialog = false },
+                onConfirmClicked = { newQty ->
+                    onQtyValueChange(newQty)
+                    showDialog = false
+                }
+            )
         }
+
     }
 }
