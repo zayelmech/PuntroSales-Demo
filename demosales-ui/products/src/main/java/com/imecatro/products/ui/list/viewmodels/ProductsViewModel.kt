@@ -8,9 +8,12 @@ import com.imecatro.products.ui.list.mappers.toProductUiModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.uistate.ListProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -20,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
     productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl()
+    iODispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ListProductsUiState>(ListProductsUiState.idle) {
 
     val productsList: StateFlow<List<ProductUiModel>> =
@@ -34,6 +38,7 @@ class ProductsViewModel @Inject constructor(
             }.onEach {
                 updateState { copy(isFetchingProducts = false) }
             }.map { it.toProductUiModel() }
+            .flowOn(iODispatcher)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
 

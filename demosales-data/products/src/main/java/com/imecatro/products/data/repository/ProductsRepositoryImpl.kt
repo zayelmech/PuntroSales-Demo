@@ -9,6 +9,8 @@ import com.imecatro.products.data.mappers.toDomain
 import com.imecatro.products.data.mappers.toListDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import java.io.IOException
 
 class ProductsRepositoryImpl(
     private val productsDao: ProductsDao?
@@ -26,12 +28,9 @@ class ProductsRepositoryImpl(
 //    private var allProducts: List<ProductDomainModel> = listOf()
 
     override fun getAllProducts(): Flow<List<ProductDomainModel>> {
-        return flow {
-            productsDao?.getAllProducts()?.collect {
-                emit(it.toListDomain())
-            }
-            //TODO implement error null
-        }
+       if (productsDao == null) throw IOException("DAO ENGINE NOT INITIALIZED")
+
+        return productsDao.getAllProducts().map { it.toListDomain() }
     }
 
     override fun deleteProductById(id: Int?) {
