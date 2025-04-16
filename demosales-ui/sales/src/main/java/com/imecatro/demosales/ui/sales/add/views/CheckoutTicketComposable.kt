@@ -68,13 +68,13 @@ fun CheckoutTicketComposable(
             colors = CardDefaults.cardColors(Color.White)
         ) {
             //Shipping cost
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Shipping", style = MaterialTheme.typography.labelMedium)
-                Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = { onChangeShippingCostClick() }) {
-                    Text(text = "$$shipping")
-                }
-            }
+//            Row(verticalAlignment = Alignment.CenterVertically) {
+//                Text(text = "Shipping", style = MaterialTheme.typography.labelMedium)
+//                Spacer(modifier = Modifier.weight(1f))
+//                TextButton(onClick = { onChangeShippingCostClick() }) {
+//                    Text(text = "$$shipping")
+//                }
+//            }
 
             //Extra
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -88,7 +88,7 @@ fun CheckoutTicketComposable(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Total", style = MaterialTheme.typography.labelMedium)
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "$${total}", style = MaterialTheme.typography.headlineMedium)
+                Text(text = "$${total}", style = MaterialTheme.typography.bodyMedium)
 
             }
         }
@@ -147,7 +147,9 @@ fun CheckoutTicketComposableImpl(
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,
+    device = "spec:id=reference_tablet,shape=Normal,width=1280,height=800,unit=dp,dpi=240"
+)
 @Composable
 fun PreviewCheckoutTicketComposable() {
     PuntroSalesDemoTheme {

@@ -33,7 +33,7 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
                     popUpTo(SalesDestinations.List) { inclusive = true }
                 }
             }, onNavigateToCheckout = {
-                navController.navigate(SalesDestinations.Checkout)
+                navController.navigate(SalesDestinations.Checkout(1))
             })
         }
 

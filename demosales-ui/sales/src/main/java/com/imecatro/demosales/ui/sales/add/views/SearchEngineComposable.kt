@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -26,6 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -48,7 +52,7 @@ fun SearchBottomSheetComposable(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
+            .sizeIn(maxHeight = 300.dp)
             .padding(5.dp)
     ) {
         OutlinedTextField(
@@ -64,7 +68,7 @@ fun SearchBottomSheetComposable(
             })
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 128.dp),
-            modifier = Modifier.height(400.dp)
+            //modifier = Modifier.height(400.dp)
         ) {
             items(searchEngineUiModel.list) { product ->
                 ProductResultCardComposable(
@@ -90,7 +94,7 @@ fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked:
         .fillMaxWidth()
         .clickable { onProductClicked(product.id ?: 0) }
         .padding(5.dp)
-//        .wrapContentSize(Alignment.TopEnd)
+        .wrapContentSize(Alignment.TopEnd)
     ) {
         ElevatedCard(
             modifier = Modifier.fillMaxSize(),
@@ -154,7 +158,7 @@ fun PreviewSearchBottomSheetComposable() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val x =SearchEngineUiModel(createFakeList(20), "a", {}, {})
+            val x =SearchEngineUiModel(createFakeList(4), "a", {}, {})
             SearchBottomSheetComposable(x)
         }
     }

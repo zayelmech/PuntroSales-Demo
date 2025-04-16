@@ -13,8 +13,8 @@ android {
     defaultConfig {
         applicationId "com.imecatro.demosales"
         minSdk 26
-        targetSdk 33
-        versionCode 3
+        targetSdk 34
+        versionCode 4
         versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

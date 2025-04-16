@@ -56,9 +56,9 @@ fun ButtonFancy(
     Button(
         onClick = { onClicked() },
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(paddingX, 10.dp),
-        colors = ButtonDefaults.buttonColors(color),
+            .sizeIn(minWidth = 100.dp, maxWidth = 320.dp)
+            .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(containerColor = color),
         shape = RoundedCornerShape(50),
         enabled = enable
     ) {
@@ -66,11 +66,11 @@ fun ButtonFancy(
             Icon(
                 imageVector = imageVector,
                 contentDescription = null,
-                tint = Color.White,
+//                tint = Color.White,
                 modifier = Modifier.padding(4.dp)
             )
         }
-        Text(text = text, style = MaterialTheme.typography.titleMedium)
+        Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
 }
 

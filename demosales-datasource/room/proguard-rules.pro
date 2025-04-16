@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn com.imecatro.demosales.data.clients.datasource.ClientsDao
+-dontwarn com.imecatro.demosales.data.clients.model.ClientRoomEntity
+-dontwarn com.imecatro.products.data.datasource.ProductsDao
+-dontwarn com.imecatro.products.data.model.ProductRoomEntity

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,7 +69,7 @@ fun CreateTicketComposable(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth()
                 .padding(10.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
@@ -98,7 +99,7 @@ fun CreateTicketComposable(
         Divider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f)
         ) {
             itemsIndexed(productsOnCart) { index, item ->
                 val dismissState = rememberSwipeToDismissBoxState()
@@ -148,8 +149,12 @@ fun CreateTicketComposable(
             }
             item {
                 productsContent()
+               // Text(text = "a")
             }
+
+
         }
+
     }
 }
 

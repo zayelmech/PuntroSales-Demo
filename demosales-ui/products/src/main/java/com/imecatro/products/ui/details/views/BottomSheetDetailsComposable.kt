@@ -1,14 +1,23 @@
 package com.imecatro.products.ui.details.views
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,16 +27,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.PurpleGrey40
-import com.imecatro.demosales.ui.theme.PurpleRed
-import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.products.ui.R
-import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 
@@ -63,15 +70,23 @@ fun DetailsComposable(
     onEditClicked: () -> Unit
 ) {
     val paddingX = 20.dp
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+    val view = LocalView.current
+
+    Column(
+        modifier = Modifier.padding(paddingX),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
+        ElevatedCard(
+            modifier = Modifier
+                .sizeIn(maxWidth = 450.dp, minWidth = 320.dp)
+                .fillMaxWidth()
+        ) {
             Image(
-                painter = rememberAsyncImagePainter(
-                    //productDetails?.imageUrl ?: R.raw.arcreactor
+                painter =
+                if (view.isInEditMode)
+                    painterResource(id = R.drawable.baseline_insert_photo_24)
+                else rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
                         .data(productDetails?.imageUrl)
                         .error(R.drawable.baseline_insert_photo_24)
@@ -80,14 +95,10 @@ fun DetailsComposable(
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .requiredSizeIn(maxHeight = 280.dp)
-//                .padding(paddingX)
-//                .clip(RoundedCornerShape(10))
-                ,
-                contentScale = ContentScale.FillWidth
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Crop
             )
-            Spacer(modifier = Modifier.height(20.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,46 +106,64 @@ fun DetailsComposable(
                 horizontalAlignment = Alignment.Start
             ) {
                 //tittle
-                Text(text = productDetails?.name ?: "No name", style = Typography.titleMedium)
+                Text(
+                    text = productDetails?.name ?: "No name",
+                    style = MaterialTheme.typography.headlineMedium
+                )
                 //pz
-                Text(text = productDetails?.unit ?: "", style = Typography.bodyLarge)
+                Text(
+                    text = productDetails?.unit ?: "",
+                    style = MaterialTheme.typography.headlineSmall
+                )
                 //price
                 Text(
                     text = "$${productDetails?.price ?: "0.00"} ${productDetails?.currency ?: ""}",
-                    style = Typography.titleMedium
+                    style = MaterialTheme.typography.headlineMedium
                 )
                 Spacer(modifier = Modifier.height(20.dp))
+
                 //Details
-                Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
-                Divider(color = Color.LightGray, thickness = 2.dp)
+                Text(text = "Details", style = MaterialTheme.typography.labelMedium)
+
                 Text(
                     text = productDetails?.details
                         ?: "This text must contains some details about this product",
-                    style = Typography.bodyLarge
+                    style = MaterialTheme.typography.bodyMedium
                 )
+
+                HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
+
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    //button delete
+                    OutlinedButton(
+                        onClick = onDeleteClicked,
+                        modifier = Modifier.sizeIn(minWidth = 120.dp)
+                    ) {
+                        Text(text = "DELETE")
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    //button edit
+                    Button(
+                        onClick = onEditClicked,
+                        modifier = Modifier.sizeIn(minWidth = 120.dp)
+                    ) {
+                        Text(text = "EDIT")
+                    }
+                }
             }
-            Spacer(modifier = Modifier.height(80.dp))
-            //button edit
-            ButtonFancy(
-                text = "EDIT",
-                color = MaterialTheme.colorScheme.primary,
-                paddingX = paddingX,
-                icon = Icons.Filled.Edit,
-                onClicked = onEditClicked
-            )
-            //button delete
-            ButtonFancy(
-                text = "DELETE",
-                color = MaterialTheme.colorScheme.secondary,
-                paddingX = paddingX,
-                icon = Icons.Filled.Delete,
-                onClicked = onDeleteClicked
-            )
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    device = "spec:id=reference_tablet,shape=Normal,width=1280,height=800,unit=dp,dpi=240"
+)
 @Composable
 fun PreviewWordsListDetailsCompose() {
     PuntroSalesDemoTheme {
@@ -145,7 +174,7 @@ fun PreviewWordsListDetailsCompose() {
             DetailsComposable(
                 productDetails = ProductDetailsUiModel(
                     1,
-                    "Cebolla",
+                    "Product name",
                     "$0.00",
                     "x pz",
                     "USD",

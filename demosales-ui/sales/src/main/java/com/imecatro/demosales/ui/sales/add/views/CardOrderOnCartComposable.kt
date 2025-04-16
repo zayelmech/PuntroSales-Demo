@@ -44,7 +44,7 @@ import java.math.BigDecimal
 private val dummyProduct =
     ProductOnCartUiModel(
         orderId = 0,
-        product = ProductResultUiModel(),
+        product = ProductResultUiModel(name = "Test"),
         qty = 0f,
         subtotal = BigDecimal(0)
     )
