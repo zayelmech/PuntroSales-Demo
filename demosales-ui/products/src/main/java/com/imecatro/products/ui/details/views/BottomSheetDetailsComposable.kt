@@ -69,11 +69,10 @@ fun DetailsComposable(
     onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit
 ) {
-    val paddingX = 20.dp
     val view = LocalView.current
 
     Column(
-        modifier = Modifier.padding(paddingX),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -162,7 +161,7 @@ fun DetailsComposable(
 
 @Preview(
     showBackground = true,
-    device = "spec:id=reference_tablet,shape=Normal,width=1280,height=800,unit=dp,dpi=240"
+    device = "spec:width=1280dp,height=800dp,dpi=240"
 )
 @Composable
 fun PreviewWordsListDetailsCompose() {

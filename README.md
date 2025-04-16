@@ -44,13 +44,26 @@ Generally, we can follow next structured pattern
 
 - Hilt for dependency injection
 - Compose 
-- Material 2 and 3
+- Material 3
 - Jetpack libraries
 - Coil for images
 
 Need permissions
 
 ## Domain layer
+
+It contains all use cases the app needs
+
+### Products
+- Get All products 
+- Create a new product
+- Edit product
+- Delete product
+
+### Sales
+- Get all tickets
+- Create a new ticket
+- 
 
 ### Libraries
 
