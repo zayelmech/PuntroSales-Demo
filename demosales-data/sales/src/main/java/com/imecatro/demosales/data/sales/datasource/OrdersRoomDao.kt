@@ -35,4 +35,11 @@ interface OrdersRoomDao {
 
     @Query("SELECT productId FROM order_table GROUP BY productId ORDER BY COUNT(productId) DESC LIMIT :n")
     suspend fun getMostPopularProducts(n : Int) : List<Int>
+
+    @Query("""
+    SELECT SUM(qty * productPrice) 
+    FROM order_table 
+    WHERE sale_id = :saleId
+""")
+    suspend fun getSaleAmount(saleId: Long): Float?
 }

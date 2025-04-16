@@ -79,6 +79,7 @@ class AddSaleViewModel @Inject constructor(
     val cartList: StateFlow<List<ProductOnCartUiModel>> = channelFlow {
         getCartFlowUseCase().collectLatest { ticket ->
             ticketId = ticket.id
+            _ticketSubtotal.update { ticket.total.toString() }
             send(ticket.toUi())
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())

@@ -6,7 +6,6 @@ import com.imecatro.demosales.data.sales.add.mappers.toDataSource
 import com.imecatro.demosales.data.sales.datasource.OrdersRoomDao
 import com.imecatro.demosales.data.sales.datasource.SalesRoomDao
 import com.imecatro.demosales.data.sales.list.mappers.toOrderStatus
-import com.imecatro.demosales.data.sales.model.OrderDataRoomModel
 import com.imecatro.demosales.data.sales.model.SaleDataRoomModel
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.model.Order
@@ -61,7 +60,7 @@ class AddSaleRepositoryImpl(
         val saleFlow = salesRoomDao.getFlowSaleById(id)
 
         return combine(itemsList, saleFlow) { products, sale ->
-            val total = calculateTotal(products)
+            val total = ordersRoomDao.calculateTotalForSale(id)
             SaleDomainModel(
                 id = sale.id,
                 clientId = sale.clientId,
@@ -87,7 +86,4 @@ class AddSaleRepositoryImpl(
         }
     }
 
-    private fun calculateTotal(products: List<OrderDataRoomModel>): Double {
-        return products.sumOf { (it.productPrice * it.qty).toDouble() }
-    }
 }
