@@ -36,7 +36,6 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.theme.GreenTurquoise
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import java.math.BigDecimal
 
@@ -105,7 +104,7 @@ fun OrderOnCartComposable(
                         contentDescription = null,
                         modifier = Modifier
                             .clickable { onMinusClick(productPosition) }
-                            .background(GreenTurquoise, RoundedCornerShape(50)),
+                            .background(MaterialTheme.colorScheme.tertiary, RoundedCornerShape(50)),
                         tint = Color.White
 
                     )
@@ -117,7 +116,7 @@ fun OrderOnCartComposable(
                         contentDescription = "Click to add 1 ",
                         modifier = Modifier
                             .clickable { onPlusClicked(productPosition) }
-                            .background(GreenTurquoise, RoundedCornerShape(50)),
+                            .background(MaterialTheme.colorScheme.tertiary, RoundedCornerShape(50)),
                         tint = Color.White
                     )
 

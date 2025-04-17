@@ -38,7 +38,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.theme.BlueTurquoise80
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
 
@@ -128,7 +127,7 @@ fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked:
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = null,
-            modifier = Modifier.background(BlueTurquoise80, RoundedCornerShape(50)),
+            modifier = Modifier.background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50)),
             tint = Color.White
         )
     }

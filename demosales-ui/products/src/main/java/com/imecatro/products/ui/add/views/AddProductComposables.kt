@@ -44,7 +44,6 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.PurpleGrey40
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.R
@@ -81,7 +80,7 @@ fun AddProductComposable(
         item {
             Column(modifier = Modifier.padding(10.dp)) {
 
-                Text(text = "Image", style = Typography.labelMedium, color = PurpleGrey40)
+                Text(text = "Image", style = Typography.labelMedium)
                 Box(
 
                     modifier = Modifier
@@ -110,10 +109,10 @@ fun AddProductComposable(
 
                 }
 
-                Text(text = "Product name", style = Typography.labelMedium, color = PurpleGrey40)
+                Text(text = "Product name", style = Typography.labelMedium)
                 OutlinedTextField(value = productName, onValueChange = onProductNameChange)
 
-                Text(text = "Price", style = Typography.labelMedium, color = PurpleGrey40)
+                Text(text = "Price", style = Typography.labelMedium)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         value = productPrice,
@@ -130,7 +129,7 @@ fun AddProductComposable(
                     }
 
                 }
-                Text(text = "Unit", style = Typography.labelMedium, color = PurpleGrey40)
+                Text(text = "Unit", style = Typography.labelMedium)
 
 
                 DropListPicker(
@@ -138,7 +137,7 @@ fun AddProductComposable(
                 ) { unitPicked ->
                     onUnitPicked(unitPicked)
                 }
-                Text(text = "Stock", style = Typography.labelMedium, color = PurpleGrey40)
+                Text(text = "Stock", style = Typography.labelMedium)
                 OutlinedTextField(
                     value = stock,
                     onValueChange = onStockChange,
@@ -146,7 +145,7 @@ fun AddProductComposable(
                 )
 
                 //Details
-                Text(text = "Details", style = Typography.labelMedium, color = PurpleGrey40)
+                Text(text = "Details", style = Typography.labelMedium)
                 HorizontalDivider(
                     modifier = Modifier.padding(0.dp, 5.dp),
                     thickness = 2.dp,
