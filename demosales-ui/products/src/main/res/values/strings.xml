@@ -2,4 +2,10 @@
 <resources>
     <string name="btn_edit">Edit</string>
     <string name="btn_delete">Delete</string>
+    <string name="title_stock">Current Stock</string>
+    <string name="btn_stock_out">Stock out</string>
+    <string name="btn_stock_in">Add stock</string>
+    <string name="title_cost">Cost</string>
+    <string name="desc_no_items">There is no history yet</string>
+    <string name="title_history">History</string>
 </resources>

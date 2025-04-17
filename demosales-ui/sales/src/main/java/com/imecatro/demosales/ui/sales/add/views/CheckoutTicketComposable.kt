@@ -3,17 +3,16 @@ package com.imecatro.demosales.ui.sales.add.views
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.EditDialogUiState
-import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 
@@ -24,8 +23,7 @@ fun CheckoutTicketComposable(
     onChangeClientClick: () -> Unit,
     note: String,
     onNoteTextChange: (String) -> Unit,
-    shipping: String,
-    onChangeShippingCostClick: () -> Unit,
+    subtotal: String,
     extra: String,
     onExtraClick: () -> Unit,
     total: String,
@@ -40,16 +38,18 @@ fun CheckoutTicketComposable(
         //Cliente // search //guest
         Row(verticalAlignment = Alignment.CenterVertically) {
 
-            Text(text = "Client", style = MaterialTheme.typography.labelMedium)
+            Text(text = "Client", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = onChangeClientClick) {
-                Text(text = client)
+            IconButton(onClick = { onChangeClientClick() }) {
+                Icon(Icons.Default.AccountCircle, null)
             }
+            Text(text = client)
+
         }
         //Notas
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Notes", style = MaterialTheme.typography.labelMedium)
+            Text(text = "Notes", style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.weight(1f))
         }
         OutlinedTextField(
@@ -61,46 +61,45 @@ fun CheckoutTicketComposable(
                 .fillMaxWidth(),
             textStyle = MaterialTheme.typography.bodyMedium
         )
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            elevation = CardDefaults.cardElevation(0.5.dp),
-            colors = CardDefaults.cardColors(Color.White)
-        ) {
-            //Shipping cost
-//            Row(verticalAlignment = Alignment.CenterVertically) {
-//                Text(text = "Shipping", style = MaterialTheme.typography.labelMedium)
-//                Spacer(modifier = Modifier.weight(1f))
-//                TextButton(onClick = { onChangeShippingCostClick() }) {
-//                    Text(text = "$$shipping")
-//                }
-//            }
+        Spacer(modifier = Modifier.size(40.dp))
 
-            //Extra
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Extra", style = MaterialTheme.typography.labelMedium)
+        Column {
+            HorizontalDivider()
+            Row {
+                Text("Subtotal")
                 Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = { onExtraClick() }) {
-                    Text(text = "$$extra")
-                }
+                Text("$$subtotal")
             }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Extra")
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { onExtraClick() }) {
+                    Icon(Icons.Default.AddCircle, null)
+                }
+                Text("$$extra")
+            }
+
+
             //Total
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Total", style = MaterialTheme.typography.labelMedium)
+                Text(text = "Total")
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "$${total}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "$${total}")
 
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
-        ButtonFancy(
-            text = "Checkout",
-            paddingX = 0.dp,
-            icon = Icons.Filled.Done,
-            onClicked = onCheckoutClick
-        )
-        //State , save as
+        Spacer(modifier = Modifier.weight(1f))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Button(
+                onClick = onCheckoutClick,
+                modifier = Modifier
+                    .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
+                    .fillMaxWidth(),
+                shape = MaterialTheme.shapes.large
+            ) {
+                Text(text = "Checkout")
+            }
+        }
     }
 }
 
@@ -124,14 +123,14 @@ fun CheckoutTicketComposableImpl(
         },
         note = ticket.note,
         onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
-        shipping = "${ticket.totals.shippingCost}",
-        onChangeShippingCostClick = {
-            checkoutViewModel.onShowEditInputDialog(
-                EditDialogUiState.Shipping(
-                    ticket.totals.shippingCost
-                )
-            )
-        },
+        subtotal = "${ticket.totals.shippingCost}",
+//        onChangeShippingCostClick = {
+//            checkoutViewModel.onShowEditInputDialog(
+//                EditDialogUiState.Shipping(
+//                    ticket.totals.shippingCost
+//                )
+//            )
+//        },
         extra = "${ticket.totals.extra}",
         onExtraClick = { checkoutViewModel.onShowEditInputDialog(EditDialogUiState.Extra(ticket.totals.extra)) },
         total = "${ticket.totals.total}",
@@ -141,14 +140,15 @@ fun CheckoutTicketComposableImpl(
         InputNumberDialogComposable(
             initialValue = editableField.txt,
             onDismissRequest = { /*TODO*/ },
-            onConfirmClicked = { checkoutViewModel.onEditDialogConfirmation(editableField,it) }
+            onConfirmClicked = { checkoutViewModel.onEditDialogConfirmation(editableField, it) }
         )
     }
 
 }
 
 
-@Preview(showBackground = true,
+@Preview(
+    showBackground = true,
     device = "spec:width=411dp,height=891dp"
 )
 @Composable
@@ -161,8 +161,7 @@ fun PreviewCheckoutTicketComposable() {
                 onChangeClientClick = {},
                 note = "this client",
                 onNoteTextChange = {},
-                shipping = "0.0",
-                onChangeShippingCostClick = {},
+                subtotal = "0.0",
                 extra = "0.0",
                 onExtraClick = {/*TODO dialog*/ },
                 total = "0.0",

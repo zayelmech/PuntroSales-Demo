@@ -199,9 +199,9 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
         }, headlineContent = {
             Text(text = product.name ?: "Product name")
         }, supportingContent = {
-            Text(text = "$${product.price ?: 0.00}")
+            Text(text = "$${product.price}")
         }, trailingContent = {
-            Text(text = "${product.unit ?: 0.00}")
+            Text(text = "${product.stock}  ${product.unit}")
         })
     }
 
@@ -210,7 +210,7 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
 fun fakeProductsList(qty: Int): List<ProductUiModel> {
     val fakeList = mutableListOf<ProductUiModel>()
     for (i in 1..qty) {
-        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", null))
+        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", stock = "1",null))
     }
     return fakeList
 }

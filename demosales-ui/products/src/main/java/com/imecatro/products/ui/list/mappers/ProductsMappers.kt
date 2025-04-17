@@ -11,6 +11,7 @@ fun List<ProductDomainModel>.toProductUiModel(): List<ProductUiModel> {
             name = it.name,
             price = it.price?.toString() ?: "0.00",
             unit = it.unit,
+            stock = "${it.stock.quantity}",
             imageUrl = Uri.parse(it.imageUri)
         )
     }
