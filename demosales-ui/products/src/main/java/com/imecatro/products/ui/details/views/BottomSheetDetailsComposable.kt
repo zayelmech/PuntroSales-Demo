@@ -113,10 +113,10 @@ fun DetailsComposableStateImpl(
         else
             StockComposable(
                 stock = productSelected?.stockQty ?: "0",
-                cost = "0",
+                cost = productSelected?.stockPrice ?: "0",
                 list = productSelected?.stockHistory ?: emptyList(),
-                onStockAdded = {},
-                onStockOut = {})
+                onStockAdded = { productDetailsViewModel.onStockAdded(it) },
+                onStockOut = { productDetailsViewModel.onStockRemoved(it) })
     }
 
 
@@ -247,7 +247,7 @@ fun StockComposable(
             initialValue = "",
             supportingMessage = "Register Stock out quantity",
             onDismissRequest = { showDialogStockOut = false },
-            onConfirmClicked = onStockAdded
+            onConfirmClicked = onStockOut
         )
 }
 
@@ -377,7 +377,10 @@ fun PreviewWordsListDetailsCompose() {
                     "x pz",
                     "USD",
                     null,
-                    "details"
+                    "details",
+                    stockQty = "0.0",
+                    stockHistory = emptyList(),
+                    stockPrice = "0"
                 ),
                 onDeleteClicked = { /*TODO*/ }) {
 

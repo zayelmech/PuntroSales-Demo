@@ -1,8 +1,8 @@
 package com.imecatro.products.ui.details.viewmodels
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
+import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.products.ui.details.mappers.toUiModel
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,34 +10,61 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductsDetailsViewModel @Inject constructor(
     private val productsRepository: ProductsRepository //= ProductsRepositoryDummyImpl()
-) : ViewModel() {
+) : BaseViewModel<ProductDetailsUiModel>(ProductDetailsUiModel.idle) {
 
-    private val initDetails = ProductDetailsUiModel(0, "Product", "0.00", "", "", null, "")
-
-    private val _product: MutableStateFlow<ProductDetailsUiModel?> = MutableStateFlow(initDetails)
-    val product: StateFlow<ProductDetailsUiModel?> = _product.asStateFlow()
+    private val _product: MutableStateFlow<ProductDetailsUiModel> =
+        MutableStateFlow(ProductDetailsUiModel.idle)
+    val product: StateFlow<ProductDetailsUiModel> = _product.asStateFlow()
 
     fun getDetailsById(id: Int?) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = productsRepository.getProductDetailsById(id)?.toUiModel()
-            _product.value = response
+            _product.update { response!! }
         }
+    }
 
+    fun onStockAdded(value: String) = viewModelScope.launch(Dispatchers.IO) {
+        val productSelected = product.value?.id
+        val amount = value.filter { it.isDigit() || it == '.' }
+        if (productSelected != null && amount.isNotBlank()){
+            productsRepository.addStock(
+                reference = "Stock in",
+                productId = productSelected,
+                amount = amount.toFloat()
+            )
+            getDetailsById(productSelected)
+        }
+        //TODO else block
+    }
+
+
+    fun onStockRemoved(value: String) = viewModelScope.launch(Dispatchers.IO) {
+        val productSelected = product.value?.id
+        val amount = value.filter { it.isDigit() || it == '.' }
+        if (productSelected != null && amount.isNotBlank()){
+            productsRepository.removeStock(
+                reference = "Stock out",
+                productId = productSelected,
+                amount = amount.toFloat()
+            )
+            getDetailsById(productSelected)
+        }
+        //TODO else block
     }
 
     fun onDeleteAction(id: Int?) {
         viewModelScope.launch(Dispatchers.IO) {
             productsRepository.deleteProductById(id)
         }
-//            .invokeOnCompletion {
-//            getAllProducts()
-//        }
     }
+
+    override fun onStart() = Unit
 }
 

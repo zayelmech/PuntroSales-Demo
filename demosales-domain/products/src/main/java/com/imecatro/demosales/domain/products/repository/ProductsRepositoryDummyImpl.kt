@@ -45,5 +45,15 @@ class ProductsRepositoryDummyImpl(
     override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
         TODO("Not yet implemented")
     }
+
+
+    override fun addStock(reference: String, productId: Int, amount: Float) {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeStock(reference: String, productId: Int, amount: Float) {
+        TODO("Not yet implemented")
+    }
+
 }
 

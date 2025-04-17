@@ -11,7 +11,7 @@ data class ProductRoomEntity(
     val price: Float,
     val currency: String,
     val unit: String,
-    val stock: Float,
+    val stock: Double,
     val details: String,
     val imageUri: String
 

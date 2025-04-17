@@ -12,10 +12,11 @@ import com.imecatro.demosales.data.sales.model.OrderDataRoomModel
 import com.imecatro.demosales.data.sales.model.SaleDataRoomModel
 import com.imecatro.products.data.datasource.ProductsDao
 import com.imecatro.products.data.model.ProductRoomEntity
+import com.imecatro.products.data.model.StockRoomEntity
 
 @Database(
-    entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class],
-    version = 4
+    entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class, StockRoomEntity::class],
+    version = 5
 )
 abstract class ProductsRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao

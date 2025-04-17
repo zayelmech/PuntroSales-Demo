@@ -6,8 +6,10 @@ import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetAllClientsUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
+import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
+import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
@@ -33,6 +35,10 @@ import kotlinx.coroutines.Dispatchers
 @Module
 @InstallIn(ViewModelComponent::class)
 class UseCasesModule {
+
+    @Provides
+    fun providesAddStockUseCase(productsRepository : ProductsRepository) = AddStockUseCase(productsRepository)
+
     @Provides
     fun provideGetListOfCurrenciesUseCase(): GetListOfCurrenciesUseCase =
         GetListOfCurrenciesUseCase()
@@ -107,19 +113,19 @@ class ClientsFeaturesModule {
     @Provides
     fun providesGetListOfClientsUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+        appCoroutineDispatcher: CoroutineProvider
     ): GetAllClientsUseCase = GetAllClientsUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesAddClientUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+        appCoroutineDispatcher: CoroutineProvider
     ): AddClientUseCase = AddClientUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesClientDetailsByIdUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+        appCoroutineDispatcher: CoroutineProvider
     ): GetClientDetailsByIdUseCase =
         GetClientDetailsByIdUseCase(clientsRepository, appCoroutineDispatcher)
 
@@ -127,13 +133,13 @@ class ClientsFeaturesModule {
     @Provides
     fun providesDeleteClientByIdUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+        appCoroutineDispatcher: CoroutineProvider
     ): DeleteClientByIdUseCase = DeleteClientByIdUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesUpdateClientUseCase(
         clientsRepository: ClientsRepository,
-        appCoroutineDispatcher: com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+        appCoroutineDispatcher: CoroutineProvider
     ): UpdateClientUseCase = UpdateClientUseCase(clientsRepository, appCoroutineDispatcher)
 
 }

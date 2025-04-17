@@ -9,7 +9,7 @@ data class ProductDomainModel(
     val price: Float?,
     val currency: String?,
     val unit: String? = ProductUnit.Default.symbol,
-    val stock: Float,
+    val stock: ProductStockDomainModel,
     val details: String,
     val imageUri: String?
 ) {

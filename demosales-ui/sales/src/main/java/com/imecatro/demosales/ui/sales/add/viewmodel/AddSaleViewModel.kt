@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
+import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
@@ -42,6 +43,7 @@ class AddSaleViewModel @Inject constructor(
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
 
+    private val addStockUseCase: AddStockUseCase,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -123,6 +125,14 @@ class AddSaleViewModel @Inject constructor(
             }
             response.onFailure {
                 _ticketState.value = TicketUiState.Error(it.message ?: "Error on saving data")
+            }
+
+            cartList.first().forEach { product ->
+                addStockUseCase(
+                    reference = "Sale #$ticketId",
+                    productId = product.product.id,
+                    amount = product.qty
+                )
             }
         }
     }
