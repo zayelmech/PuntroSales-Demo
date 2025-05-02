@@ -26,8 +26,7 @@ fun ShimmerListItem(
         modifier = Modifier
             .padding(2.dp, 2.dp)
             .fillMaxWidth(0.9f),
-        elevation = CardDefaults.cardElevation(0.5.dp),
-        colors = CardDefaults.cardColors(Color.White)
+        elevation = CardDefaults.cardElevation(0.5.dp)
     ) {
         Row(modifier = modifier) {
             Box(
