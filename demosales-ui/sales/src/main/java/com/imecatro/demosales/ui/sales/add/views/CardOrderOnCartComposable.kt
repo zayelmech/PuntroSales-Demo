@@ -44,7 +44,7 @@ private val dummyProduct =
     ProductOnCartUiModel(
         orderId = 0,
         product = ProductResultUiModel(name = "Test"),
-        qty = 0f,
+        qty = 0.0,
         subtotal = BigDecimal(0)
     )
 

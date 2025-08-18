@@ -37,7 +37,7 @@ class ProductsDetailsViewModel @Inject constructor(
             productsRepository.addStock(
                 reference = "Stock in",
                 productId = productSelected,
-                amount = amount.toFloat()
+                amount = amount.toDouble()
             )
             getDetailsById(productSelected)
         }
@@ -52,7 +52,7 @@ class ProductsDetailsViewModel @Inject constructor(
             productsRepository.removeStock(
                 reference = "Stock out",
                 productId = productSelected,
-                amount = amount.toFloat()
+                amount = amount.toDouble()
             )
             getDetailsById(productSelected)
         }
@@ -67,4 +67,3 @@ class ProductsDetailsViewModel @Inject constructor(
 
     override fun onStart() = Unit
 }
-

@@ -146,10 +146,10 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
-    private fun additional(oldQty: Float, newQty: String): Float {
+    private fun additional(oldQty: Double, newQty: String): Double {
         if (newQty.startsWith('+')) return newQty.filter { it.isDigit() }.toFloat() + oldQty
         if (newQty.startsWith('-')) return oldQty - newQty.filter { it.isDigit() }.toFloat()
-        return newQty.filter { it.isDigit() || it == '.' }.toFloat()
+        return newQty.filter { it.isDigit() || it == '.' }.toDouble()
     }
 
     fun onCancelTicketAction() {
@@ -161,7 +161,7 @@ class AddSaleViewModel @Inject constructor(
 }
 
 
-private fun ProductOnCartUiModel.toUpdateQtyDomain(newQty: Float): Order {
+private fun ProductOnCartUiModel.toUpdateQtyDomain(newQty: Double): Order {
     return Order(
         id = this.orderId,
         productId = this.product.id,

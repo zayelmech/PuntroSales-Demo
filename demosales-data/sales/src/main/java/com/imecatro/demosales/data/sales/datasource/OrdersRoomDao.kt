@@ -17,7 +17,7 @@ interface OrdersRoomDao {
     @Update
     suspend fun updateOrder(order: OrderDataRoomModel)
     @Query("UPDATE order_table SET qty = :newValue WHERE id = :id")
-    suspend fun updateOrderQty(id: Long, newValue: Float)  // Adjust the data type as needed
+    suspend fun updateOrderQty(id: Long, newValue: Double)  // Adjust the data type as needed
 
     @Query("SELECT * FROM order_table WHERE id = :id")
     fun getOrderById(id: Int) : OrderDataRoomModel

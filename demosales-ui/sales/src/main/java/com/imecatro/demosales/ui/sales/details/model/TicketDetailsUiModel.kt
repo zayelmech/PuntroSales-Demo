@@ -12,6 +12,6 @@ data class TicketDetailsUiModel(
 
 data class ProductOnTicketUiModel(
     val name: String,
-    val qty: Float,
-    val subtotal: Float
+    val qty: Double,
+    val subtotal: Double
 )

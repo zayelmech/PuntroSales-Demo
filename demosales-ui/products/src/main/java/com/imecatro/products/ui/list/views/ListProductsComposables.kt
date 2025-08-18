@@ -18,7 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -31,6 +34,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -77,6 +81,7 @@ fun ListOfProducts(
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
+    var showFilters by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(text) {
         snapshotFlow { text }
@@ -143,6 +148,19 @@ fun ListOfProducts(
                 .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+//            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+//                TextButton(onClick = { showFilters = true }) {
+//                    Icon(Icons.Filled.ArrowDropDown, null)
+//                    Text("Most popular")
+//                }
+//                if (!showFilters) {
+//                    DropdownMenu(expanded = false, onDismissRequest = { showFilters = false }) {
+//                        DropdownMenuItem(text = { Text("Most popular") }, onClick = {})
+//                        DropdownMenuItem(text = { Text("Most popular..") }, onClick = {})
+//                    }
+//                }
+//
+//            }
             LazyColumn(
                 modifier = Modifier.sizeIn(maxWidth = 411.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -210,7 +228,7 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
 fun fakeProductsList(qty: Int): List<ProductUiModel> {
     val fakeList = mutableListOf<ProductUiModel>()
     for (i in 1..qty) {
-        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", stock = "1",null))
+        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", stock = "1", null))
     }
     return fakeList
 }

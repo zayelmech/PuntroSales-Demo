@@ -254,7 +254,7 @@ fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
             ProductOnCartUiModel(
                 orderId = 0,
                 product = new,
-                qty = 0f,
+                qty = 0.0,
                 subtotal = 1.0f.toBigDecimal()
             )
 
@@ -273,7 +273,7 @@ fun PreviewCreateTicketComposable() {
         ) {
             CreateTicketComposable(
                 createFakeListOfProductsOnCart(5),
-                "",
+                "$0.00",
                 {},
                 {},
                 {},

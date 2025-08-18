@@ -18,8 +18,8 @@ data class StockRoomEntity(
     @ColumnInfo(name = "product_id", index = true)
     val productId : Int,
     val description : String,
-    val amount : Float,
+    @ColumnInfo(name = "amount")
+    val amount: Double,   // << precise
     val date : String,
     val timeStamp : String,
-
-)
+    )

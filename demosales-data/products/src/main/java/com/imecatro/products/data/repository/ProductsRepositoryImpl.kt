@@ -24,7 +24,7 @@ class ProductsRepositoryImpl(
             val stock = StockRoomEntity(
                 productId = productId?.toInt() ?: 0,
                 description = "Initial Stock",
-                amount = product.stock.quantity.toFloat(),
+                amount = product.stock.quantity,
                 date = "",
                 timeStamp = System.currentTimeMillis().toString()
             )
@@ -72,7 +72,7 @@ class ProductsRepositoryImpl(
         return productsDao.searchProducts(letter).map { it.toListDomain() }
     }
 
-    override fun addStock(reference: String, productId: Int, amount: Float) {
+    override fun addStock(reference: String, productId: Int, amount: Double) {
         val stock = StockRoomEntity(
             productId = productId,
             description = reference,
@@ -86,7 +86,7 @@ class ProductsRepositoryImpl(
         productsDao?.updateProductStock(new, productId)
     }
 
-    override fun removeStock(reference: String, productId: Int, amount: Float) {
+    override fun removeStock(reference: String, productId: Int, amount: Double) {
         val stock = StockRoomEntity(
             productId = productId,
             description = reference,

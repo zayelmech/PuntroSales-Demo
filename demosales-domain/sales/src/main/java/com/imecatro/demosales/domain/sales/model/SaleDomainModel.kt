@@ -28,7 +28,7 @@ data class Order(
     val productId :Int,
     val productName: String,
     val productPrice : Float,
-    val qty: Float, //it must be float since some products can be 0.5 kg
+    val qty: Double, //it must be float since some products can be 0.5 kg
     val imgUri : String? = null
 )
 

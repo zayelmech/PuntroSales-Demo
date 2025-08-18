@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.imecatro.demosales.data.clients.datasource.ClientsDao
 import com.imecatro.demosales.data.clients.model.ClientRoomEntity
 import com.imecatro.demosales.data.sales.datasource.OrdersRoomDao
@@ -16,7 +18,7 @@ import com.imecatro.products.data.model.StockRoomEntity
 
 @Database(
     entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class, StockRoomEntity::class],
-    version = 5
+    version = 6
 )
 abstract class ProductsRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -38,7 +40,9 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
                 context,
                 ProductsRoomDatabase::class.java,
                 "puntrosales_demo_database"
-            ).build()
+            )
+                .addMigrations(MIGRATION_5_6)
+                .build()
 
             productsDao = db.productsRoomDao()
             salesDao = db.salesRoomDao()
@@ -52,5 +56,20 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
             return productsDao?.let { true } ?: false
         }
 
+    }
+}
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Round to, say, 6 decimals (adjust to your domain needs)
+        db.execSQL("""
+            UPDATE stock_table
+            SET amount = ROUND(amount, 6)
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE order_table
+            SET qty = ROUND(qty, 6)
+        """.trimIndent())
     }
 }

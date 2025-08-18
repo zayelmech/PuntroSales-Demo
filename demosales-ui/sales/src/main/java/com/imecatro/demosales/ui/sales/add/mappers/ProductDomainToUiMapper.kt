@@ -38,7 +38,7 @@ internal fun ProductResultUiModel.toDomain(id: Long = 0): Order {
         productId = this.id ?: 0,
         productName = name ?: "",
         productPrice = price ?: 0f,
-        1f
+        qty = 1.0
     )
 }
 

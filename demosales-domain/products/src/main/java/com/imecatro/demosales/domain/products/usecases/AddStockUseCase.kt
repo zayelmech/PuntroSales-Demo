@@ -15,7 +15,7 @@ class AddStockUseCase(
     suspend operator fun invoke(
         reference: String,
         productId: Int,
-        amount: Float
+        amount: Double
     ) {
         productsRepository.addStock(
             reference = reference,

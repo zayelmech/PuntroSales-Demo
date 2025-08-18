@@ -44,7 +44,7 @@ import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
 @Preview(showBackground = true, showSystemUi = false)
 @Composable
 fun TicketDetailsComposable(
-    ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(listOf(ProductOnTicketUiModel("a",1f,3f))),
+    ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(listOf(ProductOnTicketUiModel("a",1.0,3.0))),
     onDeleteClick: () -> Unit = {},
     onEditClick: () -> Unit = {}
 ) {

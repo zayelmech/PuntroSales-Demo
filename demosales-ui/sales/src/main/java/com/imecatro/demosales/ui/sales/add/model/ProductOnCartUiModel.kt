@@ -5,6 +5,6 @@ import java.math.BigDecimal
 data class ProductOnCartUiModel(
     val orderId : Long,
     val product: ProductResultUiModel,
-    var qty: Float,
+    var qty: Double,
     var subtotal: BigDecimal
 )

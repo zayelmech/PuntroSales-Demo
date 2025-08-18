@@ -13,7 +13,7 @@ interface ProductsRepository {
 
     fun searchProducts(letter: String): Flow<List<ProductDomainModel>>
 
-    fun addStock(reference: String, productId: Int, amount: Float)
+    fun addStock(reference: String, productId: Int, amount: Double)
 
-    fun removeStock(reference: String,productId: Int, amount: Float)
+    fun removeStock(reference: String,productId: Int, amount: Double)
 }
