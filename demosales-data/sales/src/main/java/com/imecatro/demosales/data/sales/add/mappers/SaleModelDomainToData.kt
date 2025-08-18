@@ -13,6 +13,8 @@ fun SaleDomainModel.toData(id: Long): SaleDataRoomModel {
         clientId = this.clientId,
         creationDateMillis = this.date.toLong(),
         status = this.status.str,
+        extra = totals.extraCost,
+        note = note
     )
 }
 

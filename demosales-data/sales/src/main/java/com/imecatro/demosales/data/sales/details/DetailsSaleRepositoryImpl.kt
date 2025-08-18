@@ -5,6 +5,7 @@ import com.imecatro.demosales.data.sales.datasource.SalesRoomDao
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.details.SaleDetailsDomainModel
 import com.imecatro.demosales.domain.sales.model.Order
+import com.imecatro.demosales.domain.sales.model.OrderStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -24,12 +25,14 @@ class DetailsSaleRepositoryImpl(
                 list = list.map {
                     Order(it.id, it.productId, it.productName, it.productPrice, it.qty)
                 },
+                status = OrderStatus.entries.find { it.str == sale.status }
+                    ?: OrderStatus.INITIALIZED,
                 clientName = "UNKNOWN",
-                note = "...",
+                note = sale.note ?: "",
                 shippingCost = 0.0,
                 tax = 0.0,
-                extra = 0.0,
-                total = ordersRoomDao.calculateTotalForSale(id) + 0 //TODO
+                extra = sale.extra,
+                total = ordersRoomDao.calculateTotalForSale(id) + sale.extra //TODO
             )
         }
 

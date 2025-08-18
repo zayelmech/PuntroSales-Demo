@@ -18,7 +18,7 @@ import com.imecatro.products.data.model.StockRoomEntity
 
 @Database(
     entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class, StockRoomEntity::class],
-    version = 7
+    version = 8
 )
 abstract class ProductsRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -41,7 +41,7 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
                 ProductsRoomDatabase::class.java,
                 "puntrosales_demo_database"
             )
-                .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
+                .addMigrations( MIGRATION_6_7, MIGRATION_7_8)
                 .build()
 
             productsDao = db.productsRoomDao()
@@ -58,21 +58,21 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
 
     }
 }
-
-val MIGRATION_5_6 = object : Migration(5, 6) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        // Round to, say, 6 decimals (adjust to your domain needs)
-        db.execSQL("""
-            UPDATE stock_table
-            SET amount = ROUND(amount, 6)
-        """.trimIndent())
-
-        db.execSQL("""
-            UPDATE order_table
-            SET qty = ROUND(qty, 6)
-        """.trimIndent())
-    }
-}
+//
+//val MIGRATION_5_6 = object : Migration(5, 6) {
+//    override fun migrate(db: SupportSQLiteDatabase) {
+//        // Round to, say, 6 decimals (adjust to your domain needs)
+//        db.execSQL("""
+//            UPDATE stock_table
+//            SET amount = ROUND(amount, 6)
+//        """.trimIndent())
+//
+//        db.execSQL("""
+//            UPDATE order_table
+//            SET qty = ROUND(qty, 6)
+//        """.trimIndent())
+//    }
+//}
 
 val MIGRATION_6_7 = object : Migration(6,7) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -88,3 +88,9 @@ val MIGRATION_6_7 = object : Migration(6,7) {
         """.trimIndent())
     }
 }
+val MIGRATION_7_8 = object : Migration(7,8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE sales_table ADD COLUMN extra REAL NOT NULL DEFAULT 0.0")
+    }
+}
+

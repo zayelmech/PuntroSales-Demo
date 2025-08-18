@@ -18,5 +18,5 @@ sealed class SalesDestinations{
     data class Details(val id: Long)
 
     @Serializable
-    data class Checkout(val id: Int)
+    data class Checkout(val id: Long)
 }

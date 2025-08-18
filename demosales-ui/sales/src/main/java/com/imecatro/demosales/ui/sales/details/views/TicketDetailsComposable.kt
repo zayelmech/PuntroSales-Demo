@@ -22,7 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,9 +44,18 @@ import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
 @Preview(showBackground = true, showSystemUi = false)
 @Composable
 fun TicketDetailsComposable(
-    ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(listOf(ProductOnTicketUiModel("a",1.0,3.0))),
+    ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(
+        listOf(
+            ProductOnTicketUiModel(
+                "a",
+                1.0,
+                3.0
+            )
+        )
+    ),
     onDeleteClick: () -> Unit = {},
-    onEditClick: () -> Unit = {}
+    onEditClick: () -> Unit = {},
+    onNavToList: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -127,33 +136,44 @@ fun TicketDetailsComposable(
                 Text("New Sale")
             }
 
-            TextButton(
-                onClick = onDeleteClick,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-            ) {
-                Icon(Icons.Default.Delete, null)
-                Text("Cancel")
-            }
+            if (ticketDetails.isEditable)
+                TextButton(
+                    onClick = onDeleteClick,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Icon(Icons.Default.Delete, null)
+                    Text("Cancel")
+                }
+            else
+                TextButton(
+                    onClick = onNavToList,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text("Back to Sales")
+                }
         }
     }
 }
 
 @Composable
 fun TicketDetailsComposableImpl(
-    ticketDetailsVM: TicketDetailsViewModel, saleId: Long, onNavigateAction: (Long?) -> Unit
+    ticketDetailsVM: TicketDetailsViewModel,
+    saleId: Long,
+    onNavigateAction: (Long?) -> Unit
 ) {
 
     val saleSelected by ticketDetailsVM.sale.collectAsState()
     var showDeleteTicketDialog by remember {
         mutableStateOf(false)
     }
-    SideEffect {
+    LaunchedEffect(Unit) {
         ticketDetailsVM.onGetDetailsAction(saleId)
     }
 
     TicketDetailsComposable(ticketDetails = saleSelected,
         onDeleteClick = { showDeleteTicketDialog = true },
-        onEditClick = { onNavigateAction(saleId) })
+        onEditClick = { onNavigateAction(saleId) },
+        onNavToList = { onNavigateAction(null) })
 
     if (showDeleteTicketDialog) {
         OnDeleteItemDialog(

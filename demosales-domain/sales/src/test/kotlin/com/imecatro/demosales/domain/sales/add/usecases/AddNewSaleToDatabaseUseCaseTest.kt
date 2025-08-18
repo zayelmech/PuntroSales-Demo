@@ -46,8 +46,7 @@ class AddNewSaleToDatabaseUseCaseTest {
             id = 0,
             clientId = 1,
             date = "today",
-            productsList = listOf(Order(0,0,"", 2f,2f)),
-            total = 2.0,
+            productsList = listOf(Order(0,0,"", 2.0,2.0)),
             status = OrderStatus.COMPLETED
         )
 

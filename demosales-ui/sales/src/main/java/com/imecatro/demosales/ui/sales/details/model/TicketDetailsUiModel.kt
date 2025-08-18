@@ -7,7 +7,8 @@ data class TicketDetailsUiModel(
     val shippingCost: String = "",
     val tax: String = "",
     val extra: String = "",
-    val total: String = ""
+    val total: String = "",
+    val isEditable: Boolean = true,
 )
 
 data class ProductOnTicketUiModel(

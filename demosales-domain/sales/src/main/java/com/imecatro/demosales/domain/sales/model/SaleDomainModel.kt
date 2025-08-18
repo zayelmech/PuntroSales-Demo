@@ -15,21 +15,28 @@ package com.imecatro.demosales.domain.sales.model
  */
 data class SaleDomainModel(
     val id: Long,
-    val clientId : Int,
+    val clientId: Int,
     var date: String, //date when ticket was created
     var productsList: List<Order>, //contains the id of all products
-    var total: Double,
+    val totals: Costs = Costs(),
     val status: OrderStatus = OrderStatus.INITIALIZED,
-    val note : String = ""
-)
+    val note: String = ""
+) {
+
+    data class Costs(
+        val extraCost: Double = 0.0,
+        val subTotal: Double = 0.0,
+        var total: Double = 0.0,
+    )
+}
 
 data class Order(
     val id: Long,
-    val productId :Int,
+    val productId: Int,
     val productName: String,
-    val productPrice : Double,
+    val productPrice: Double,
     val qty: Double, //it must be float since some products can be 0.5 kg
-    val imgUri : String? = null
+    val imgUri: String? = null
 )
 
 enum class OrderStatus(val str: String) {

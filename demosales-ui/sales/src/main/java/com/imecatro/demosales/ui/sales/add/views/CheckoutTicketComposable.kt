@@ -1,18 +1,38 @@
 package com.imecatro.demosales.ui.sales.add.views
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
-import com.imecatro.demosales.ui.sales.add.viewmodel.EditDialogUiState
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 
@@ -106,50 +126,47 @@ fun CheckoutTicketComposable(
 @Composable
 fun CheckoutTicketComposableImpl(
     checkoutViewModel: CheckoutViewModel,
-    onCheckoutClick: () -> Unit
+    saleId: Long,
+    onTicketCheckedOut: (Long) -> Unit
 ) {
     val ticket by checkoutViewModel.currentTicket.collectAsState()
-    val showEditInputDialog by checkoutViewModel.showEditDialog.collectAsState()
-    val editableField by checkoutViewModel.editableState.collectAsState()
 
-    CheckoutTicketComposable(
-        client = ticket.clientName,
-        onChangeClientClick = {
-            checkoutViewModel.onShowEditInputDialog(
-                EditDialogUiState.Client(
-                    ticket.clientName
-                )
-            )
-        },
+    var showEditInputDialog by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        checkoutViewModel.onGetDetailsAction(saleId)
+    }
+    CheckoutTicketComposable(client = ticket.clientName,
+        onChangeClientClick = { /*TODO*/ },
         note = ticket.note,
         onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
-        subtotal = "${ticket.totals.shippingCost}",
-//        onChangeShippingCostClick = {
-//            checkoutViewModel.onShowEditInputDialog(
-//                EditDialogUiState.Shipping(
-//                    ticket.totals.shippingCost
-//                )
-//            )
-//        },
+        subtotal = "${ticket.totals.subtotal}",
         extra = "${ticket.totals.extra}",
-        onExtraClick = { checkoutViewModel.onShowEditInputDialog(EditDialogUiState.Extra(ticket.totals.extra)) },
+        onExtraClick = { showEditInputDialog = true },
         total = "${ticket.totals.total}",
-        onCheckoutClick = onCheckoutClick
-    )
+        onCheckoutClick = {
+            checkoutViewModel.onCheckoutAction()
+        })
+
+    LaunchedEffect(ticket.ticketSaved) {
+        if (ticket.ticketSaved) onTicketCheckedOut(ticket.id)
+    }
     if (showEditInputDialog) {
-        InputNumberDialogComposable(
-            initialValue = editableField.txt,
-            onDismissRequest = { /*TODO*/ },
-            onConfirmClicked = { checkoutViewModel.onEditDialogConfirmation(editableField, it) }
-        )
+        InputNumberDialogComposable(initialValue = "",
+            onDismissRequest = { showEditInputDialog = false },
+            onConfirmClicked = {
+                checkoutViewModel.onExtraChargeAdded(it)
+                showEditInputDialog = false
+            })
     }
 
 }
 
 
 @Preview(
-    showBackground = true,
-    device = "spec:width=411dp,height=891dp"
+    showBackground = true, device = "spec:width=411dp,height=891dp"
 )
 @Composable
 fun PreviewCheckoutTicketComposable() {

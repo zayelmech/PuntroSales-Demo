@@ -74,7 +74,11 @@ class AddSaleRepositoryImpl(
                         qty = it.qty
                     )
                 },
-                total = total,
+                totals = SaleDomainModel.Costs(
+                    subTotal = total,
+                    extraCost = sale.extra,
+                    total = (total + sale.extra)
+                ),
                 status = sale.status.toOrderStatus()
             )
         }.flowOn(Dispatchers.IO)

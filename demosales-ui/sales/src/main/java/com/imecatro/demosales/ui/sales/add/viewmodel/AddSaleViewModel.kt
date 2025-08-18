@@ -76,12 +76,13 @@ class AddSaleViewModel @Inject constructor(
     }
 
     @Volatile
-    private var ticketId: Long = 0
+    private var _ticketId: Long = 0
+    val ticketId get() = _ticketId
 
     val cartList: StateFlow<List<ProductOnCartUiModel>> = channelFlow {
         getCartFlowUseCase().collectLatest { ticket ->
-            ticketId = ticket.id
-            _ticketSubtotal.update { ticket.total.toString() }
+            _ticketId = ticket.id
+            _ticketSubtotal.update { ticket.totals.subTotal.toString() }
             send(ticket.toUi())
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
@@ -116,7 +117,6 @@ class AddSaleViewModel @Inject constructor(
 
         val saleModelDomain: SaleDomainModel = cartList.value.toDomainModel().copy(
             date = System.currentTimeMillis().toString(),
-            total = 0.0
         )
         viewModelScope.launch(dispatcher) {
             val response = addNewSaleToDatabaseUseCase(saleModelDomain)
@@ -129,7 +129,7 @@ class AddSaleViewModel @Inject constructor(
 
             cartList.first().forEach { product ->
                 addStockUseCase(
-                    reference = "Sale #$ticketId",
+                    reference = "Sale #$_ticketId",
                     productId = product.product.id,
                     amount = product.qty
                 )
@@ -154,7 +154,7 @@ class AddSaleViewModel @Inject constructor(
 
     fun onCancelTicketAction() {
         viewModelScope.launch {
-            deleteTicketByIdUseCase.invoke(ticketId)
+            deleteTicketByIdUseCase.invoke(_ticketId)
         }
     }
 

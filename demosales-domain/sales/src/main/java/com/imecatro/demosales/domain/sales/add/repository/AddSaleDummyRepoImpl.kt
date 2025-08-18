@@ -16,7 +16,6 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         clientId = 0,
         date = "",
         productsList = listOf(),
-        total = 0.0,
         status = OrderStatus.INITIALIZED
     )
 

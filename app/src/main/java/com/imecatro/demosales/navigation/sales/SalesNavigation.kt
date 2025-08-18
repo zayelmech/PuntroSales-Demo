@@ -27,16 +27,18 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
         composable<SalesDestinations.Add> {
 
             CreateTicketComposableStateImpl(addSaleViewModel = hiltViewModel(),
-                onNavigateToCheckout = {
-                    navController.navigate(SalesDestinations.Checkout(1))
+                onNavigateToCheckout = { id ->
+                    navController.navigate(SalesDestinations.Checkout(id))
                 })
         }
 
-        composable<SalesDestinations.Checkout> {
+        composable<SalesDestinations.Checkout> { backStackEntry ->
 
-            CheckoutTicketComposableImpl(checkoutViewModel = hiltViewModel()) {
-                navController.navigate(SalesDestinations.List) {
-                    popUpTo(SalesDestinations.List) { inclusive = true }
+            val id = backStackEntry.toRoute<SalesDestinations.Checkout>().id
+
+            CheckoutTicketComposableImpl(checkoutViewModel = hiltViewModel(), saleId = id) { ticket ->
+                navController.navigate(SalesDestinations.Details(ticket)) {
+                   popUpTo(SalesDestinations.List) { inclusive = false }
                 }
             }
         }

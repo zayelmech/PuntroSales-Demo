@@ -177,7 +177,7 @@ fun CreateTicketComposable(
 @Composable
 fun CreateTicketComposableStateImpl(
     addSaleViewModel: AddSaleViewModel,
-    onNavigateToCheckout: () -> Unit
+    onNavigateToCheckout: (Long) -> Unit
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
     val productsOnCart by addSaleViewModel.cartList.collectAsState()
@@ -226,7 +226,7 @@ fun CreateTicketComposableStateImpl(
                 onQtyValueChange = { product, number ->
                     addSaleViewModel.onQtyValueChangeAtPos(product, number)
                 },
-                onContinueTicketClicked = { onNavigateToCheckout() },
+                onContinueTicketClicked = { onNavigateToCheckout(addSaleViewModel.ticketId) },
                 onAddProductClicked = { scope.launch { scaffoldState.bottomSheetState.expand() } }
             )
         }

@@ -19,6 +19,7 @@ import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.CheckoutSaleUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
@@ -37,7 +38,8 @@ import kotlinx.coroutines.Dispatchers
 class UseCasesModule {
 
     @Provides
-    fun providesAddStockUseCase(productsRepository : ProductsRepository) = AddStockUseCase(productsRepository)
+    fun providesAddStockUseCase(productsRepository: ProductsRepository) =
+        AddStockUseCase(productsRepository)
 
     @Provides
     fun provideGetListOfCurrenciesUseCase(): GetListOfCurrenciesUseCase =
@@ -86,10 +88,13 @@ class UseCasesModule {
 
     @Provides
     fun provideGetAllSalesUseCase(
-        allSalesRepository: AllSalesRepository,
-        //dispatcher: CoroutineDispatcher
-    ) =
-        GetAllSalesUseCase(allSalesRepository)
+        allSalesRepository: AllSalesRepository
+    ) = GetAllSalesUseCase(allSalesRepository)
+
+    @Provides
+    fun provideSaveSaleUseCase(
+        allSalesRepository: AddSaleRepository
+    ) = CheckoutSaleUseCase(allSalesRepository)
 
 
     @Provides

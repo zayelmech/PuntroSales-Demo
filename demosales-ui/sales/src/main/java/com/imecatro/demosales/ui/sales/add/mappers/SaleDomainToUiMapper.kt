@@ -36,7 +36,7 @@ fun List<ProductOnCartUiModel>.toDomainModel(): SaleDomainModel {
         clientId = 0,
         date = "",
         productsList = map { it.toOrderDomainModel() },
-        total = 0.0,
+        totals = SaleDomainModel.Costs(),
         status = OrderStatus.PENDING
     )
 }
