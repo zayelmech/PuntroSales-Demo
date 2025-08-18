@@ -17,7 +17,7 @@ interface SalesRoomDao {
     @Update
     suspend fun saveSaleState(sale: SaleDataRoomModel)
 
-    @Query("SELECT * FROM sales_table ORDER BY id")
+    @Query("SELECT * FROM sales_table ORDER BY id DESC")
     fun getAllSales(): Flow<List<SaleDataRoomModel>>
 
     @Query("SELECT * FROM sales_table WHERE id = :id")

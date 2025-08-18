@@ -27,7 +27,7 @@ class AllSalesRepositoryImpl(
     override fun getAllSales(): Flow<List<SaleOnListDomainModel>> =
         allSales.map { list ->
             list.map { saleFromDb ->
-                val total = ordersRoomDao.calculateTotalForSale(saleFromDb.id)
+                val total = ordersRoomDao.calculateTotalForSale(saleFromDb.id) + saleFromDb.extra
                 saleFromDb.toDomain(total)
             }
         }.flowOn(Dispatchers.IO)

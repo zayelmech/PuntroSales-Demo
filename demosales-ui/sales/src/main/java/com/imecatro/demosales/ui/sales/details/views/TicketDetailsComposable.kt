@@ -105,13 +105,13 @@ fun TicketDetailsComposable(
         }
         HorizontalDivider()
         Spacer(modifier = Modifier.size(5.dp))
-        //Shipping cost
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Shipping")
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = "$${ticketDetails.shippingCost}")
-        }
-        //Extra
+//        //Shipping cost
+//        Row(verticalAlignment = Alignment.CenterVertically) {
+//            Text(text = "Shipping")
+//            Spacer(modifier = Modifier.weight(1f))
+//            Text(text = "$${ticketDetails.shippingCost}")
+//        }
+//        //Extra
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Extra")
             Spacer(modifier = Modifier.weight(1f))
