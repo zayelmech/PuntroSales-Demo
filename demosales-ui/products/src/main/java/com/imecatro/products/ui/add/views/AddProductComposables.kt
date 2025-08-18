@@ -139,6 +139,7 @@ fun AddProductComposable(
                 }
                 Text(text = "Stock", style = Typography.labelMedium)
                 OutlinedTextField(
+                    enabled = !isEditMode,
                     value = stock,
                     onValueChange = onStockChange,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)

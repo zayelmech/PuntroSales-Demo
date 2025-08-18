@@ -51,7 +51,8 @@ class ProductsRepositoryImpl(
     @WorkerThread
     override fun updateProduct(product: ProductDomainModel?) {
         product?.let {
-            productsDao?.updateProduct(it.toData())
+            val currentStock : Double = productsDao?.getProductStockHistory(product.id!!)?.sumOf { c -> c.amount }?:0.0
+            productsDao?.updateProduct(it.toData().copy(stock = currentStock))
         }
         //TODO implement error null
     }
@@ -81,22 +82,20 @@ class ProductsRepositoryImpl(
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStock(stock = stock)
-        val currentQty: Double = productsDao?.getProductDetailsById(productId)?.stock ?: 0.0
-        val new: Double = currentQty + amount
-        productsDao?.updateProductStock(new, productId)
+        val currentQty: Double = productsDao?.getProductStockHistory(productId)?.sumOf { it.amount }?:0.0
+        productsDao?.updateProductStock(currentQty, productId)
     }
 
     override fun removeStock(reference: String, productId: Int, amount: Double) {
         val stock = StockRoomEntity(
             productId = productId,
             description = reference,
-            amount = amount * (-1f),
+            amount = amount * (-1.0),
             date = "",//todo
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStock(stock = stock)
-        val currentQty: Double = productsDao?.getProductDetailsById(productId)?.stock ?: 0.0
-        val new: Double = currentQty - amount
-        productsDao?.updateProductStock(new, productId)
+        val currentQty: Double = productsDao?.getProductStockHistory(productId)?.sumOf { it.amount }?:0.0
+        productsDao?.updateProductStock(currentQty, productId)
     }
 }
