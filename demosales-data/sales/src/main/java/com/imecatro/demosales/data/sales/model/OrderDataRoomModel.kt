@@ -22,7 +22,8 @@ data class OrderDataRoomModel(
     val saleId: Long,
     val productId: Int,
     val productName: String,
-    val productPrice: Float,
+    @ColumnInfo(name = "productPrice")
+    val productPrice: Double,
     @ColumnInfo(name = "qty")
     val qty: Double,
     val productImage : String

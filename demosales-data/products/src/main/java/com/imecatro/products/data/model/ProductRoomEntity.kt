@@ -1,5 +1,6 @@
 package com.imecatro.products.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -8,7 +9,8 @@ data class ProductRoomEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     val name: String,
-    val price: Float,
+    @ColumnInfo(name = "price")
+    val price: Double,
     val currency: String,
     val unit: String,
     val stock: Double,

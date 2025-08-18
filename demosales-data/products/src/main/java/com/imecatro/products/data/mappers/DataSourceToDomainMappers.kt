@@ -20,7 +20,8 @@ fun ProductRoomEntity.toDomain(stock: List<StockRoomEntity> = emptyList()): Prod
         imageUri = this.imageUri,
         stock = ProductStockDomainModel(
             quantity = this.stock,
-            cost = (this.stock * price), stock.toDomain()
+            cost = (this.stock.toBigDecimal() * price.toBigDecimal()).toDouble(),
+            history = stock.toDomain()
         )
     )
 }
@@ -29,7 +30,7 @@ fun List<StockRoomEntity>.toDomain(): List<ProductStockDomainModel.History> {
     return map { stockEntity ->
         ProductStockDomainModel.History(
             date = stockEntity.date,
-            qty = stockEntity.amount.toDouble(),
+            qty = stockEntity.amount,
             tittle = stockEntity.description
         )
     }
@@ -40,7 +41,7 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
         ProductRoomEntity(
             id = id,
             name = this.name ?: "",
-            price = this.price ?: 0f,
+            price = this.price ?: 0.0,
             currency = this.currency ?: "",
             unit = this.unit ?: "",
             details = this.details,
@@ -50,7 +51,7 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
     } ?: run {
         ProductRoomEntity(
             name = this.name ?: "",
-            price = this.price ?: 0f,
+            price = this.price ?: 0.0,
             currency = this.currency ?: "",
             unit = this.unit ?: "",
             details = this.details,

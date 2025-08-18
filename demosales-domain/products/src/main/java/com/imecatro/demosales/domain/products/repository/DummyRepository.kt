@@ -14,7 +14,7 @@ object DummyRepository {
                 ProductDomainModel(
                     i,
                     "Product Name $i",
-                    3f,
+                    3.0,
                     "pz",
                     ProductUnit.Default.symbol,
                     stock = ProductStockDomainModel(1.0,1.2, emptyList()),

@@ -139,7 +139,7 @@ fun createFakeList(num: Int): List<ProductResultUiModel> {
         val new = ProductResultUiModel(
             id = i,
             name = "Product name $i",
-            price = 1f,
+            price = 1.0,
             imageUri = null
         )
         list.add(new)

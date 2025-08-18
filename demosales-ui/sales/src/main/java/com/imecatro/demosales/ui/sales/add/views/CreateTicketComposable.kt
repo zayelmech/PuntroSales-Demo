@@ -247,7 +247,7 @@ fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
         val new = ProductResultUiModel(
             id = i,
             name = "Product name $i",
-            price = 1f,
+            price = 1.0,
             imageUri = null
         )
         val new2 =

@@ -18,7 +18,7 @@ import com.imecatro.products.data.model.StockRoomEntity
 
 @Database(
     entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class, StockRoomEntity::class],
-    version = 6
+    version = 7
 )
 abstract class ProductsRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -41,7 +41,7 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
                 ProductsRoomDatabase::class.java,
                 "puntrosales_demo_database"
             )
-                .addMigrations(MIGRATION_5_6)
+                .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
                 .build()
 
             productsDao = db.productsRoomDao()
@@ -70,6 +70,21 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         db.execSQL("""
             UPDATE order_table
             SET qty = ROUND(qty, 6)
+        """.trimIndent())
+    }
+}
+
+val MIGRATION_6_7 = object : Migration(6,7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Round to, say, 6 decimals (adjust to your domain needs)
+        db.execSQL("""
+            UPDATE products_table
+            SET price = ROUND(price, 6)
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE order_table
+            SET productPrice = ROUND(productPrice, 6)
         """.trimIndent())
     }
 }

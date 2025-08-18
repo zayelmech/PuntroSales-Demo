@@ -6,7 +6,7 @@ import com.imecatro.demosales.domain.core.model.ProductUnit
 data class ProductDomainModel(
     var id: Int?,
     val name: String?,
-    val price: Float?,
+    val price: Double?,
     val currency: String?,
     val unit: String? = ProductUnit.Default.symbol,
     val stock: ProductStockDomainModel,

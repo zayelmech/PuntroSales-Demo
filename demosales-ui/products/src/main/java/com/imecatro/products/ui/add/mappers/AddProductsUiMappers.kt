@@ -10,7 +10,7 @@ internal fun AddProductUiModel.toDomain(): ProductDomainModel? {
     return ProductDomainModel(
         id = null,
         name = this.name,
-        price = this.price?.toFloat() ?: 0f,
+        price = this.price?.toDouble() ?: 0.0,
         currency = this.currency,
         unit = this.unit,
         details = this.details,

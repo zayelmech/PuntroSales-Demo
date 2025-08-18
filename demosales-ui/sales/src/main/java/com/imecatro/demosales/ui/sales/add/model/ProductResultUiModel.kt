@@ -5,6 +5,6 @@ import android.net.Uri
 data class ProductResultUiModel(
     val id: Int = 0,
     val name: String = "",
-    val price: Float = 0f,
+    val price: Double = 0.0,
     val imageUri: Uri? = null
 )
