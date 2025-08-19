@@ -20,7 +20,7 @@ data class OrderDataRoomModel(
     val id: Long = 0,
     @ColumnInfo(name = "sale_id", index = true)
     val saleId: Long,
-    val productId: Int,
+    val productId: Long,
     val productName: String,
     @ColumnInfo(name = "productPrice")
     val productPrice: Double,

@@ -22,5 +22,5 @@ interface AddSaleRepository {
      * @param n is the number of items needed in the list
      * @return a list of id's [Int]
      */
-    suspend fun filterPopularProducts(n: Int): List<Int>
+    suspend fun filterPopularProducts(n: Int): List<Long>
 }

@@ -11,7 +11,7 @@ class GetProductDetailsByIdUseCase(
     private val iODispatcher: CoroutineDispatcher
 ) {
 
-    suspend operator fun invoke(id: Int): ProductDomainModel? =
+    suspend operator fun invoke(id: Long): ProductDomainModel? =
         withContext(iODispatcher) {
             return@withContext try {
                 productsRepository.getProductDetailsById(id)

@@ -51,7 +51,7 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         return ticketOnCache
     }
 
-    override suspend fun filterPopularProducts(n: Int): List<Int> {
+    override suspend fun filterPopularProducts(n: Int): List<Long> {
         TODO("Not yet implemented")
     }
 

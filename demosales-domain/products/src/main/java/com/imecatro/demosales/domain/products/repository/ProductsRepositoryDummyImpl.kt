@@ -13,7 +13,7 @@ class ProductsRepositoryDummyImpl(
             p.id?.let {
                 DummyRepository.fakeList.add(p)
             }?:run {
-                val newId = DummyRepository.fakeList.size + 1
+                val newId = DummyRepository.fakeList.size + 1L
                 DummyRepository.fakeList.add(p.apply {
                     id = newId
                 })
@@ -25,7 +25,7 @@ class ProductsRepositoryDummyImpl(
         return flow { emit(DummyRepository.fakeList) }
     }
 
-    override fun deleteProductById(id: Int?) {
+    override fun deleteProductById(id: Long) {
         DummyRepository.fakeList.removeIf {
             it.id == id
         }
@@ -38,7 +38,7 @@ class ProductsRepositoryDummyImpl(
         }
     }
 
-    override fun getProductDetailsById(id: Int?): ProductDomainModel? {
+    override fun getProductDetailsById(id: Long): ProductDomainModel? {
         return DummyRepository.fakeList.find { it.id == id }
     }
 
@@ -47,11 +47,11 @@ class ProductsRepositoryDummyImpl(
     }
 
 
-    override fun addStock(reference: String, productId: Int, amount: Double) {
+    override fun addStock(reference: String, productId: Long, amount: Double) {
         TODO("Not yet implemented")
     }
 
-    override fun removeStock(reference: String, productId: Int, amount: Double) {
+    override fun removeStock(reference: String, productId: Long, amount: Double) {
         TODO("Not yet implemented")
     }
 

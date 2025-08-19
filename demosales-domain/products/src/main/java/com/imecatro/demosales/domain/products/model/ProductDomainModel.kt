@@ -4,7 +4,7 @@ import com.imecatro.demosales.domain.core.model.ProductUnit
 
 
 data class ProductDomainModel(
-    var id: Int?,
+    var id: Long?,
     val name: String?,
     val price: Double?,
     val currency: String?,

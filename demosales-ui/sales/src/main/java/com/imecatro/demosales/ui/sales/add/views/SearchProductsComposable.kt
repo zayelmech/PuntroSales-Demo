@@ -88,7 +88,7 @@ data class SearchEngineUiModel(
 )
 
 @Composable
-fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked: (Int) -> Unit) {
+fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked: (Long) -> Unit) {
     val context = LocalContext.current
 
     Box(modifier = Modifier
@@ -135,7 +135,7 @@ fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked:
 
 fun createFakeList(num: Int): List<ProductResultUiModel> {
     val list: MutableList<ProductResultUiModel> = mutableListOf()
-    for (i in 1..num) {
+    for (i in 1L..num) {
         val new = ProductResultUiModel(
             id = i,
             name = "Product name $i",

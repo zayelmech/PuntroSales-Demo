@@ -22,7 +22,7 @@ class ProductsRepositoryImpl(
             val productId = productsDao?.addProduct(product = it.toData())
 
             val stock = StockRoomEntity(
-                productId = productId?.toInt() ?: 0,
+                productId = productId?:0L,
                 description = "Initial Stock",
                 amount = product.stock.quantity,
                 date = "",
@@ -41,31 +41,27 @@ class ProductsRepositoryImpl(
         return productsDao.getAllProducts().map { it.toListDomain() }
     }
 
-    override fun deleteProductById(id: Int?) {
-        id?.let {
-            productsDao?.deleteProductById(it)
-        }
-        //TODO implement error
+    override fun deleteProductById(id: Long) {
+        productsDao?.deleteProductById(id)
     }
+
 
     @WorkerThread
     override fun updateProduct(product: ProductDomainModel?) {
         product?.let {
-            val currentStock : Double = productsDao?.getProductStockHistory(product.id!!)?.sumOf { c -> c.amount }?:0.0
+            val currentStock: Double =
+                productsDao?.getProductStockHistory(product.id!!)?.sumOf { c -> c.amount } ?: 0.0
             productsDao?.updateProduct(it.toData().copy(stock = currentStock))
         }
         //TODO implement error null
     }
 
-    override fun getProductDetailsById(id: Int?): ProductDomainModel? {
-        return id?.let {
-            val basicDetails = productsDao?.getProductDetailsById(it)
-            val stock = productsDao?.getProductStockHistory(it)
+    override fun getProductDetailsById(id: Long): ProductDomainModel? {
 
-            return basicDetails?.toDomain(stock ?: emptyList())
-        } ?: run {
-            null
-        }
+        val basicDetails = productsDao?.getProductDetailsById(id)
+        val stock = productsDao?.getProductStockHistory(id)
+
+        return basicDetails?.toDomain(stock ?: emptyList())
     }
 
     override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
@@ -73,7 +69,7 @@ class ProductsRepositoryImpl(
         return productsDao.searchProducts(letter).map { it.toListDomain() }
     }
 
-    override fun addStock(reference: String, productId: Int, amount: Double) {
+    override fun addStock(reference: String, productId: Long, amount: Double) {
         val stock = StockRoomEntity(
             productId = productId,
             description = reference,
@@ -82,11 +78,12 @@ class ProductsRepositoryImpl(
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStock(stock = stock)
-        val currentQty: Double = productsDao?.getProductStockHistory(productId)?.sumOf { it.amount }?:0.0
+        val currentQty: Double =
+            productsDao?.getProductStockHistory(productId)?.sumOf { it.amount } ?: 0.0
         productsDao?.updateProductStock(currentQty, productId)
     }
 
-    override fun removeStock(reference: String, productId: Int, amount: Double) {
+    override fun removeStock(reference: String, productId: Long, amount: Double) {
         val stock = StockRoomEntity(
             productId = productId,
             description = reference,
@@ -95,7 +92,8 @@ class ProductsRepositoryImpl(
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStock(stock = stock)
-        val currentQty: Double = productsDao?.getProductStockHistory(productId)?.sumOf { it.amount }?:0.0
+        val currentQty: Double =
+            productsDao?.getProductStockHistory(productId)?.sumOf { it.amount } ?: 0.0
         productsDao?.updateProductStock(currentQty, productId)
     }
 }

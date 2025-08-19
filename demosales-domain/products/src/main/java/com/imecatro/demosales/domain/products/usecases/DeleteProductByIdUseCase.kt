@@ -8,7 +8,7 @@ class DeleteProductByIdUseCase(
     private val productsRepository: ProductsRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
-    operator fun invoke(id : Int?) {
+    operator fun invoke(id : Long) {
         productsRepository.deleteProductById(id)
     }
 }

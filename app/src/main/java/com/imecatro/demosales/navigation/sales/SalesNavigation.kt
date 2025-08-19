@@ -6,8 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import com.imecatro.demosales.ui.clients.edit.viewmodel.EditClientViewModel
 import com.imecatro.demosales.ui.sales.add.views.CheckoutTicketComposableImpl
 import com.imecatro.demosales.ui.sales.add.views.CreateTicketComposableStateImpl
+import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
 import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl
 
@@ -49,7 +51,10 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
         composable<SalesDestinations.Details> { backStackEntry ->
             val navArgs = backStackEntry.toRoute<SalesDestinations.Details>()
 
-            TicketDetailsComposableImpl(ticketDetailsVM = hiltViewModel(), saleId = navArgs.id) {
+            val viewModel: TicketDetailsViewModel =
+                hiltViewModel(creationCallback = { factory: TicketDetailsViewModel.Factory -> factory.create(navArgs.id) })
+
+            TicketDetailsComposableImpl(ticketDetailsVM = viewModel, saleId = navArgs.id) {
                 it?.let {
                     navController.navigate(SalesDestinations.Add) {
                         popUpTo(SalesDestinations.Details(navArgs.id)) { inclusive = true }

@@ -10,9 +10,9 @@ sealed class ProductsDestinations {
     object Add
 
     @Serializable
-    data class Edit(val id: Int)
+    data class Edit(val id: Long)
 
     @Serializable
-    data class Details(val id: Int)
+    data class Details(val id: Long)
 }
 

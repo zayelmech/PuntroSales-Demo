@@ -54,16 +54,16 @@ import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 @Composable
 fun DetailsComposableStateImpl(
     productDetailsViewModel: ProductsDetailsViewModel,
-    productId: Int?,
-    onNavigateToEdit: (Int?) -> Unit
+    onProductDeleted: () -> Unit,
+    onNavigateToEdit: () -> Unit,
 ) {
 
     val productSelected by productDetailsViewModel.product.collectAsState()
 
-    LaunchedEffect(Unit) {
-        productDetailsViewModel.getDetailsById(productId)
+    LaunchedEffect(productSelected.productDeleted) {
+        if (productSelected.productDeleted)
+            onProductDeleted()
     }
-
     var state by remember { mutableIntStateOf(0) }
     val titles = listOf(
         "Details",
@@ -89,13 +89,10 @@ fun DetailsComposableStateImpl(
             DetailsComposable(
                 productDetails = productSelected,
                 onDeleteClicked = {
-                    onNavigateToEdit(null)
-                    productDetailsViewModel.onDeleteAction(productId)
+                    productDetailsViewModel.onDeleteAction()
                 },
                 onEditClicked = {
-                    productId?.let {
-                        onNavigateToEdit(it)
-                    }
+                    onNavigateToEdit()
                 }
             )
         else

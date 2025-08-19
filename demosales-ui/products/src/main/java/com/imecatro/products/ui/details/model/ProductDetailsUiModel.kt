@@ -5,7 +5,7 @@ import com.imecatro.demosales.ui.theme.architect.Idle
 import com.imecatro.demosales.ui.theme.architect.UiState
 
 data class ProductDetailsUiModel(
-    val id: Int?,
+    val id: Long?,
     val name: String?,
     val price: String?,
     val unit: String?,
@@ -14,7 +14,8 @@ data class ProductDetailsUiModel(
     val details: String?,
     val stockQty: String,
     val stockPrice: String,
-    val stockHistory: List<History>
+    val stockHistory: List<History>,
+    val productDeleted : Boolean = false,
 ) : UiState {
 
     /**

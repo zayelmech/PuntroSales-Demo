@@ -30,6 +30,8 @@ interface SalesRoomDao {
     @Query("DELETE FROM sales_table WHERE id = :id")
     suspend fun deleteSaleWithId(id : Long)
 
+    @Query("UPDATE sales_table SET status = :status WHERE id = :id")
+    suspend fun updateSaleStatus(id : Long, status : String)
 
     /**
      * Returns a list of sales prepared for the "sales list" screen.

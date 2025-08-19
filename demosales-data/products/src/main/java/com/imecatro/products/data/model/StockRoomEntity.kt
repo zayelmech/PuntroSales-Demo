@@ -16,7 +16,7 @@ data class StockRoomEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     @ColumnInfo(name = "product_id", index = true)
-    val productId : Int,
+    val productId : Long,
     val description : String,
     @ColumnInfo(name = "amount")
     val amount: Double,   // << precise

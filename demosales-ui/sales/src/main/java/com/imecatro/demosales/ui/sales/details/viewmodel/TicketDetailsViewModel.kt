@@ -3,33 +3,49 @@ package com.imecatro.demosales.ui.sales.details.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
-import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
+import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
+import com.imecatro.demosales.domain.sales.details.UpdateSaleStatusUseCase
+import com.imecatro.demosales.domain.sales.model.OrderStatus
+import com.imecatro.demosales.domain.sales.model.SaleDomainModel
+import com.imecatro.demosales.ui.sales.add.mappers.toDomainModel
+import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
 import com.imecatro.demosales.ui.sales.details.mappers.toUi
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class TicketDetailsViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = TicketDetailsViewModel.Factory::class)
+class TicketDetailsViewModel @AssistedInject constructor(
+    @Assisted("saleId") private val saleId: Long,
     private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
-    private val deleteTicketByIdUseCase: DeleteTicketByIdUseCase,
+    private val updateSaleStatus: UpdateSaleStatusUseCase,
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
+    private val addStockUseCase: AddStockUseCase,
 ) : ViewModel() {
 
     private val _sale: MutableStateFlow<TicketDetailsUiModel> =
         MutableStateFlow(TicketDetailsUiModel(listOf()))
-    val sale: StateFlow<TicketDetailsUiModel> = _sale.asStateFlow()
+    val sale: StateFlow<TicketDetailsUiModel> = _sale.onStart {
+        onGetDetailsAction()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), TicketDetailsUiModel(emptyList()))
 
-    fun onGetDetailsAction(id: Long) {
+    private fun onGetDetailsAction() {
         viewModelScope.launch(Dispatchers.IO) {
-            val details = getDetailsOfSaleByIdUseCase.invoke(id)
+            val details = getDetailsOfSaleByIdUseCase.invoke(saleId)
             _sale.update { details.toUi() }
             getClientDetailsByIdUseCase.execute(details.clientId)
                 .onSuccess { result ->
@@ -37,15 +53,28 @@ class TicketDetailsViewModel @Inject constructor(
                 }.onFailure {
 
                 }
-
-
         }
     }
 
-    fun onDeleteTicketAction(id: Long) {
-        viewModelScope.launch {
-            deleteTicketByIdUseCase.invoke(id)
+    fun onDeleteTicketAction() {
+        viewModelScope.launch(Dispatchers.IO) {
+            updateSaleStatus.invoke(saleId, OrderStatus.CANCEL)
+            //re-add stock
+            sale.value.list.forEach { product ->
+                addStockUseCase(
+                    reference = "Sale #${saleId} Cancelled",
+                    productId = product.id,
+                    amount = product.qty
+                )
+            }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("saleId") saleId: Long
+        ): TicketDetailsViewModel
     }
 }
 

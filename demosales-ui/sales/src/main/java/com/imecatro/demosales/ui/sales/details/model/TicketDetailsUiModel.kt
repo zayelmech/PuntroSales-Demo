@@ -20,6 +20,7 @@ data class TicketDetailsUiModel(
 }
 
 data class ProductOnTicketUiModel(
+    val id : Long,
     val name: String,
     val qty: Double,
     val subtotal: Double

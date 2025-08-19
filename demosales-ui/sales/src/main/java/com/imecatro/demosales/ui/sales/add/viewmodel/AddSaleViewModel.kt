@@ -4,15 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
-import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
+import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
-import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.*
@@ -43,7 +43,8 @@ class AddSaleViewModel @Inject constructor(
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
 
-    private val addStockUseCase: AddStockUseCase,
+    //private val addStockUseCase: AddStockUseCase,
+    private val removeFromStockUseCase: RemoveFromStockUseCase,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -128,7 +129,7 @@ class AddSaleViewModel @Inject constructor(
             }
 
             cartList.first().forEach { product ->
-                addStockUseCase(
+                removeFromStockUseCase(
                     reference = "Sale #$_ticketId",
                     productId = product.product.id,
                     amount = product.qty

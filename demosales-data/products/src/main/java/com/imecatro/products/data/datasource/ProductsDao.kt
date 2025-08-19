@@ -20,13 +20,13 @@ interface ProductsDao {
     fun getAllProducts(): Flow<List<ProductRoomEntity>>
 
     @Query("DELETE FROM products_table WHERE id = :id")
-    fun deleteProductById(id: Int)
+    fun deleteProductById(id: Long)
 
     @Update
     fun updateProduct(product: ProductRoomEntity)
 
     @Query("SELECT * FROM products_table WHERE id = :id ")
-    fun getProductDetailsById(id: Int): ProductRoomEntity
+    fun getProductDetailsById(id: Long): ProductRoomEntity
 
     @Query("""
     SELECT * FROM products_table 
@@ -35,11 +35,11 @@ interface ProductsDao {
     fun searchProducts(productName: String): Flow<List<ProductRoomEntity>>
 
     @Query("SELECT * FROM stock_table WHERE product_id = :id")
-    fun getProductStockHistory(id : Int) : List<StockRoomEntity>
+    fun getProductStockHistory(id : Long) : List<StockRoomEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addStock(stock: StockRoomEntity)
 
     @Query("UPDATE products_table SET stock = :newStock WHERE id = :id")
-    fun updateProductStock(newStock : Double, id: Int)
+    fun updateProductStock(newStock : Double, id: Long)
 }

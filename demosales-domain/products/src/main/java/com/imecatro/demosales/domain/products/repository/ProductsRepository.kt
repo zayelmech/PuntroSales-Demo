@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 interface ProductsRepository {
     fun addProduct(product: ProductDomainModel?)
     fun getAllProducts(): Flow<List<ProductDomainModel>>
-    fun deleteProductById(id: Int?)
+    fun deleteProductById(id: Long)
     fun updateProduct(product: ProductDomainModel?)
-    fun getProductDetailsById(id: Int?): ProductDomainModel?
+    fun getProductDetailsById(id: Long): ProductDomainModel?
 
     fun searchProducts(letter: String): Flow<List<ProductDomainModel>>
 
-    fun addStock(reference: String, productId: Int, amount: Double)
+    fun addStock(reference: String, productId: Long, amount: Double)
 
-    fun removeStock(reference: String,productId: Int, amount: Double)
+    fun removeStock(reference: String,productId: Long, amount: Double)
 }

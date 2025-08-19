@@ -3,7 +3,7 @@ package com.imecatro.products.ui.update.model
 import android.net.Uri
 
 data class UpdateProductUiModel(
-    val id : Int?,
+    val id : Long?,
     val name: String?,
     val price: String?,
     val currency: String?,

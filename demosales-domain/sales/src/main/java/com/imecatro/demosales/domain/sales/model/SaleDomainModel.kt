@@ -32,7 +32,7 @@ data class SaleDomainModel(
 
 data class Order(
     val id: Long,
-    val productId: Int,
+    val productId: Long,
     val productName: String,
     val productPrice: Double,
     val qty: Double, //it must be float since some products can be 0.5 kg

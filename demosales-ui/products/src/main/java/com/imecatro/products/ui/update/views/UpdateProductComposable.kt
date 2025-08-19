@@ -20,7 +20,6 @@ import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 @Composable
 fun UpdateProductComposableStateImpl(
     updateProductViewModel: UpdateProductViewModel,
-    productId: Int?,
     onSaveAction: () -> Unit
 ) {
 
@@ -87,7 +86,7 @@ fun UpdateProductComposableStateImpl(
     ) {
         updateProductViewModel.onSaveAction(
             UpdateProductUiModel(
-                id = productId,
+                id = 0,
                 name = productName,
                 price = productPrice,
                 currency = currencySelected,
@@ -103,9 +102,6 @@ fun UpdateProductComposableStateImpl(
         // TODO back
     }
 
-    LaunchedEffect(Unit) {
-        updateProductViewModel.getProductById(productId)
-    }
     LaunchedEffect(uiState) {
         if (uiState.productUpdated){
             onSaveAction.invoke()

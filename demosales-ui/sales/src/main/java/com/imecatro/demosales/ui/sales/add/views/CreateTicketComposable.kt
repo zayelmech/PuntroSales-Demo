@@ -243,7 +243,7 @@ fun CreateTicketComposableStateImpl(
 
 fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
     val list: MutableList<ProductOnCartUiModel> = mutableListOf()
-    for (i in 1..num) {
+    for (i in 1L..num) {
         val new = ProductResultUiModel(
             id = i,
             name = "Product name $i",

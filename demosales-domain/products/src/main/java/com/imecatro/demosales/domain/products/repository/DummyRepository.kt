@@ -12,7 +12,7 @@ object DummyRepository {
 
             fakeList.add(
                 ProductDomainModel(
-                    i,
+                    0,
                     "Product Name $i",
                     3.0,
                     "pz",

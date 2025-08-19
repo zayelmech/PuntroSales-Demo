@@ -14,6 +14,7 @@ import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
+import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
@@ -22,9 +23,10 @@ import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.CheckoutSaleUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
-import com.imecatro.demosales.domain.sales.details.DeleteTicketByIdUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
+import com.imecatro.demosales.domain.sales.details.UpdateSaleStatusUseCase
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
 import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
 import dagger.Module
@@ -41,6 +43,10 @@ class UseCasesModule {
     @Provides
     fun providesAddStockUseCase(productsRepository: ProductsRepository) =
         AddStockUseCase(productsRepository)
+
+    @Provides
+    fun providesRemoveFromStockUseCase(productsRepository: ProductsRepository) =
+        RemoveFromStockUseCase(productsRepository)
 
     @Provides
     fun provideGetListOfCurrenciesUseCase(): GetListOfCurrenciesUseCase =
@@ -106,6 +112,10 @@ class UseCasesModule {
     fun providesDeleteTicketByIdUseCase(repo: DetailsSaleRepository) =
         DeleteTicketByIdUseCase(repo)
 
+
+    @Provides
+    fun providesUpdateSaleStatus(repo: DetailsSaleRepository) =
+        UpdateSaleStatusUseCase(repo)
 
     @Provides
     fun providesDeleteProductOnCartUseCase(addSaleRepository: AddSaleRepository) =

@@ -76,7 +76,7 @@ fun ListOfProducts(
     isLoading: Boolean = false,
     onSearchProduct: (String) -> Unit = {},
     searchList: List<ProductUiModel> = emptyList(),
-    onCardClicked: (Int?) -> Unit = {},
+    onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {},
 ) {
     var text by rememberSaveable { mutableStateOf("") }
@@ -227,7 +227,7 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
 
 fun fakeProductsList(qty: Int): List<ProductUiModel> {
     val fakeList = mutableListOf<ProductUiModel>()
-    for (i in 1..qty) {
+    for (i in 1L..qty) {
         fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", stock = "1", null))
     }
     return fakeList
@@ -245,7 +245,7 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
 @Composable
 fun ListOfProductsStateImpl(
     productsViewModel: ProductsViewModel,
-    onNavigateAction: (Int?) -> Unit,
+    onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 

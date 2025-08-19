@@ -2,13 +2,7 @@ package com.imecatro.demosales.domain.products.usecases
 
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 
-/**
- *
- * Add Stock Use Case
- *
- *
- */
-class AddStockUseCase(
+class RemoveFromStockUseCase(
     private val productsRepository: ProductsRepository
 ) {
 
@@ -17,12 +11,11 @@ class AddStockUseCase(
         productId: Long,
         amount: Double
     ) {
-        productsRepository.addStock(
+        productsRepository.removeStock(
             reference = reference,
             productId = productId,
             amount = amount
         )
 
     }
-
 }

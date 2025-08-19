@@ -36,6 +36,12 @@ class DetailsSaleRepositoryImpl(
             )
         }
 
+    override suspend fun updateSaleStatusWithId(id: Long, status: OrderStatus) {
+        withContext(Dispatchers.IO) {
+            salesRoomDao.updateSaleStatus(id, status.str)
+        }
+    }
+
     override suspend fun deleteSaleWithId(id: Long) {
         withContext(Dispatchers.IO) {
             salesRoomDao.deleteSaleWithId(id)

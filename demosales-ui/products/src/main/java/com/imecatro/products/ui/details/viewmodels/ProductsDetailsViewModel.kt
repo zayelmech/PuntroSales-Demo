@@ -5,65 +5,83 @@ import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.products.ui.details.mappers.toUiModel
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class ProductsDetailsViewModel @Inject constructor(
-    private val productsRepository: ProductsRepository //= ProductsRepositoryDummyImpl()
+@HiltViewModel(assistedFactory = ProductsDetailsViewModel.Factory::class)
+class ProductsDetailsViewModel @AssistedInject constructor(
+    @Assisted("productId") private val productId: Long,
+    private val productsRepository: ProductsRepository
 ) : BaseViewModel<ProductDetailsUiModel>(ProductDetailsUiModel.idle) {
 
     private val _product: MutableStateFlow<ProductDetailsUiModel> =
         MutableStateFlow(ProductDetailsUiModel.idle)
-    val product: StateFlow<ProductDetailsUiModel> = _product.asStateFlow()
+    val product: StateFlow<ProductDetailsUiModel> = _product.onStart {
+        getDetailsById()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ProductDetailsUiModel.idle)
 
-    fun getDetailsById(id: Int?) {
+
+    private fun getDetailsById() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = productsRepository.getProductDetailsById(id)?.toUiModel()
-            _product.update { response!! }
+            val response =
+                productsRepository.getProductDetailsById(productId)?.toUiModel()
+            response?.let { _product.update { response } }
         }
     }
 
     fun onStockAdded(value: String) = viewModelScope.launch(Dispatchers.IO) {
-        val productSelected = product.value?.id
+        val productSelected = productId
         val amount = value.filter { it.isDigit() || it == '.' }
-        if (productSelected != null && amount.isNotBlank()){
+        if (amount.isNotBlank()) {
             productsRepository.addStock(
                 reference = "Stock in",
                 productId = productSelected,
                 amount = amount.toDouble()
             )
-            getDetailsById(productSelected)
+            getDetailsById()
         }
-        //TODO else block
     }
 
 
     fun onStockRemoved(value: String) = viewModelScope.launch(Dispatchers.IO) {
-        val productSelected = product.value?.id
+        val productSelected = productId
         val amount = value.filter { it.isDigit() || it == '.' }
-        if (productSelected != null && amount.isNotBlank()){
+        if (amount.isNotBlank()) {
             productsRepository.removeStock(
                 reference = "Stock out",
                 productId = productSelected,
                 amount = amount.toDouble()
             )
-            getDetailsById(productSelected)
+            getDetailsById()
         }
         //TODO else block
     }
 
-    fun onDeleteAction(id: Int?) {
+    fun onDeleteAction() {
         viewModelScope.launch(Dispatchers.IO) {
-            productsRepository.deleteProductById(id)
+            productsRepository.deleteProductById(productId)
+            _product.update { it.copy(productDeleted = true) }
         }
     }
 
     override fun onStart() = Unit
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("productId") productId: Long
+        ): ProductsDetailsViewModel
+    }
 }

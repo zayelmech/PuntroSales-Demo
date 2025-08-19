@@ -29,6 +29,7 @@ internal fun ClientDomainModel.toUi(): TicketDetailsUiModel.Client {
 private fun List<Order>.toUi(): List<ProductOnTicketUiModel> {
     return map { order ->
         ProductOnTicketUiModel(
+            id= order.productId,
             name = order.productName,
             qty = order.qty,
             subtotal = order.qty * order.productPrice

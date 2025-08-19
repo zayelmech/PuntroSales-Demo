@@ -84,7 +84,7 @@ class AddSaleRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun filterPopularProducts(n: Int): List<Int> {
+    override suspend fun filterPopularProducts(n: Int): List<Long> {
         return withContext(Dispatchers.IO) {
             ordersRoomDao.getMostPopularProducts(n)
         }

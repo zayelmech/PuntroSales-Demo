@@ -34,7 +34,7 @@ interface OrdersRoomDao {
     suspend fun deleteOrderById(id: Long)
 
     @Query("SELECT productId FROM order_table GROUP BY productId ORDER BY COUNT(productId) DESC LIMIT :n")
-    suspend fun getMostPopularProducts(n : Int) : List<Int>
+    suspend fun getMostPopularProducts(n : Int) : List<Long>
 
     @Query("""
     SELECT SUM(qty * productPrice) 

@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +46,7 @@ fun TicketDetailsComposable(
     ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(
         listOf(
             ProductOnTicketUiModel(
+                0L,
                 "a",
                 1.0,
                 3.0
@@ -54,7 +54,7 @@ fun TicketDetailsComposable(
         )
     ),
     onDeleteClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
+    onAddNewSale: () -> Unit = {},
     onNavToList: () -> Unit = {},
 ) {
     Column(
@@ -128,7 +128,7 @@ fun TicketDetailsComposable(
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
             Button(
-                onClick = { onEditClick() },
+                onClick = { onAddNewSale() },
                 modifier = Modifier
                     .sizeIn(maxWidth = 320.dp)
                     .fillMaxWidth()
@@ -166,13 +166,10 @@ fun TicketDetailsComposableImpl(
     var showDeleteTicketDialog by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(Unit) {
-        ticketDetailsVM.onGetDetailsAction(saleId)
-    }
 
     TicketDetailsComposable(ticketDetails = saleSelected,
         onDeleteClick = { showDeleteTicketDialog = true },
-        onEditClick = { onNavigateAction(saleId) },
+        onAddNewSale = { onNavigateAction(saleId) },
         onNavToList = { onNavigateAction(null) })
 
     if (showDeleteTicketDialog) {
@@ -180,7 +177,7 @@ fun TicketDetailsComposableImpl(
             message = stringResource(id = R.string.delete_ticket),
             onDismissRequest = { showDeleteTicketDialog = false },
             onConfirmClicked = {
-                ticketDetailsVM.onDeleteTicketAction(saleId)
+                ticketDetailsVM.onDeleteTicketAction()
                 onNavigateAction(null)
             }
         )
