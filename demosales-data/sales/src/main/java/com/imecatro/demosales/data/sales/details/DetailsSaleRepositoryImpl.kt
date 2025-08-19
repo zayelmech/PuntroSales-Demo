@@ -27,7 +27,7 @@ class DetailsSaleRepositoryImpl(
                 },
                 status = OrderStatus.entries.find { it.str == sale.status }
                     ?: OrderStatus.INITIALIZED,
-                clientName = "UNKNOWN",
+                clientId = sale.clientId,
                 note = sale.note ?: "",
                 shippingCost = 0.0,
                 tax = 0.0,

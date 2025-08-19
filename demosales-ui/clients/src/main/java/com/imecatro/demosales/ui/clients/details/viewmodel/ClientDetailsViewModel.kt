@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ClientDetailsViewModel.Factory::class)
 class ClientDetailsViewModel @AssistedInject constructor(
-    @Assisted private val clientId: Int,
+    @Assisted private val clientId: Long,
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
     private val deleteClientByIdUseCase: DeleteClientByIdUseCase
 ) : ViewModel() {
@@ -47,7 +47,7 @@ class ClientDetailsViewModel @AssistedInject constructor(
         }
     }
 
-    fun onDeleteClientAction(clientId: Int) {
+    fun onDeleteClientAction(clientId: Long) {
         viewModelScope.launch {
             _uiState.update { cs -> cs.copy(isDeletingClient = true) }
             deleteClientByIdUseCase.execute(clientId).onSuccess {
@@ -66,7 +66,7 @@ class ClientDetailsViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(clientId: Int): ClientDetailsViewModel
+        fun create(clientId: Long): ClientDetailsViewModel
     }
 }
 

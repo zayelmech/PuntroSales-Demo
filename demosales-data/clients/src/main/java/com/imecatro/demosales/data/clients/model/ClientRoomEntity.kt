@@ -7,7 +7,7 @@ import java.sql.Timestamp
 @Entity(tableName = "client_table")
 data class ClientRoomEntity(
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
+    var id: Long = 0,
     val name: String,
     val phone: String,
     val address: String,

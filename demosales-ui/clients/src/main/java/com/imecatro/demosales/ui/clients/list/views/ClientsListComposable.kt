@@ -98,7 +98,7 @@ internal fun ClientCardCompose(
 private fun ListOfClients(
     list: List<ClientUiModel> = listOf(ClientUiModel.getDummy(), ClientUiModel.getDummy()),
     isLoading: Boolean = false,
-    onCardClicked: (Int?) -> Unit = {},
+    onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -135,7 +135,7 @@ private fun ListOfClients(
 @Composable
 fun ClientListImpl(
     clientsListViewModel: ClientsListViewModel,
-    onNavigateAction: (Int?) -> Unit
+    onNavigateAction: (Long?) -> Unit
 ) {
     val uiState by clientsListViewModel.uiState.collectAsState()
 

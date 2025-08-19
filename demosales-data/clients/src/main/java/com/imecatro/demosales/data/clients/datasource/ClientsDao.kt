@@ -18,13 +18,13 @@ interface ClientsDao {
     fun getAllClients(): Flow<List<ClientRoomEntity>>
 
     @Query("DELETE FROM client_table WHERE id = :id")
-    fun deleteClientById(id: Int)
+    fun deleteClientById(id: Long)
 
     @Update
     fun updateClient(product: ClientRoomEntity)
 
     @Query("SELECT * FROM client_table WHERE id = :id ")
-    fun getClientDetailsById(id: Int): ClientRoomEntity
+    fun getClientDetailsById(id: Long): ClientRoomEntity
 
     @Query("SELECT * FROM client_table WHERE name LIKE :clientName || '%'")
     fun searchClients(clientName: String): Flow<List<ClientRoomEntity>>

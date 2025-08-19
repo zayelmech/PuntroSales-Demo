@@ -5,6 +5,7 @@ import com.imecatro.demosales.domain.clients.usecases.AddClientUseCase
 import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetAllClientsUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
+import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
@@ -147,4 +148,8 @@ class ClientsFeaturesModule {
         appCoroutineDispatcher: CoroutineProvider
     ): UpdateClientUseCase = UpdateClientUseCase(clientsRepository, appCoroutineDispatcher)
 
+    @Provides
+    fun providesSearchClientUseCase(
+        clientsRepository: ClientsRepository,
+    ): SearchClientUseCase = SearchClientUseCase(clientsRepository)
 }

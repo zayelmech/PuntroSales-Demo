@@ -5,7 +5,7 @@ import com.imecatro.demosales.domain.sales.model.OrderStatus
 
 data class SaleDetailsDomainModel(
     val list: List<Order>,
-    val clientName: String = "Guest",
+    val clientId: Long = 0,
     val note: String = "",
     val shippingCost: Double = 0.0,
     val tax: Double = 0.0,

@@ -7,8 +7,8 @@ import com.imecatro.demosales.domain.core.architecture.usecase.BackgroundUseCase
 class DeleteClientByIdUseCase(
     private val clientsRepository: ClientsRepository,
     coroutineContext: CoroutineProvider
-) : BackgroundUseCase<Int, Unit>(coroutineContext) {
-    override suspend fun doInBackground(input: Int) {
+) : BackgroundUseCase<Long, Unit>(coroutineContext) {
+    override suspend fun doInBackground(input: Long) {
         clientsRepository.deleteClientById(input)
     }
 }

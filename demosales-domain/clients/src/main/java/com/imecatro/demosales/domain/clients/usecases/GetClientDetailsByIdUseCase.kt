@@ -8,8 +8,8 @@ import com.imecatro.demosales.domain.core.architecture.usecase.BackgroundUseCase
 class GetClientDetailsByIdUseCase(
     private val clientsRepository: ClientsRepository,
     coroutineContext: CoroutineProvider
-) : BackgroundUseCase<Int, ClientDomainModel>(coroutineContext) {
-    override suspend fun doInBackground(input: Int): ClientDomainModel {
+) : BackgroundUseCase<Long, ClientDomainModel>(coroutineContext) {
+    override suspend fun doInBackground(input: Long): ClientDomainModel {
         return clientsRepository.getClientDetailsById(input)
     }
 }

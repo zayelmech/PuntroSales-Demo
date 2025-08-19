@@ -20,15 +20,15 @@ internal class DummyClientsRepositoryImpl : ClientsRepository {
         return flowOf(clients)
     }
 
-    override fun deleteClientById(id: Int) {
-        clients.removeAt(id!!)
+    override fun deleteClientById(id: Long) {
+        //clients.removeAt(id!!)
     }
 
     override fun updateClient(client: ClientDomainModel) {
-        clients.set(client!!.id, client!!)
+        //clients.set(client!!.id, client!!)
     }
 
-    override fun getClientDetailsById(id: Int): ClientDomainModel {
+    override fun getClientDetailsById(id: Long): ClientDomainModel {
         return clients.find { it.id == id } ?: throw ClientNotFoundException()
     }
 

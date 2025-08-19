@@ -15,6 +15,7 @@ class CheckoutSaleUseCase(
         val c = CheckoutDomainModel().apply(sale)
         addSaleRepository.saveSale(
             currentSal.copy(
+                clientId = c.clientId,
                 status = OrderStatus.COMPLETED,
                 note = c.note,
                 date = c.date,
@@ -27,5 +28,6 @@ class CheckoutSaleUseCase(
 data class CheckoutDomainModel(
     var note: String = "",
     var date: String = "",
-    var totals: SaleDomainModel.Costs = SaleDomainModel.Costs()
+    var totals: SaleDomainModel.Costs = SaleDomainModel.Costs(),
+    var clientId: Long = 0
 )

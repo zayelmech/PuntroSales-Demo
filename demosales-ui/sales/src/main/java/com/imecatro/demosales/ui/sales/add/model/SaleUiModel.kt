@@ -1,8 +1,9 @@
 package com.imecatro.demosales.ui.sales.add.model
 
 data class SaleUiModel(
-    val id : Long = 0,
-    var clientName: String,
+    val id: Long = 0,
+    val clientName: String,
+    val clientId: Long = 0,
     var date: String,
     var products: List<ProductOnCartUiModel>,
     var totals: SaleChargeUiModel,

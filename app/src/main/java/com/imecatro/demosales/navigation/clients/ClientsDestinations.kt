@@ -10,7 +10,7 @@ object ClientsList
 object AddClient
 
 @Serializable
-data class EditClient(val id: Int)
+data class EditClient(val id: Long)
 
 @Serializable
-data class ClientDetails(val id: Int)
+data class ClientDetails(val id: Long)

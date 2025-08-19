@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.jetbrains.kotlin.android)
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
 
@@ -44,8 +44,10 @@ dependencies {
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.material
+    implementation project(path: ':demosales-domain:core')
     implementation project(path: ':demosales-domain:sales')
     implementation project(path: ':demosales-domain:products')
+    implementation project(path: ':demosales-domain:clients')
     implementation project(path: ':demosales-ui:theme')
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

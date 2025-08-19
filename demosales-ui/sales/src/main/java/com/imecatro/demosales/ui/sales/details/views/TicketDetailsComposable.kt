@@ -68,7 +68,7 @@ fun TicketDetailsComposable(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Client:", style = Typography.labelMedium)
             Spacer(modifier = Modifier.weight(1f))
-            Text(text = ticketDetails.client)
+            Text(text = ticketDetails.client.name)
         }
         //Notes
         Row(verticalAlignment = Alignment.CenterVertically) {

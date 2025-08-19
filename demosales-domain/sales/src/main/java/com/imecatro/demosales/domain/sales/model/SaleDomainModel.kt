@@ -15,7 +15,7 @@ package com.imecatro.demosales.domain.sales.model
  */
 data class SaleDomainModel(
     val id: Long,
-    val clientId: Int,
+    val clientId: Long,
     var date: String, //date when ticket was created
     var productsList: List<Order>, //contains the id of all products
     val totals: Costs = Costs(),

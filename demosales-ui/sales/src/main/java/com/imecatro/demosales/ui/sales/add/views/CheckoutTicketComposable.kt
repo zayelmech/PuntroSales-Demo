@@ -1,6 +1,7 @@
 package com.imecatro.demosales.ui.sales.add.views
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,13 +24,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -123,6 +130,7 @@ fun CheckoutTicketComposable(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutTicketComposableImpl(
     checkoutViewModel: CheckoutViewModel,
@@ -135,21 +143,55 @@ fun CheckoutTicketComposableImpl(
         mutableStateOf(false)
     }
 
+    val resultsList by checkoutViewModel.clientsFound.collectAsState()
+
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    var query by remember {
+        mutableStateOf("")
+    }
+
     LaunchedEffect(Unit) {
         checkoutViewModel.onGetDetailsAction(saleId)
     }
-    CheckoutTicketComposable(client = ticket.clientName,
-        onChangeClientClick = { /*TODO*/ },
-        note = ticket.note,
-        onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
-        subtotal = "${ticket.totals.subtotal}",
-        extra = "${ticket.totals.extra}",
-        onExtraClick = { showEditInputDialog = true },
-        total = "${ticket.totals.total}",
-        onCheckoutClick = {
-            checkoutViewModel.onCheckoutAction()
-        })
 
+    BottomSheetScaffold(scaffoldState =
+    scaffoldState, sheetPeekHeight = 0.dp, sheetContent = {
+        Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val searchUiState = SearchClientEngineModel(
+                list = resultsList.toMutableStateList(),
+                query = query,
+                onQueryChange = {
+                    query = it
+                    checkoutViewModel.onSearchClientAction(query)
+                },
+                onClientClicked = {
+                    checkoutViewModel.onAddClientAction(it)
+                }
+            )
+            SearchClientBottomSheet(searchUiState)
+        }
+    }) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            CheckoutTicketComposable(client = ticket.clientName,
+                onChangeClientClick = { scope.launch { scaffoldState.bottomSheetState.expand() } },
+                note = ticket.note,
+                onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
+                subtotal = "${ticket.totals.subtotal}",
+                extra = "${ticket.totals.extra}",
+                onExtraClick = { showEditInputDialog = true },
+                total = "${ticket.totals.total}",
+                onCheckoutClick = {
+                    checkoutViewModel.onCheckoutAction()
+                })
+        }
+    }
+
+    
     LaunchedEffect(ticket.ticketSaved) {
         if (ticket.ticketSaved) onTicketCheckedOut(ticket.id)
     }

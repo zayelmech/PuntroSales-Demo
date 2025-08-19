@@ -10,7 +10,7 @@ package com.imecatro.demosales.domain.clients.model
  * @param avatarUri The URL of the client's avatar image.
  */
 data class ClientDomainModel(
-    val id: Int,
+    val id: Long = 0,
     val name: String,
     val phoneNumber: String,
     val shipping: String,

@@ -3,7 +3,7 @@ package com.imecatro.demosales.ui.clients.edit.model
 import android.net.Uri
 
 data class EditClientUiModel(
-    val id: Int,
+    val id: Long,
     val clientName: String = "",
     val phoneNumber: String = "",
     val clientAddress: String = "",

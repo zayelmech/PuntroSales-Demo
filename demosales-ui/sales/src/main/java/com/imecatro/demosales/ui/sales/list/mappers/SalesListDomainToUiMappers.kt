@@ -16,7 +16,7 @@ internal fun List<SaleOnListDomainModel>.toUiModel(): SalesList {
     return map {
         SaleOnListUiModel(
             id = it.id,
-            clientName = it.clientName,
+            clientName = it.clientName.ifEmpty { "System" },
             date = it.date.convertMillisToDate(),
             total = it.total,
             status = it.status.str

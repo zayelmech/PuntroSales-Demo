@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.annotation.VisibleForTesting
 
 class ClientUiModel(
-    val id: Int?,
+    val id: Long?,
     val name: String?,
     val number: String?,
     val image: String?,

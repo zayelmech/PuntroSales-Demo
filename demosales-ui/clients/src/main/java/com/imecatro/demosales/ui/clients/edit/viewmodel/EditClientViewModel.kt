@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = EditClientViewModel.Factory::class)
 class EditClientViewModel @AssistedInject constructor(
-    @Assisted("clientId") private val clientId: Int,
+    @Assisted("clientId") private val clientId: Long,
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
     private val updateClientUseCase: UpdateClientUseCase
 ) : ViewModel() {
@@ -80,7 +80,7 @@ class EditClientViewModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
-            @Assisted("clientId") clientId: Int
+            @Assisted("clientId") clientId: Long
         ): EditClientViewModel
     }
 

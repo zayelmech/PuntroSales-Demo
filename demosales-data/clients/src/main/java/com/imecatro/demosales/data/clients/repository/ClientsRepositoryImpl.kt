@@ -31,7 +31,7 @@ class ClientsRepositoryImpl(
     }
 
     @WorkerThread
-    override fun deleteClientById(id: Int) {
+    override fun deleteClientById(id: Long) {
         Log.d(TAG, "deleteClientById: $id")
         clientsDao.deleteClientById(id)
     }
@@ -43,7 +43,7 @@ class ClientsRepositoryImpl(
     }
 
     @WorkerThread
-    override fun getClientDetailsById(id: Int): ClientDomainModel {
+    override fun getClientDetailsById(id: Long): ClientDomainModel {
         return clientsDao.getClientDetailsById(id).toDomain()
     }
 

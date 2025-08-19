@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class SaleDataRoomModel(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val clientId: Int = 0,
+    val clientId: Long = 0,
     val creationDateMillis: Long = 0,
     val status: String = "",
     @ColumnInfo(name = "extra")

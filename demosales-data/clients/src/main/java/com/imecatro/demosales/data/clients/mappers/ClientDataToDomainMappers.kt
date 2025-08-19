@@ -8,8 +8,8 @@ internal fun ClientRoomEntity.toDomain(): ClientDomainModel {
     return ClientDomainModel(
         id = id,
         name = name,
-        phoneNumber = this.phone,
-        shipping = this.address,
-        avatarUri = this.imageUri.ifEmpty { null }
+        phoneNumber = this.phone?:"",
+        shipping = this.address?:"",
+        avatarUri = this.imageUri?.ifEmpty { null }
     )
 }

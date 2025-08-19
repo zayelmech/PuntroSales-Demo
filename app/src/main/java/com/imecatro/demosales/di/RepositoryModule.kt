@@ -34,10 +34,9 @@ class RepositoryModule {
 
     @Provides
     fun providesSalesListRepository(
-        dao: SalesRoomDao,
-        ordersRoomDao: OrdersRoomDao
+        dao: SalesRoomDao
     ): AllSalesRepository =
-        AllSalesRepositoryImpl(dao, ordersRoomDao)
+        AllSalesRepositoryImpl(dao)
 
     @Provides
     @Singleton
