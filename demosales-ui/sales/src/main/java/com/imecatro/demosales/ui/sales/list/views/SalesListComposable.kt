@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
@@ -46,8 +47,8 @@ fun SalesListComposable(
 
 
 private val fakelist = listOf(
-    SaleOnListUiModel(0, "Named", "30/01/2023", 20.0, "pending"),
-    SaleOnListUiModel(1, "Someone", "30/01/2023", 20.0, "pending")
+    SaleOnListUiModel(0, "Named", "30/01/2023", 20.0, "pending", Color.Red),
+    SaleOnListUiModel(1, "Someone", "30/01/2023", 20.0, "pending",Color.Gray)
 )
 
 @Composable
