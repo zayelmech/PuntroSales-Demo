@@ -1,19 +1,20 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
-    id 'com.google.dagger.hilt.android'
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp.plugin)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace 'com.imecatro.demosales'
-    compileSdk 34
+    compileSdk libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
         applicationId "com.imecatro.demosales"
         minSdk 26
-        targetSdk 34
+        targetSdk libs.versions.targetSdk.get().toInteger()
         versionCode 4
         versionName "1.0.1"
 
@@ -26,6 +27,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            //signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -39,9 +41,6 @@ android {
     }
     buildFeatures {
         compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion "1.5.13"
     }
     packagingOptions {
         resources {
@@ -86,7 +85,7 @@ dependencies {
 
     //hilt for dependency injection
     implementation libs.hilt.android
-    kapt libs.hilt.compiler
+    ksp libs.hilt.compiler
     implementation libs.androidx.hilt.navigation.compose
 
 //    debugImplementation('com.squareup.leakcanary:leakcanary-android:2.12') {

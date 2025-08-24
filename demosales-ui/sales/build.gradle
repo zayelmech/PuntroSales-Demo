@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id 'kotlin-kapt'
+    alias(libs.plugins.ksp.plugin)
     id 'com.google.dagger.hilt.android'
-
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -33,9 +33,6 @@ android {
     }
     buildFeatures {
         compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion "1.5.13"
     }
 }
 
@@ -70,5 +67,5 @@ dependencies {
 
     //hilt
     implementation libs.hilt.android
-    kapt libs.hilt.compiler
+    ksp libs.hilt.compiler
 }

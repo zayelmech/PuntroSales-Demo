@@ -20,3 +20,16 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+# Keep Dependency Injection Framework related classes and methods
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class javax.annotation.** { *; }
+
+
+
+# Menjaga kelas-kelas yang diperlukan untuk penanganan SSL/TLS
+-keep class okhttp3.internal.platform.ConscryptPlatform {*;}
+-keep class okhttp3.internal.platform.OpenJSSEPlatform {*;}
+-keep class org.bouncycastle.** {*;}
+-keep class org.conscrypt.** {*;}
+-keep class org.openjsse.** {*;}
