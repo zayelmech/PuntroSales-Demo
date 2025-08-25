@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -22,15 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +49,7 @@ import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,44 +66,55 @@ fun DetailsComposableStateImpl(
         if (productSelected.productDeleted)
             onProductDeleted()
     }
-    var state by remember { mutableIntStateOf(0) }
-    val titles = listOf(
-        "Details",
-        "Stock",
-    )
 
-    Column {
-        PrimaryTabRow(selectedTabIndex = state) {
+    val titles = listOf("Details", "Stock")
+    val pagerState = rememberPagerState(initialPage = 0) { titles.size }
+    val scope = rememberCoroutineScope()
+
+    Column(Modifier.fillMaxSize()) {
+        PrimaryTabRow(
+            selectedTabIndex = pagerState.currentPage,
+            indicator = {
+                TabRowDefaults.PrimaryIndicator(
+                    Modifier.tabIndicatorOffset(pagerState.currentPage),
+                    width = 100.dp
+                )
+            }
+        ) {
             titles.forEachIndexed { index, title ->
-                Tab(selected = state == index,
-                    onClick = { state = index },
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
                     text = {
                         Text(
                             text = title,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
+                            overflow = TextOverflow.Ellipsis
                         )
-                    })
+                    }
+                )
             }
         }
-        if (state == 0)
-            DetailsComposable(
-                productDetails = productSelected,
-                onDeleteClicked = {
-                    productDetailsViewModel.onDeleteAction()
-                },
-                onEditClicked = {
-                    onNavigateToEdit()
-                }
-            )
-        else
-            StockComposable(
-                stock = productSelected.stockQty,
-                cost = productSelected.stockPrice,
-                list = productSelected.stockHistory,
-                onStockAdded = { productDetailsViewModel.onStockAdded(it) },
-                onStockOut = { productDetailsViewModel.onStockRemoved(it) })
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth().weight(1f) // take remaining space
+        ) { page ->
+            when (page) {
+                0 -> DetailsComposable(
+                    productDetails = productSelected,
+                    onDeleteClicked = { productDetailsViewModel.onDeleteAction() },
+                    onEditClicked = onNavigateToEdit
+                )
+                1 -> StockComposable(
+                    stock = productSelected.stockQty,
+                    cost = productSelected.stockPrice,
+                    list = productSelected.stockHistory,
+                    onStockAdded = { productDetailsViewModel.onStockAdded(it) },
+                    onStockOut = { productDetailsViewModel.onStockRemoved(it) }
+                )
+            }
+        }
     }
 
 
