@@ -42,7 +42,10 @@ fun OnDeleteItemDialog(
             Spacer(modifier = Modifier.height(20.dp))
             Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = message, color = MaterialTheme.colorScheme.onSurface)
+            Text(text = "Are you sure?", style = MaterialTheme.typography.titleMedium)
+
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(text = "Do you want to remove $message" ,style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(20.dp))
 
             Row {

@@ -1,4 +1,4 @@
-package com.imecatro.demosales.ui.sales.add.uistate
+package com.imecatro.demosales.ui.sales.add.state
 
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 

@@ -6,9 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import com.imecatro.demosales.ui.clients.edit.viewmodel.EditClientViewModel
-import com.imecatro.demosales.ui.sales.add.views.CheckoutTicketComposableImpl
-import com.imecatro.demosales.ui.sales.add.views.CreateTicketComposableStateImpl
+import com.imecatro.demosales.ui.sales.add.screens.CheckoutTicketComposableImpl
+import com.imecatro.demosales.ui.sales.add.screens.CreateTicketComposableStateImpl
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
 import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl

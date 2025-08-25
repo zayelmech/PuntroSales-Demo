@@ -10,20 +10,3 @@ interface AllSalesRepository {
     fun getAllSales(): Flow<List<SaleOnListDomainModel>>
 
 }
-
-class AllSalesRepositoryDummy : AllSalesRepository {
-    override fun getAllSales(): Flow<List<SaleOnListDomainModel>> {
-        return flowOf(
-            listOf(
-                SaleOnListDomainModel(
-                    id = 2,
-                    "Abdiel",
-                    1,
-                    200.0,
-                    OrderStatus.PENDING
-                )
-            )
-        )
-    }
-
-}

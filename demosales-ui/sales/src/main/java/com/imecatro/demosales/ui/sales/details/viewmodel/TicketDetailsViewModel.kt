@@ -7,9 +7,6 @@ import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.details.UpdateSaleStatusUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
-import com.imecatro.demosales.domain.sales.model.SaleDomainModel
-import com.imecatro.demosales.ui.sales.add.mappers.toDomainModel
-import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
 import com.imecatro.demosales.ui.sales.details.mappers.toUi
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel
 import dagger.assisted.Assisted
@@ -20,13 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = TicketDetailsViewModel.Factory::class)
 class TicketDetailsViewModel @AssistedInject constructor(

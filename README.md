@@ -13,12 +13,6 @@ This file must include
 
 
 
-### Features
-
-- Create, delete and update your products from inventory
-- Create tickets
-
-
 ## Branching Strategy
 
 ### Main branches
@@ -38,41 +32,81 @@ Generally, we can follow next structured pattern
   <img width="514" height="406" src="doc/img/DetailsProduct.png">
 </p>
 
+
+### Features
+
+- CRUD for products
+  - Products has an inventory
+- CRUD for Sales
+  - Sales are automatically shyncronized with clients and inventory 
+- CRUD for clients
+  - The idea, is to control clients sales history
+
+
+[x] Create a new product
+- Image from device gallery
+- Name
+- Price
+- Currency (MXN, USD)
+- Initial stock
+- Unit (pcs, mL, kg, lb)
+
+[x] Edit product details
+[x] Delete a product and its stock history
+[x] List all products
+- [ ] Filter and sort products
+- [x] Default product sorting
+
+[x] Product search bar
+[ ] Download product inventory as CSV
+
+#### Stock Control
+[x] Adjust stock (in/out) by quantity
+[x] Total remaining stock
+[x] Stock syncs with sales; when a sale is completed, items are automatically deducted
+[x] Stock may go negative for pending orders to forecast restocking needs
+[ ] Download stock by product as CSV
+
+### Sales
+[x] List all tickets
+[x] Create a new ticket — stock is automatically deducted
+[x] Cancel a ticket — stock will be re-added
+[ ] View ticket details and share a screenshot with overscroll
+[ ] Filter sales by date range, status, etc.
+[ ] Download sales as CSV
+[ ] Sales charts and income tracking — *Future*
+
+### Clients
+[x] List all clients
+[x] Add client
+[ ] Sync phone contacts
+[x] Edit client
+[x] Delete client
+[ ] Client sales history
+
 ## UI Layer
 
 ### Libraries
 
 - Hilt for dependency injection
-- Compose 
+- Compose
 - Material 3
-- Jetpack libraries
 - Coil for images
 
-Need permissions
+Need permissions : N/A
 
 ## Domain layer
 
 It contains all use cases the app needs
-
-### Products
-- Get All products 
-- Create a new product
-- Edit product
-- Delete product
-
-### Sales
-- Get all tickets
-- Create a new ticket
-- 
 
 ### Libraries
 
 - KotlinX coroutines
 
 ## Data Source layer
+Room Database Instance, it wraps DAOs and migrations
 
 ## Libraries
 
 - Room Database
-- Dagger 2 for dependency injection
-
+- Hilt for dependency injection

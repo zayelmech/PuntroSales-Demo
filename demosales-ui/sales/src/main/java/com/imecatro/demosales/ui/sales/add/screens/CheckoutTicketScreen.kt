@@ -1,4 +1,4 @@
-package com.imecatro.demosales.ui.sales.add.views
+package com.imecatro.demosales.ui.sales.add.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
+import com.imecatro.demosales.ui.sales.add.components.SearchClientBottomSheet
+import com.imecatro.demosales.ui.sales.add.components.SearchClientEngineModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import kotlinx.coroutines.launch

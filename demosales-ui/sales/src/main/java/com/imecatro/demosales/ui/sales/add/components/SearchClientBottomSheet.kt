@@ -1,4 +1,4 @@
-package com.imecatro.demosales.ui.sales.add.views
+package com.imecatro.demosales.ui.sales.add.components
 
 
 import androidx.compose.foundation.Image

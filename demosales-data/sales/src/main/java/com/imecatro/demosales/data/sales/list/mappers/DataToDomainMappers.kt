@@ -15,5 +15,5 @@ internal fun SaleFullTransactionModel.toDomain() : SaleOnListDomainModel{
     )
 }
 internal fun String.toOrderStatus(): OrderStatus = OrderStatus.entries.find { it.str == this }
-    ?: OrderStatus.PENDING
+    ?: OrderStatus.INITIALIZED
 

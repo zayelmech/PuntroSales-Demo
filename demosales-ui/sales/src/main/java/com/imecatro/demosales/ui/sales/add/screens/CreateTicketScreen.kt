@@ -1,4 +1,4 @@
-package com.imecatro.demosales.ui.sales.add.views
+package com.imecatro.demosales.ui.sales.add.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +44,11 @@ import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
+import com.imecatro.demosales.ui.sales.add.components.OrderOnCartComposable
+import com.imecatro.demosales.ui.sales.add.components.SearchBottomSheetComposable
+import com.imecatro.demosales.ui.sales.add.components.SearchEngineUiModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
 import kotlinx.coroutines.launch
 
 @Composable
@@ -82,7 +86,7 @@ fun CreateTicketComposable(
                 val scope = rememberCoroutineScope()
 
                 if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                    OnDeleteItemDialog(item.product.name ?: "unknown", {
+                    OnDeleteItemDialog(item.product.name, {
                         scope.launch {
                             dismissState.reset()
                         }

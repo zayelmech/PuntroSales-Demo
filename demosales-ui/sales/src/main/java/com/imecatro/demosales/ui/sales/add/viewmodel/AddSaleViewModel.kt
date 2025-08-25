@@ -13,13 +13,12 @@ import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
-import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.*
 import com.imecatro.demosales.ui.sales.add.mappers.toListAddSaleUi
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.sales.add.uistate.TicketUiState
+import com.imecatro.demosales.ui.sales.add.state.TicketUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
@@ -159,17 +158,6 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
-}
-
-
-private fun ProductOnCartUiModel.toUpdateQtyDomain(newQty: Double): Order {
-    return Order(
-        id = this.orderId,
-        productId = this.product.id,
-        productName = this.product.name,
-        productPrice = this.product.price,
-        qty = newQty
-    )
 }
 
 

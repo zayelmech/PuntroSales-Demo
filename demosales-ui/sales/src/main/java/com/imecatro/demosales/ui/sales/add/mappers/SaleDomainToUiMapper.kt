@@ -41,11 +41,12 @@ fun List<ProductOnCartUiModel>.toDomainModel(): SaleDomainModel {
     )
 }
 
-internal fun ProductDomainModel.toCartUiModel(): ProductOnCartUiModel {
-    return ProductOnCartUiModel(
-        orderId = 0,
-        product = this.toAddSaleUi(),
-        qty = 0.0,
-        subtotal = 0f.toBigDecimal()
+internal fun ProductOnCartUiModel.toUpdateQtyDomain(newQty: Double): Order {
+    return Order(
+        id = this.orderId,
+        productId = this.product.id,
+        productName = this.product.name,
+        productPrice = this.product.price,
+        qty = newQty
     )
 }
