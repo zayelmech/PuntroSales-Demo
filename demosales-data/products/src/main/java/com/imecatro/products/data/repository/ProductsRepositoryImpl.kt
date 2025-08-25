@@ -22,7 +22,7 @@ class ProductsRepositoryImpl(
             val productId = productsDao?.addProduct(product = it.toData())
 
             val stock = StockRoomEntity(
-                productId = productId?:0L,
+                productId = productId ?: 0L,
                 description = "Initial Stock",
                 amount = product.stock.quantity,
                 date = "",
@@ -57,11 +57,14 @@ class ProductsRepositoryImpl(
     }
 
     override fun getProductDetailsById(id: Long): ProductDomainModel? {
-
-        val basicDetails = productsDao?.getProductDetailsById(id)
-        val stock = productsDao?.getProductStockHistory(id)
-
-        return basicDetails?.toDomain(stock ?: emptyList())
+        try {
+            val basicDetails = productsDao?.getProductDetailsById(id)
+            val stock = productsDao?.getProductStockHistory(id)
+            return basicDetails?.toDomain(stock ?: emptyList())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
     }
 
     override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
