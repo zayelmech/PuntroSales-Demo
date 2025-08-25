@@ -8,4 +8,7 @@
     <string name="title_cost">Cost</string>
     <string name="desc_no_items">There is no history yet</string>
     <string name="title_history">History</string>
+    <string name="supporting_stock_txt">Initial stock must be added</string>
+    <string name="supporting_name_txt">Name is required</string>
+    <string name="supporting_price_txt">Price is required</string>
 </resources>

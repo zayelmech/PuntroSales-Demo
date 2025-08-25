@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,7 +68,7 @@ fun AddProductComposable(
     onUnitPicked: (String) -> Unit,
     stock: String,
     onStockChange: (String) -> Unit,
-    isEditMode : Boolean,
+    isEditMode: Boolean,
     detailsText: String,
     onDetailsChange: (String) -> Unit,
     buttonSaveState: Boolean,
@@ -110,13 +111,19 @@ fun AddProductComposable(
                 }
 
                 Text(text = "Product name", style = Typography.labelMedium)
-                OutlinedTextField(value = productName, onValueChange = onProductNameChange)
+                OutlinedTextField(
+                    value = productName,
+                    supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_name_txt)) },
+                    onValueChange = onProductNameChange
+                )
 
                 Text(text = "Price", style = Typography.labelMedium)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         value = productPrice,
                         onValueChange = onProductPriceChange,
+                        placeholder = { Text("0.0") },
+                        supportingText = { if (productPrice.isBlank()) Text(stringResource(R.string.supporting_price_txt)) },
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
@@ -141,6 +148,9 @@ fun AddProductComposable(
                 OutlinedTextField(
                     enabled = !isEditMode,
                     value = stock,
+                    placeholder = { Text("0.0") },
+                    supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_stock_txt)) },
+                    singleLine = true,
                     onValueChange = onStockChange,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
@@ -188,7 +198,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
 
     val launcher = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.GetContent()
+            ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
         uriPicked?.let {
@@ -217,7 +227,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
     }
 
     var stock by remember {
-        mutableStateOf("0")
+        mutableStateOf("")
     }
 
     var buttonEnableState by remember {
