@@ -33,10 +33,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.theme.common.localDate
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
-
 
 @Preview(showBackground = true)
 @Composable
@@ -131,7 +131,10 @@ fun StockComposable(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     else
-                        Text(text = stringResource(R.string.title_history), style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            text = stringResource(R.string.title_history),
+                            style = MaterialTheme.typography.titleLarge
+                        )
                 }
                 items(list) { item ->
                     ListItem(
@@ -142,7 +145,7 @@ fun StockComposable(
                                 color = if (item.qty.contains('-')) Color.Red else Color(0xff37c8ab)
                             )
                         },
-                        supportingContent = { Text(item.date) }
+                        supportingContent = { Text(item.date.localDate()) }
                     )
                     HorizontalDivider()
                 }
