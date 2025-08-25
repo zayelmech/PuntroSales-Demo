@@ -1,5 +1,7 @@
 package com.imecatro.products.data.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
@@ -11,6 +13,9 @@ import com.imecatro.products.data.model.StockRoomEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import java.time.Instant
+import java.time.LocalDateTime.now
+import java.time.format.DateTimeFormatter
 
 class ProductsRepositoryImpl(
     private val productsDao: ProductsDao?
@@ -72,12 +77,16 @@ class ProductsRepositoryImpl(
         return productsDao.searchProducts(letter).map { it.toListDomain() }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun addStock(reference: String, productId: Long, amount: Double) {
+        val now = Instant.now()
+        val dateIso = DateTimeFormatter.ISO_INSTANT.format(now) // e.g. "2025-08-24T01:23:45Z"
+
         val stock = StockRoomEntity(
             productId = productId,
             description = reference,
             amount = amount,
-            date = "",//todo
+            date = dateIso,// ISO-8601 UTC → ideal for filtering/sorting
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStock(stock = stock)
@@ -86,12 +95,16 @@ class ProductsRepositoryImpl(
         productsDao?.updateProductStock(currentQty, productId)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun removeStock(reference: String, productId: Long, amount: Double) {
+        val now = Instant.now()
+        val dateIso = DateTimeFormatter.ISO_INSTANT.format(now) // e.g. "2025-08-24T01:23:45Z"
+
         val stock = StockRoomEntity(
             productId = productId,
             description = reference,
             amount = amount * (-1.0),
-            date = "",//todo
+            date = dateIso,// ISO-8601 UTC → ideal for filtering/sorting
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStock(stock = stock)
