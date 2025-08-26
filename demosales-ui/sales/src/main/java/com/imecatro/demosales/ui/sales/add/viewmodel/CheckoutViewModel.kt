@@ -81,6 +81,7 @@ class CheckoutViewModel @Inject constructor(
                 date = System.currentTimeMillis().toString()
                 totals = currentTicket.value.totals.toDomain()
                 clientId = currentTicket.value.clientId
+                tickedPaid = true
             }
             currentTicket.update { it.copy(ticketSaved = true) }
         }
@@ -97,6 +98,19 @@ class CheckoutViewModel @Inject constructor(
 
     fun onAddClientAction(client: ClientResultUiModel) {
         currentTicket.update { it.copy(clientName = client.name, clientId = client.id) }
+    }
+
+    fun onSavePendingTicked() {
+        viewModelScope.launch(Dispatchers.IO) {
+            saveSaleUseCase(currentTicket.value.id) {
+                note = currentTicket.value.note
+                date = System.currentTimeMillis().toString()
+                totals = currentTicket.value.totals.toDomain()
+                clientId = currentTicket.value.clientId
+                tickedPaid = false
+            }
+            currentTicket.update { it.copy(ticketSaved = true) }
+        }
     }
 
 }

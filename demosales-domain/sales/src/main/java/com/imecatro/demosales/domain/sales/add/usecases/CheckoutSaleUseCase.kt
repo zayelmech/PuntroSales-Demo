@@ -16,7 +16,7 @@ class CheckoutSaleUseCase(
         addSaleRepository.saveSale(
             currentSal.copy(
                 clientId = c.clientId,
-                status = OrderStatus.COMPLETED,
+                status = if (c.tickedPaid) OrderStatus.COMPLETED else OrderStatus.PENDING,
                 note = c.note,
                 date = c.date,
                 totals = c.totals
@@ -29,5 +29,6 @@ data class CheckoutDomainModel(
     var note: String = "",
     var date: String = "",
     var totals: SaleDomainModel.Costs = SaleDomainModel.Costs(),
-    var clientId: Long = 0
+    var clientId: Long = 0,
+    var tickedPaid: Boolean = false
 )

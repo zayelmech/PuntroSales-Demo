@@ -140,13 +140,12 @@ fun CheckoutTicketComposable(
             ) {
                 Text(text = "Checkout")
             }
-            if (false) // TODO
-                TextButton(
-                    onClick = onSavePending,
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
-                ) {
-                    Text(text = "Save as pending sale")
-                }
+            TextButton(
+                onClick = onSavePending,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
+            ) {
+                Text(text = "Save as pending sale")
+            }
         }
     }
 }
@@ -211,7 +210,7 @@ fun CheckoutTicketComposableImpl(
                 onCheckoutClick = {
                     checkoutViewModel.onCheckoutAction()
                 },
-                onSavePending = { /*todo*/ }
+                onSavePending = { checkoutViewModel.onSavePendingTicked()}
             )
         }
     }
