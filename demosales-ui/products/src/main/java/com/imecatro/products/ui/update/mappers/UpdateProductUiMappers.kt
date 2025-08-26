@@ -4,6 +4,7 @@ import android.net.Uri
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
+import androidx.core.net.toUri
 
 
 fun UpdateProductUiModel.toDomain(): ProductDomainModel {
@@ -28,6 +29,6 @@ fun ProductDomainModel.toUpdateUiModel(): UpdateProductUiModel {
         unit = this.unit,
         stock= 0f,
         details = this.details,
-        imageUri = Uri.parse(this.imageUri.toString())
+        imageUri = this.imageUri.toString().toUri()
     )
 }

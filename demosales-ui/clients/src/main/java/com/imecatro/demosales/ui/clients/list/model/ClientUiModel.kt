@@ -2,6 +2,7 @@ package com.imecatro.demosales.ui.clients.list.model
 
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
+import androidx.core.net.toUri
 
 class ClientUiModel(
     val id: Long?,
@@ -24,4 +25,4 @@ class ClientUiModel(
 
 
 internal val ClientUiModel.imageUrl: Uri
-    get() = Uri.parse(this.image?:"")
+    get() = (this.image ?: "").toUri()

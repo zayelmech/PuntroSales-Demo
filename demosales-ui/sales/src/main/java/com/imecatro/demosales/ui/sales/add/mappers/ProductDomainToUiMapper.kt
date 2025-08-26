@@ -5,13 +5,14 @@ import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import androidx.core.net.toUri
 
 internal fun ProductDomainModel.toAddSaleUi(): ProductResultUiModel {
     return ProductResultUiModel(
         id = this.id?:0L,
         name = this.name?:"",
         price = this.price?:0.0,
-        imageUri = Uri.parse(this.imageUri)
+        imageUri = this.imageUri?.toUri()
     )
 }
 

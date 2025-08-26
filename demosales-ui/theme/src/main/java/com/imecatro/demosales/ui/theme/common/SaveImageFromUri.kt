@@ -8,6 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import java.io.File
 import java.io.OutputStream
+import androidx.core.net.toUri
 
 inline fun Context.saveMediaToStorage(uriPicked: Uri, crossinline onUri: (Uri) -> Unit) {
 
@@ -36,7 +37,7 @@ inline fun Context.saveMediaToStorage(uriPicked: Uri, crossinline onUri: (Uri) -
 
     val fos: OutputStream = file.outputStream()
 
-    onUri(Uri.parse(file.absolutePath))
+    onUri(file.absolutePath.toUri())
 
 
     fos.use {
