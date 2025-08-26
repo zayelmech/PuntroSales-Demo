@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
+import com.imecatro.demosales.ui.theme.common.localDate
 
 @Preview(showBackground = true)
 @Composable
@@ -43,7 +43,7 @@ fun CardOfSaleComposable(
                 Text(text = sale.clientName)
             },
             supportingContent = {
-                Text(text = "#${sale.id}  - ${sale.date}")
+                Text(text = "#${sale.id}  - ${sale.date.localDate()}")
             },
             trailingContent = {
                 Box(

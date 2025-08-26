@@ -1,17 +1,12 @@
 package com.imecatro.demosales.ui.sales.list.mappers
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import com.imecatro.demosales.domain.sales.list.model.SaleOnListDomainModel
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
 import com.imecatro.demosales.ui.sales.list.model.SalesList
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 
 internal fun List<SaleOnListDomainModel>.toUiModel(): SalesList {
@@ -39,8 +34,7 @@ internal fun OrderStatus.toColor(): Color {
 
 fun Long.convertMillisToDate(): String {
     val instant = Instant.ofEpochMilli(this)
-    val zoneId = ZoneId.systemDefault()
-    val localDateTime = LocalDateTime.ofInstant(instant, zoneId)
-    val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())
-    return localDateTime.format(formatter)
+    // DateTimeFormatter.ISO_INSTANT correctly formats an Instant
+    // to the full ISO 8601 format in UTC, ending with 'Z'.
+    return DateTimeFormatter.ISO_INSTANT.format(instant)
 }

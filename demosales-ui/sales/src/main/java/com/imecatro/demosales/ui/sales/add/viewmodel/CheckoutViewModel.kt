@@ -68,7 +68,19 @@ class CheckoutViewModel @Inject constructor(
      * @param extra is the amount extra that must be added to the total
      */
     fun onExtraChargeAdded(extra: String) {
-        //todo validates extra amount
+        // Attempt to parse the string to a Double.
+        // toDoubleOrNull() is safer as it returns null for invalid input.
+        val extraAmount = extra.toDoubleOrNull()
+
+        // Validate the parsed amount.
+        // 1. Check if parsing failed (extraAmount is null).
+        // 2. Check if the amount is negative.
+        if (extraAmount == null || extraAmount < 0) {
+            // Handle invalid input appropriately.
+            // For example, log an error, show a message to the user, etc.
+            println("Invalid extra charge amount: $extra") // Replace with actual error handling
+            return
+        }
         currentTicket.update { it.copy(totals = it.totals.copy(extra = extra.toDouble())) }
         currentTicket.update { it.copy(totals = it.totals.copy(total = extra.toDouble() + it.totals.subtotal)) }
     }
