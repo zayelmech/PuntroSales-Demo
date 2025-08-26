@@ -20,6 +20,10 @@ internal class DummyClientsRepositoryImpl : ClientsRepository {
         return flowOf(clients)
     }
 
+    override fun getAllFilteredClients(): List<ClientDomainModel> {
+        TODO("Not yet implemented")
+    }
+
     override fun deleteClientById(id: Long) {
         //clients.removeAt(id!!)
     }

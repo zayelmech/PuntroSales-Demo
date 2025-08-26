@@ -30,6 +30,10 @@ class ClientsRepositoryImpl(
         }
     }
 
+    override fun getAllFilteredClients(): List<ClientDomainModel> {
+       return emptyList() // TODO
+    }
+
     @WorkerThread
     override fun deleteClientById(id: Long) {
         Log.d(TAG, "deleteClientById: $id")

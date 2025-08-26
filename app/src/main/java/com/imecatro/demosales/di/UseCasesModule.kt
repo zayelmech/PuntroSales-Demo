@@ -3,6 +3,7 @@ package com.imecatro.demosales.di
 import com.imecatro.demosales.domain.clients.repository.ClientsRepository
 import com.imecatro.demosales.domain.clients.usecases.AddClientUseCase
 import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
+import com.imecatro.demosales.domain.clients.usecases.FilterClientsUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetAllClientsUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
@@ -18,12 +19,12 @@ import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.CheckoutSaleUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
-import com.imecatro.demosales.domain.sales.add.usecases.CheckoutSaleUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
-import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.details.UpdateSaleStatusUseCase
@@ -131,6 +132,12 @@ class ClientsFeaturesModule {
         clientsRepository: ClientsRepository,
         appCoroutineDispatcher: CoroutineProvider
     ): GetAllClientsUseCase = GetAllClientsUseCase(clientsRepository, appCoroutineDispatcher)
+
+    @Provides
+    fun providesFilterClientsUseCase(
+        clientsRepository: ClientsRepository,
+        appCoroutineDispatcher: CoroutineProvider
+    ): FilterClientsUseCase = FilterClientsUseCase(clientsRepository, appCoroutineDispatcher)
 
     @Provides
     fun providesAddClientUseCase(

@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 interface ClientsRepository {
     fun addClient(client: ClientDomainModel)
     fun getAllClients(): Flow<List<ClientDomainModel>>
+    fun getAllFilteredClients(): List<ClientDomainModel>
     fun deleteClientById(id: Long)
     fun updateClient(client: ClientDomainModel)
     @Throws(ClientNotFoundException::class)

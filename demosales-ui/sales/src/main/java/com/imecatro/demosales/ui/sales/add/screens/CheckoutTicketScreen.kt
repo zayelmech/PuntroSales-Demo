@@ -157,7 +157,7 @@ fun CheckoutTicketComposableImpl(
     saleId: Long,
     onTicketCheckedOut: (Long) -> Unit
 ) {
-    val ticket by checkoutViewModel.currentTicket.collectAsState()
+    val uiState by checkoutViewModel.uiState.collectAsState()
 
     var showEditInputDialog by remember {
         mutableStateOf(false)
@@ -199,14 +199,14 @@ fun CheckoutTicketComposableImpl(
         }) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             CheckoutTicketComposable(
-                client = ticket.clientName,
+                client = uiState.ticket.clientName,
                 onChangeClientClick = { scope.launch { scaffoldState.bottomSheetState.expand() } },
-                note = ticket.note,
+                note = uiState.ticket.note,
                 onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
-                subtotal = "${ticket.totals.subtotal}",
-                extra = "${ticket.totals.extra}",
+                subtotal = "${uiState.ticket.totals.subtotal}",
+                extra = "${uiState.ticket.totals.extra}",
                 onExtraClick = { showEditInputDialog = true },
-                total = "${ticket.totals.total}",
+                total = "${uiState.ticket.totals.total}",
                 onCheckoutClick = {
                     checkoutViewModel.onCheckoutAction()
                 },
@@ -215,8 +215,8 @@ fun CheckoutTicketComposableImpl(
         }
     }
 
-    LaunchedEffect(ticket.ticketSaved) {
-        if (ticket.ticketSaved) onTicketCheckedOut(ticket.id)
+    LaunchedEffect(uiState.ticket.ticketSaved) {
+        if (uiState.ticket.ticketSaved) onTicketCheckedOut(uiState.ticket.id)
     }
     if (showEditInputDialog) {
         InputNumberDialogComposable(

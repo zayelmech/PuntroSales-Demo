@@ -76,8 +76,6 @@ class ProductsDetailsViewModel @AssistedInject constructor(
         }
     }
 
-    override fun onStart() = Unit
-
     @AssistedFactory
     interface Factory {
         fun create(

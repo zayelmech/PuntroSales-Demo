@@ -54,6 +54,5 @@ class ProductsViewModel @Inject constructor(
 
     }
 
-    override fun onStart() = Unit
 }
 

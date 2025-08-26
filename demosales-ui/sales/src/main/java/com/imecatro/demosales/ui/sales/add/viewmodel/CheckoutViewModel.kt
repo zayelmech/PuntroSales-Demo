@@ -1,16 +1,18 @@
 package com.imecatro.demosales.ui.sales.add.viewmodel
 
 import androidx.core.net.toUri
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
+import com.imecatro.demosales.domain.clients.usecases.FilterClientsUseCase
+import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.CheckoutSaleUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.model.ClientResultUiModel
 import com.imecatro.demosales.ui.sales.add.model.SaleChargeUiModel
-import com.imecatro.demosales.ui.sales.add.model.SaleUiModel
+import com.imecatro.demosales.ui.sales.add.state.TicketUiState
+import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,14 +28,10 @@ import javax.inject.Inject
 class CheckoutViewModel @Inject constructor(
     private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
     private val saveSaleUseCase: CheckoutSaleUseCase,
-    private val searchClientUseCase: SearchClientUseCase
-
-) : ViewModel() {
-
-
-    private val initCharges = SaleChargeUiModel(0.0, 0.0, 0.0, 0.0, 0.0)
-    private val initialTicket = SaleUiModel(0, "Guest", 0, "", listOf(), initCharges, "default", "")
-    val currentTicket: MutableStateFlow<SaleUiModel> = MutableStateFlow(initialTicket)
+    private val searchClientUseCase: SearchClientUseCase,
+    private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
+    private val filterClientsUseCase: FilterClientsUseCase
+) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
 
     private val _results: MutableStateFlow<List<ClientResultUiModel>> =
         MutableStateFlow(emptyList())
@@ -43,23 +41,36 @@ class CheckoutViewModel @Inject constructor(
 
     private fun fetchMostPopularClients() {
         viewModelScope.launch {
-//            val filtered = TODO()
-//            _results.update { filtered }
+            val result = filterClientsUseCase { limit = 10 }
+            result.onSuccess { list->
+                _results.update { list.toUi() }
+            }
         }
     }
 
     fun onNoteChangeAction(note: String) {
-        currentTicket.update { it.copy(note = note) }
+        updateState {
+            val updatedTicket = ticket.copy(note = note)
+            copy(ticket = updatedTicket)
+        }
     }
 
     fun onGetDetailsAction(saleId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val ticket = getDetailsOfSaleByIdUseCase(saleId)
-            currentTicket.update {
-                it.copy(
+            val ticketD = getDetailsOfSaleByIdUseCase(saleId)
+            updateState {
+                val updatedTicket = ticket.copy(
                     id = saleId,
-                    totals = initCharges.copy(subtotal = ticket.total)
+                    note = ticketD.note,
+                    totals = ticket.totals.copy(subtotal = ticketD.total, extra = ticketD.extra)
                 )
+                copy(ticket = updatedTicket)
+            }
+            getClientDetailsByIdUseCase.execute(ticketD.clientId).onSuccess {
+                updateState {
+                    val updatedTicket = ticket.copy(clientName = it.name, clientId = it.id)
+                    copy(ticket = updatedTicket)
+                }
             }
         }
     }
@@ -81,21 +92,31 @@ class CheckoutViewModel @Inject constructor(
             println("Invalid extra charge amount: $extra") // Replace with actual error handling
             return
         }
-        currentTicket.update { it.copy(totals = it.totals.copy(extra = extra.toDouble())) }
-        currentTicket.update { it.copy(totals = it.totals.copy(total = extra.toDouble() + it.totals.subtotal)) }
+        updateState {
+            val updatedTicket = ticket.copy(
+                totals = ticket.totals.copy(
+                    extra = extraAmount,
+                    total = ticket.totals.subtotal + extraAmount
+                )
+            )
+            copy(ticket = updatedTicket)
+        }
     }
 
 
     fun onCheckoutAction() {
         viewModelScope.launch(Dispatchers.IO) {
-            saveSaleUseCase(currentTicket.value.id) {
-                note = currentTicket.value.note
+            val currentTicket = uiState.value.ticket
+            saveSaleUseCase(currentTicket.id) {
+                note = currentTicket.note
                 date = System.currentTimeMillis().toString()
-                totals = currentTicket.value.totals.toDomain()
-                clientId = currentTicket.value.clientId
+                totals = currentTicket.totals.toDomain()
+                clientId = currentTicket.clientId
                 tickedPaid = true
             }
-            currentTicket.update { it.copy(ticketSaved = true) }
+            updateState {
+                copy(ticket = ticket.copy(ticketSaved = true))
+            }
         }
     }
 
@@ -109,19 +130,25 @@ class CheckoutViewModel @Inject constructor(
     }
 
     fun onAddClientAction(client: ClientResultUiModel) {
-        currentTicket.update { it.copy(clientName = client.name, clientId = client.id) }
+        updateState {
+            val updatedTicket = ticket.copy(clientName = client.name, clientId = client.id)
+            copy(ticket = updatedTicket)
+        }
     }
 
     fun onSavePendingTicked() {
         viewModelScope.launch(Dispatchers.IO) {
-            saveSaleUseCase(currentTicket.value.id) {
-                note = currentTicket.value.note
+            val currentTicket = uiState.value.ticket
+            saveSaleUseCase(currentTicket.id) {
+                note = currentTicket.note
                 date = System.currentTimeMillis().toString()
-                totals = currentTicket.value.totals.toDomain()
-                clientId = currentTicket.value.clientId
+                totals = currentTicket.totals.toDomain()
+                clientId = currentTicket.clientId
                 tickedPaid = false
             }
-            currentTicket.update { it.copy(ticketSaved = true) }
+            updateState {
+                copy(ticket = ticket.copy(ticketSaved = true))
+            }
         }
     }
 

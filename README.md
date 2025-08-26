@@ -84,6 +84,12 @@ Generally, we can follow next structured pattern
 - [x] Delete client
 - [ ] Client sales history
 
+### Home & Settings 
+- [] Add/Update Store Logo and name, address, phone number
+- [] Change Currency
+- [] Change Language
+- [] Export data (sales, products, clients)) as .zip
+
 ## UI Layer
 
 ### Libraries
