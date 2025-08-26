@@ -81,7 +81,6 @@ fun ListOfProducts(
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
-    var showFilters by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(text) {
         snapshotFlow { text }

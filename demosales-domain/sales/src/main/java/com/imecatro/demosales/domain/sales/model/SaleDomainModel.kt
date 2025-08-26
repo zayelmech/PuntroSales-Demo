@@ -8,7 +8,7 @@ package com.imecatro.demosales.domain.sales.model
  * @property clientId
  * @property date
  * @property productsList is a list of products of type [Order]
- * @property total is the amount of money [Double] the client will pay for all products on Cart
+ * @property totals is the amount of money [Costs] the client will pay for all products on Cart
  * @property status see [OrderStatus]
  * @property note limited to 40 chars
  * @constructor Create empty Sale domain model

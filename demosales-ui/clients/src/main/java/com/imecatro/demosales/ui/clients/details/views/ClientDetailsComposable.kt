@@ -51,7 +51,6 @@ private fun ClientDetailsComposable(
     onDeleteClicked: () -> Unit = {},
     onEditClicked: () -> Unit = {}
 ) {
-    val paddingX = 20.dp
     val view = LocalView.current
 
     LazyColumn(
