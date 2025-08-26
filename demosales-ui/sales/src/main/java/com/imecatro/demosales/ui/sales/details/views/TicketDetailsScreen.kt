@@ -120,10 +120,14 @@ fun ResumeTicketScreen(
                 Text("Notes:", style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.weight(1f))
             }
-            if (ticketDetails.note.isNotBlank()) Text(ticketDetails.note)
+            if (ticketDetails.note.isNotBlank())
+               Column(Modifier.padding(horizontal = 20.dp, vertical = 5.dp)) {
+                   Text(ticketDetails.note, style = MaterialTheme.typography.bodySmall)
+               }
+
 
             // Products
-            Text("Items:", style = MaterialTheme.typography.titleSmall)
+            Text("Items:", style = MaterialTheme.typography.labelMedium)
         }
 
         items(ticketDetails.list) { product ->
