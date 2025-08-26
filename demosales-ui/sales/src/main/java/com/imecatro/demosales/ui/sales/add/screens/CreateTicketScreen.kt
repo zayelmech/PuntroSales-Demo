@@ -104,6 +104,7 @@ fun CreateTicketComposable(
                     modifier = Modifier
                         .padding(vertical = Dp(1f)),
                     enableDismissFromEndToStart = true,
+                    enableDismissFromStartToEnd = false,
                     backgroundContent = {
                         Box(
                             Modifier
@@ -191,7 +192,6 @@ fun CreateTicketComposableStateImpl(
     val productsOnCart by addSaleViewModel.cartList.collectAsState()
     val ticketSubtotal by addSaleViewModel.ticketSubtotal.collectAsState()
 
-    val ticketState by addSaleViewModel.ticketState.collectAsState()
     var query by remember {
         mutableStateOf("")
     }

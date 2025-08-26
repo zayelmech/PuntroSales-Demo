@@ -9,19 +9,31 @@ import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
-import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
-import com.imecatro.demosales.ui.sales.add.mappers.*
+import com.imecatro.demosales.ui.sales.add.mappers.toAddSaleUi
+import com.imecatro.demosales.ui.sales.add.mappers.toDomain
+import com.imecatro.demosales.ui.sales.add.mappers.toDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.toListAddSaleUi
+import com.imecatro.demosales.ui.sales.add.mappers.toUi
+import com.imecatro.demosales.ui.sales.add.mappers.toUpdateQtyDomain
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.sales.add.state.TicketUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,10 +64,6 @@ class AddSaleViewModel @Inject constructor(
     val productsFound: StateFlow<List<ProductResultUiModel>> = _results.onStart {
         fetchMostPopularProducts()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-
-    private val _ticketState: MutableStateFlow<TicketUiState> =
-        MutableStateFlow(TicketUiState.Initialized)
-    val ticketState: StateFlow<TicketUiState> = _ticketState.asStateFlow()
 
     private fun fetchMostPopularProducts() {
         viewModelScope.launch {
@@ -111,8 +119,6 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
-//    private val lista = mutableStateListOf<ProductOnCartUiModel>()
-
     fun onSaveTicketAction() {
 
         val saleModelDomain: SaleDomainModel = cartList.value.toDomainModel().copy(
@@ -121,10 +127,10 @@ class AddSaleViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             val response = addNewSaleToDatabaseUseCase(saleModelDomain)
             response.onSuccess {
-                _ticketState.value = TicketUiState.Saved
+
             }
             response.onFailure {
-                _ticketState.value = TicketUiState.Error(it.message ?: "Error on saving data")
+
             }
 
             cartList.first().forEach { product ->
