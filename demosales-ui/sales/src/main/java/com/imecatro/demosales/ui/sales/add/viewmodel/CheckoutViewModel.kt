@@ -20,9 +20,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -114,14 +111,6 @@ private fun List<ClientDomainModel>.toUi(): List<ClientResultUiModel> {
     }
 }
 
-/**
- * @return date formatted 2025-08-17T21:05:42Z
- *
- */
-fun nowIsoString(): String {
-    return ZonedDateTime.now(ZoneOffset.UTC)
-        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-}
 
 private fun SaleChargeUiModel.toDomain(): SaleDomainModel.Costs {
     return SaleDomainModel.Costs(

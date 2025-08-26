@@ -27,7 +27,7 @@ internal fun List<SaleOnListDomainModel>.toUiModel(): SalesList {
     }
 }
 
-private fun OrderStatus.toColor(): Color {
+internal fun OrderStatus.toColor(): Color {
     return when(this){
         OrderStatus.INITIALIZED -> Color.Gray               // neutral, just created
         OrderStatus.PENDING     -> Color(0xFFFFA000)        // amber/orange = waiting

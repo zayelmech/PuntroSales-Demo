@@ -1,6 +1,5 @@
 package com.imecatro.demosales.ui.sales.add.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,9 +39,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.sales.add.components.SearchClientBottomSheet
 import com.imecatro.demosales.ui.sales.add.components.SearchClientEngineModel
+import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import kotlinx.coroutines.launch
@@ -56,7 +57,8 @@ fun CheckoutTicketComposable(
     extra: String,
     onExtraClick: () -> Unit,
     total: String,
-    onCheckoutClick: () -> Unit
+    onCheckoutClick: () -> Unit,
+    onSavePending: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -75,8 +77,7 @@ fun CheckoutTicketComposable(
             Text(text = client)
 
         }
-        //Notas
-
+        //Notes
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Notes", style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.weight(1f))
@@ -108,6 +109,14 @@ fun CheckoutTicketComposable(
                 Text("$$extra")
             }
 
+//            Row(verticalAlignment = Alignment.CenterVertically) {
+//                Text(text = "Discount")
+//                Spacer(modifier = Modifier.weight(1f))
+//                IconButton(onClick = { onExtraClick() }) {
+//                    Icon(Icons.Default.AddCircle, null)
+//                }
+//                Text("$$extra")
+//            }
 
             //Total
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -118,7 +127,10 @@ fun CheckoutTicketComposable(
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Button(
                 onClick = onCheckoutClick,
                 modifier = Modifier
@@ -128,6 +140,13 @@ fun CheckoutTicketComposable(
             ) {
                 Text(text = "Checkout")
             }
+            if (false) // TODO
+                TextButton(
+                    onClick = onSavePending,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
+                ) {
+                    Text(text = "Save as pending sale")
+                }
         }
     }
 }
@@ -158,28 +177,30 @@ fun CheckoutTicketComposableImpl(
         checkoutViewModel.onGetDetailsAction(saleId)
     }
 
-    BottomSheetScaffold(scaffoldState =
-    scaffoldState, sheetPeekHeight = 0.dp, sheetContent = {
-        Column(
-            Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val searchUiState = SearchClientEngineModel(
-                list = resultsList.toMutableStateList(),
-                query = query,
-                onQueryChange = {
-                    query = it
-                    checkoutViewModel.onSearchClientAction(query)
-                },
-                onClientClicked = {
-                    checkoutViewModel.onAddClientAction(it)
-                }
-            )
-            SearchClientBottomSheet(searchUiState)
-        }
-    }) { innerPadding ->
+    BottomSheetScaffold(
+        scaffoldState =
+            scaffoldState, sheetPeekHeight = 0.dp, sheetContent = {
+            Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val searchUiState = SearchClientEngineModel(
+                    list = resultsList.toMutableStateList(),
+                    query = query,
+                    onQueryChange = {
+                        query = it
+                        checkoutViewModel.onSearchClientAction(query)
+                    },
+                    onClientClicked = {
+                        checkoutViewModel.onAddClientAction(it)
+                    }
+                )
+                SearchClientBottomSheet(searchUiState)
+            }
+        }) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            CheckoutTicketComposable(client = ticket.clientName,
+            CheckoutTicketComposable(
+                client = ticket.clientName,
                 onChangeClientClick = { scope.launch { scaffoldState.bottomSheetState.expand() } },
                 note = ticket.note,
                 onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
@@ -189,16 +210,18 @@ fun CheckoutTicketComposableImpl(
                 total = "${ticket.totals.total}",
                 onCheckoutClick = {
                     checkoutViewModel.onCheckoutAction()
-                })
+                },
+                onSavePending = { /*todo*/ }
+            )
         }
     }
 
-    
     LaunchedEffect(ticket.ticketSaved) {
         if (ticket.ticketSaved) onTicketCheckedOut(ticket.id)
     }
     if (showEditInputDialog) {
-        InputNumberDialogComposable(initialValue = "",
+        InputNumberDialogComposable(
+            initialValue = "",
             onDismissRequest = { showEditInputDialog = false },
             onConfirmClicked = {
                 checkoutViewModel.onExtraChargeAdded(it)

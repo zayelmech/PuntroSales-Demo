@@ -10,6 +10,7 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,7 +50,8 @@ fun CardOfSaleComposable(
                     modifier = Modifier
                         .background(color = sale.statusColor, shape = RoundedCornerShape(5.dp))
                         .padding(10.dp)
-                        .sizeIn(minWidth = 50.dp)
+                        .sizeIn(minWidth = 50.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(text = sale.status)
                 }

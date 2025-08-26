@@ -32,15 +32,15 @@ class TicketDetailsViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     private val _sale: MutableStateFlow<TicketDetailsUiModel> =
-        MutableStateFlow(TicketDetailsUiModel(listOf()))
+        MutableStateFlow(TicketDetailsUiModel(list = listOf()))
     val sale: StateFlow<TicketDetailsUiModel> = _sale.onStart {
         onGetDetailsAction()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), TicketDetailsUiModel(emptyList()))
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), TicketDetailsUiModel( list = emptyList()))
 
     private fun onGetDetailsAction() {
         viewModelScope.launch(Dispatchers.IO) {
             val details = getDetailsOfSaleByIdUseCase.invoke(saleId)
-            _sale.update { details.toUi() }
+            _sale.update { details.toUi() .copy(id = saleId)}
             getClientDetailsByIdUseCase.execute(details.clientId)
                 .onSuccess { result ->
                     _sale.update { it.copy(client = result.toUi()) }

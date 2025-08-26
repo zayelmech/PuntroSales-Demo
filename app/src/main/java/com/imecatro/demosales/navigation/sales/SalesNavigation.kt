@@ -8,6 +8,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.imecatro.demosales.ui.sales.add.screens.CheckoutTicketComposableImpl
 import com.imecatro.demosales.ui.sales.add.screens.CreateTicketComposableStateImpl
+import com.imecatro.demosales.ui.sales.add.screens.ResumeTicketScreenImpl
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
 import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl
@@ -38,13 +39,33 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
             val id = backStackEntry.toRoute<SalesDestinations.Checkout>().id
 
             CheckoutTicketComposableImpl(checkoutViewModel = hiltViewModel(), saleId = id) { ticket ->
-                navController.navigate(SalesDestinations.Details(ticket)) {
+                navController.navigate(SalesDestinations.SuccessDetails(ticket)) {
                    popUpTo(SalesDestinations.List) { inclusive = false }
                 }
             }
         }
         composable<SalesDestinations.Edit> {
             //TODO edit sales route
+
+        }
+
+        composable<SalesDestinations.SuccessDetails> { backStackEntry ->
+            val navArgs = backStackEntry.toRoute<SalesDestinations.Details>()
+
+            val viewModel: TicketDetailsViewModel =
+                hiltViewModel(creationCallback = { factory: TicketDetailsViewModel.Factory -> factory.create(navArgs.id) })
+
+            ResumeTicketScreenImpl(ticketDetailsVM=viewModel, saleId = navArgs.id) {
+                it?.let {
+                    navController.navigate(SalesDestinations.Add) {
+                        popUpTo(SalesDestinations.Details(navArgs.id)) { inclusive = true }
+                    }
+                } ?: run {
+                    navController.navigate(SalesDestinations.List) {
+                        popUpTo(SalesDestinations.List) { inclusive = true }
+                    }
+                }
+            }
 
         }
         composable<SalesDestinations.Details> { backStackEntry ->

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="delete_ticket">Are you sure you want to delete this ticket ?</string>
+    <string name="btn_cancel">Cancel / Refund</string>
 </resources>

@@ -7,6 +7,7 @@ import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.details.model.ProductOnTicketUiModel
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel
+import com.imecatro.demosales.ui.sales.list.mappers.toColor
 
 
 internal fun SaleDetailsDomainModel.toUi(): TicketDetailsUiModel =
@@ -18,6 +19,8 @@ internal fun SaleDetailsDomainModel.toUi(): TicketDetailsUiModel =
         tax = tax.toString(),
         extra = extra.toString(),
         total = total.toString(),
+        statusColor = status.toColor(),
+        status = status.str,
         isEditable = (status != OrderStatus.COMPLETED && status != OrderStatus.CANCEL)
     )
 
