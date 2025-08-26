@@ -11,6 +11,8 @@ import com.imecatro.demosales.ui.sales.add.screens.CreateTicketComposableStateIm
 import com.imecatro.demosales.ui.sales.add.screens.ResumeTicketScreenImpl
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
+import com.imecatro.demosales.ui.sales.edit.EditSaleViewModel
+import com.imecatro.demosales.ui.sales.edit.EditTicketComposableStateImpl
 import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl
 
 inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHostController) {
@@ -22,13 +24,17 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
                         popUpTo(SalesDestinations.List)
                     }
                 } ?: run {
-                    navController.navigate(SalesDestinations.Add)
+                    navController.navigate(SalesDestinations.Add())
                 }
             }
         }
-        composable<SalesDestinations.Add> {
+        composable<SalesDestinations.Add> { backStackEntry ->
 
-            CreateTicketComposableStateImpl(addSaleViewModel = hiltViewModel(),
+            val id = backStackEntry.toRoute<SalesDestinations.Add>().id
+
+            CreateTicketComposableStateImpl(
+                addSaleViewModel = hiltViewModel(),
+                basedOnTicketId = id,
                 onNavigateToCheckout = { id ->
                     navController.navigate(SalesDestinations.Checkout(id))
                 })
@@ -38,14 +44,28 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
 
             val id = backStackEntry.toRoute<SalesDestinations.Checkout>().id
 
-            CheckoutTicketComposableImpl(checkoutViewModel = hiltViewModel(), saleId = id) { ticket ->
+            CheckoutTicketComposableImpl(
+                checkoutViewModel = hiltViewModel(),
+                saleId = id
+            ) { ticket ->
                 navController.navigate(SalesDestinations.SuccessDetails(ticket)) {
-                   popUpTo(SalesDestinations.List) { inclusive = false }
+                    popUpTo(SalesDestinations.List) { inclusive = false }
                 }
             }
         }
-        composable<SalesDestinations.Edit> {
-            //TODO edit sales route
+        composable<SalesDestinations.Edit> { backStackEntry ->
+            val navArgs = backStackEntry.toRoute<SalesDestinations.Edit>()
+
+            val viewModel: EditSaleViewModel =
+                hiltViewModel(creationCallback = { factory: EditSaleViewModel.Factory ->
+                    factory.create(
+                        navArgs.id
+                    )
+                })
+
+            EditTicketComposableStateImpl(viewModel) { id ->
+                navController.navigate(SalesDestinations.Checkout(id))
+            }
 
         }
 
@@ -53,11 +73,15 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
             val navArgs = backStackEntry.toRoute<SalesDestinations.Details>()
 
             val viewModel: TicketDetailsViewModel =
-                hiltViewModel(creationCallback = { factory: TicketDetailsViewModel.Factory -> factory.create(navArgs.id) })
+                hiltViewModel(creationCallback = { factory: TicketDetailsViewModel.Factory ->
+                    factory.create(
+                        navArgs.id
+                    )
+                })
 
-            ResumeTicketScreenImpl(ticketDetailsVM=viewModel, saleId = navArgs.id) {
+            ResumeTicketScreenImpl(ticketDetailsVM = viewModel, saleId = navArgs.id) {
                 it?.let {
-                    navController.navigate(SalesDestinations.Add) {
+                    navController.navigate(SalesDestinations.Add()) {
                         popUpTo(SalesDestinations.Details(navArgs.id)) { inclusive = true }
                     }
                 } ?: run {
@@ -72,19 +96,28 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
             val navArgs = backStackEntry.toRoute<SalesDestinations.Details>()
 
             val viewModel: TicketDetailsViewModel =
-                hiltViewModel(creationCallback = { factory: TicketDetailsViewModel.Factory -> factory.create(navArgs.id) })
+                hiltViewModel(creationCallback = { factory: TicketDetailsViewModel.Factory ->
+                    factory.create(navArgs.id)
+                })
 
-            TicketDetailsComposableImpl(ticketDetailsVM = viewModel, saleId = navArgs.id) {
-                it?.let {
-                    navController.navigate(SalesDestinations.Add) {
+            TicketDetailsComposableImpl(
+                ticketDetailsVM = viewModel, saleId = navArgs.id,
+                onEditTicket = {
+                    navController.navigate(SalesDestinations.Checkout(it)) {
                         popUpTo(SalesDestinations.Details(navArgs.id)) { inclusive = true }
                     }
-                } ?: run {
+                },
+                onDuplicateTicket = {
+                    navController.navigate(SalesDestinations.Add(it)) {
+                        popUpTo(SalesDestinations.Details(navArgs.id)) { inclusive = true }
+                    }
+                },
+                onBackToList = {
                     navController.navigate(SalesDestinations.List) {
                         popUpTo(SalesDestinations.List) { inclusive = true }
                     }
                 }
-            }
+            )
         }
     }
 }

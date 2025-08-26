@@ -1,9 +1,10 @@
-package com.imecatro.demosales.ui.sales.add.viewmodel
+package com.imecatro.demosales.ui.sales.edit
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
+import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
 import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
@@ -18,18 +19,20 @@ import com.imecatro.demosales.ui.sales.add.mappers.*
 import com.imecatro.demosales.ui.sales.add.mappers.toListAddSaleUi
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.sales.add.state.TicketUiState
+import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 private const val TAG = "AddSaleViewModel"
 
-@HiltViewModel
-class AddSaleViewModel @Inject constructor(
-
+@HiltViewModel(assistedFactory = EditSaleViewModel.Factory::class)
+class EditSaleViewModel  @AssistedInject constructor(
+    @Assisted("ticketId") private val ticketId: Long,
     private val addNewSaleToDatabaseUseCase: AddNewSaleToDatabaseUseCase,
     private val deleteTicketByIdUseCase: DeleteTicketByIdUseCase,
 
@@ -42,8 +45,8 @@ class AddSaleViewModel @Inject constructor(
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
 
-    //private val addStockUseCase: AddStockUseCase,
-    private val removeFromStockUseCase: RemoveFromStockUseCase,
+//    private val addStockUseCase: AddStockUseCase,
+//    private val removeFromStockUseCase: RemoveFromStockUseCase,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -52,10 +55,6 @@ class AddSaleViewModel @Inject constructor(
     val productsFound: StateFlow<List<ProductResultUiModel>> = _results.onStart {
         fetchMostPopularProducts()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-
-    private val _ticketState: MutableStateFlow<TicketUiState> =
-        MutableStateFlow(TicketUiState.Initialized)
-    val ticketState: StateFlow<TicketUiState> = _ticketState.asStateFlow()
 
     private fun fetchMostPopularProducts() {
         viewModelScope.launch {
@@ -75,13 +74,11 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
-    @Volatile
-    private var _ticketId: Long = 0
-    val ticketId get() = _ticketId
+    val saleId get() = ticketId
 
     val cartList: StateFlow<List<ProductOnCartUiModel>> = channelFlow {
-        getCartFlowUseCase().collectLatest { ticket ->
-            _ticketId = ticket.id
+        getCartFlowUseCase(ticketId).collectLatest { ticket ->
+
             _ticketSubtotal.update { ticket.totals.subTotal.toString() }
             send(ticket.toUi())
         }
@@ -113,6 +110,9 @@ class AddSaleViewModel @Inject constructor(
 
 //    private val lista = mutableStateListOf<ProductOnCartUiModel>()
 
+    /**
+     * todo modify
+     */
     fun onSaveTicketAction() {
 
         val saleModelDomain: SaleDomainModel = cartList.value.toDomainModel().copy(
@@ -121,19 +121,19 @@ class AddSaleViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             val response = addNewSaleToDatabaseUseCase(saleModelDomain)
             response.onSuccess {
-                _ticketState.value = TicketUiState.Saved
+               // _ticketState.value = TicketUiState.Saved
             }
             response.onFailure {
-                _ticketState.value = TicketUiState.Error(it.message ?: "Error on saving data")
+               // _ticketState.value = TicketUiState.Error(it.message ?: "Error on saving data")
             }
 
-            cartList.first().forEach { product ->
-                removeFromStockUseCase(
-                    reference = "Sale #$_ticketId",
-                    productId = product.product.id,
-                    amount = product.qty
-                )
-            }
+//            cartList.first().forEach { product ->
+//                removeFromStockUseCase(
+//                    reference = "Sale #$_ticketId",
+//                    productId = product.product.id,
+//                    amount = product.qty
+//                )
+//            }
         }
     }
 
@@ -154,18 +154,15 @@ class AddSaleViewModel @Inject constructor(
 
     fun onCancelTicketAction() {
         viewModelScope.launch {
-            deleteTicketByIdUseCase.invoke(_ticketId)
+            deleteTicketByIdUseCase.invoke(ticketId)
         }
     }
 
-    fun onTicketDuplication(basedOnTicketId: Long) {
-        viewModelScope.launch(dispatcher) {
-           val sale =  getCartFlowUseCase(basedOnTicketId).first()
-
-            sale.productsList.forEach { order ->
-                addProductToCartUseCase.invoke(order)
-            }
-        }
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("ticketId") ticketId: Long
+        ): EditSaleViewModel
     }
 
 }

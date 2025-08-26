@@ -71,7 +71,7 @@ Generally, we can follow next structured pattern
 - [x] List all tickets
 - [x] Create a new ticket — stock is automatically deducted
 - [x] Cancel a ticket — stock will be re-added
-- [ ] View ticket details and share a screenshot with overscroll
+- [x] View ticket details and share a screenshot with overscroll
 - [ ] Filter sales by date range, status, etc.
 - [ ] Download sales as CSV
 - [ ] Sales charts and income tracking — *Future*

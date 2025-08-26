@@ -15,30 +15,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Label
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,14 +48,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.android.material.chip.Chip
-import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.BitmapComposer
+import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.details.model.ProductOnTicketUiModel
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
 import kotlinx.coroutines.launch
 
@@ -88,7 +79,11 @@ private fun getFakeItems(): List<ProductOnTicketUiModel> {
 @Preview(showBackground = true, showSystemUi = false)
 @Composable
 fun ResumeTicketScreen(
-    ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(list = getFakeItems(), statusColor = Color.Red, status = "Pending")
+    ticketDetails: TicketDetailsUiModel = TicketDetailsUiModel(
+        list = getFakeItems(),
+        statusColor = Color.Red,
+        status = "Pending"
+    )
 ) {
     LazyColumn(
         modifier = Modifier
@@ -101,7 +96,10 @@ fun ResumeTicketScreen(
                 Spacer(Modifier.weight(1f))
                 Box(
                     modifier = Modifier
-                        .background(color = ticketDetails.statusColor, shape = RoundedCornerShape(5.dp))
+                        .background(
+                            color = ticketDetails.statusColor,
+                            shape = RoundedCornerShape(5.dp)
+                        )
                         .padding(horizontal = 2.dp)
                         .sizeIn(minHeight = 15.dp),
                     contentAlignment = Alignment.Center
@@ -168,7 +166,9 @@ fun ResumeTicketScreen(
 fun TicketDetailsComposableImpl(
     ticketDetailsVM: TicketDetailsViewModel,
     saleId: Long,
-    onNavigateAction: (Long?) -> Unit
+    onEditTicket: (Long) -> Unit,
+    onDuplicateTicket: (Long) -> Unit,
+    onBackToList: () -> Unit
 ) {
 
     val saleSelected by ticketDetailsVM.sale.collectAsState()
@@ -243,19 +243,26 @@ fun TicketDetailsComposableImpl(
         ) {
 
 
-            OutlinedButton(
-                onClick = { showDeleteTicketDialog = true },
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.secondary
-                )
-            ) { Text("Cancel / Refund") }
+            if (saleSelected.isCancelable)
+                OutlinedButton(
+                    onClick = { showDeleteTicketDialog = true },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) { Icon(Icons.Outlined.Delete, "Delete"); Text("Cancel & Refund") }
 
             if (saleSelected.isEditable) {
                 Button(
-                    onClick = { onNavigateAction(saleId) },
+                    onClick = { onEditTicket(saleId) },
                     modifier = Modifier
                         .sizeIn(maxWidth = 320.dp)
-                ) { Icon(Icons.Default.Edit, "Add"); Text("Resume") }
+                ) { Text("$ Go to Checkout") }
+            } else {
+                Button(
+                    onClick = { onDuplicateTicket(saleId) },
+                    modifier = Modifier
+                        .sizeIn(maxWidth = 320.dp)
+                ) { Icon(Icons.Outlined.ShoppingCart, "Duplicate"); Text("Duplicate sale") }
             }
         }
 
@@ -266,7 +273,7 @@ fun TicketDetailsComposableImpl(
             onDismissRequest = { showDeleteTicketDialog = false },
             onConfirmClicked = {
                 ticketDetailsVM.onDeleteTicketAction()
-                onNavigateAction(null)
+                onBackToList()
             }
         )
     }

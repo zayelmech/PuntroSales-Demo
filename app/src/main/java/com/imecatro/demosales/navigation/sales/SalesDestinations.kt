@@ -3,16 +3,16 @@ package com.imecatro.demosales.navigation.sales
 import kotlinx.serialization.Serializable
 
 
-sealed class SalesDestinations{
+sealed class SalesDestinations {
 
     @Serializable
     object List
 
     @Serializable
-    object Add
+    data class Add(val id: Long? = null)
 
     @Serializable
-    data class Edit(val id: Int)
+    data class Edit(val id: Long)
 
     @Serializable
     data class Details(val id: Long)

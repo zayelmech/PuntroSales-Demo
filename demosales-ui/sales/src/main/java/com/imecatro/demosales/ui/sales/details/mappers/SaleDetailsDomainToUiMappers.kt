@@ -21,7 +21,8 @@ internal fun SaleDetailsDomainModel.toUi(): TicketDetailsUiModel =
         total = total.toString(),
         statusColor = status.toColor(),
         status = status.str,
-        isEditable = (status != OrderStatus.COMPLETED && status != OrderStatus.CANCEL)
+        isEditable = (status != OrderStatus.COMPLETED && status != OrderStatus.CANCEL),
+        isCancelable = (status != OrderStatus.CANCEL),
     )
 
 

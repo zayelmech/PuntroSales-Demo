@@ -29,6 +29,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -129,7 +130,9 @@ fun CreateTicketComposable(
 
             if (productsOnCart.isEmpty()) {
                 item {
-                    Column(Modifier.fillMaxWidth().padding(20.dp)) {
+                    Column(Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)) {
 
                         Text(
                             text = "Add products to this section, when is done press Continue.\n\nNote: if you need to delete a product, just swipe to left the item",
@@ -181,6 +184,7 @@ fun CreateTicketComposable(
 @Composable
 fun CreateTicketComposableStateImpl(
     addSaleViewModel: AddSaleViewModel,
+    basedOnTicketId: Long?,
     onNavigateToCheckout: (Long) -> Unit
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
@@ -196,26 +200,27 @@ fun CreateTicketComposableStateImpl(
     val scaffoldState = rememberBottomSheetScaffoldState()
 
 
-    BottomSheetScaffold(scaffoldState =
-    scaffoldState, sheetPeekHeight = 0.dp, sheetContent = {
-        Column(
-            Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val searchUiState = SearchEngineUiModel(
-                list = resultsList.toMutableStateList(),
-                query = query,
-                onQueryChange = {
-                    query = it
-                    addSaleViewModel.onSearchProductAction(query)
-                },
-                onProductClicked = {
-                    addSaleViewModel.onAddProductToCartAction(it)
-                }
-            )
-            SearchBottomSheetComposable(searchUiState)
-        }
-    }) { innerPadding ->
+    BottomSheetScaffold(
+        scaffoldState =
+            scaffoldState, sheetPeekHeight = 0.dp, sheetContent = {
+            Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val searchUiState = SearchEngineUiModel(
+                    list = resultsList.toMutableStateList(),
+                    query = query,
+                    onQueryChange = {
+                        query = it
+                        addSaleViewModel.onSearchProductAction(query)
+                    },
+                    onProductClicked = {
+                        addSaleViewModel.onAddProductToCartAction(it)
+                    }
+                )
+                SearchBottomSheetComposable(searchUiState)
+            }
+        }) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             CreateTicketComposable(
                 productsOnCart = productsOnCart.toMutableStateList(),
@@ -242,6 +247,11 @@ fun CreateTicketComposableStateImpl(
             if (productsOnCart.isEmpty()) addSaleViewModel.onCancelTicketAction()
             else addSaleViewModel.onSaveTicketAction()
         }
+    }
+
+    LaunchedEffect(basedOnTicketId) {
+        if (basedOnTicketId != null)
+            addSaleViewModel.onTicketDuplication(basedOnTicketId)
     }
 }
 
