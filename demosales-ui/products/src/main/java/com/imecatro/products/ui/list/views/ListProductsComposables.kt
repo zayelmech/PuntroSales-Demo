@@ -85,7 +85,7 @@ fun ListOfProducts(
 
     LaunchedEffect(text) {
         snapshotFlow { text }
-            .debounce(1000)
+            .debounce(300)
             .collect {
                 onSearchProduct(it)
             }
