@@ -21,11 +21,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
@@ -167,53 +170,57 @@ fun CheckoutTicketComposableImpl(
     val resultsList by checkoutViewModel.clientsFound.collectAsState()
 
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        // Add this line to fix the error:
+        confirmValueChange = { true }, // Add a default confirmValueChange lambda
+    )
+    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     var query by remember {
         mutableStateOf("")
     }
 
-    BottomSheetScaffold(
-        scaffoldState =
-            scaffoldState, sheetPeekHeight = 0.dp, sheetContent = {
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val searchUiState = SearchClientEngineModel(
-                    list = resultsList.toMutableStateList(),
-                    query = query,
-                    onQueryChange = {
-                        query = it
-                        checkoutViewModel.onSearchClientAction(query)
-                    },
-                    onClientClicked = {
-                        checkoutViewModel.onAddClientAction(it)
-                        scope.launch { scaffoldState.bottomSheetState.hide() }
-                    }
-                )
-                SearchClientBottomSheet(searchUiState)
-            }
-        }) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            CheckoutTicketComposable(
-                saleId = uiState.ticket.id,
-                client = uiState.ticket.clientName,
-                onChangeClientClick = { scope.launch { scaffoldState.bottomSheetState.expand() } },
-                note = uiState.ticket.note,
-                onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
-                subtotal = "${uiState.ticket.totals.subtotal}",
-                extra = "${uiState.ticket.totals.extra}",
-                onExtraClick = { showEditInputDialog = true },
-                total = "${uiState.ticket.totals.total}",
-                onCheckoutClick = {
-                    checkoutViewModel.onCheckoutAction()
-                },
-                onSavePending = { checkoutViewModel.onSavePendingTicked()}
-            )
-        }
-    }
+    CheckoutTicketComposable(
+        saleId = uiState.ticket.id,
+        client = uiState.ticket.clientName,
+        onChangeClientClick = { scope.launch { openBottomSheet = true } },
+        note = uiState.ticket.note,
+        onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
+        subtotal = "${uiState.ticket.totals.subtotal}",
+        extra = "${uiState.ticket.totals.extra}",
+        onExtraClick = { showEditInputDialog = true },
+        total = "${uiState.ticket.totals.total}",
+        onCheckoutClick = {
+            checkoutViewModel.onCheckoutAction()
+        },
+        onSavePending = { checkoutViewModel.onSavePendingTicked() }
+    )
 
+    if (openBottomSheet)
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = { openBottomSheet = false },
+            content = {
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val searchUiState = SearchClientEngineModel(
+                        list = resultsList.toMutableStateList(),
+                        query = query,
+                        onQueryChange = {
+                            query = it
+                            checkoutViewModel.onSearchClientAction(query)
+                        },
+                        onClientClicked = {
+                            checkoutViewModel.onAddClientAction(it)
+                            scope.launch { openBottomSheet = false }
+                        }
+                    )
+                    SearchClientBottomSheet(searchUiState)
+                }
+            })
     LaunchedEffect(uiState.ticket.ticketSaved) {
         if (uiState.ticket.ticketSaved) onTicketCheckedOut(uiState.ticket.id)
     }
