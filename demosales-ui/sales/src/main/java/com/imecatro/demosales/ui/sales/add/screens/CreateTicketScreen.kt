@@ -185,7 +185,6 @@ fun CreateTicketComposable(
 @Composable
 fun CreateTicketComposableStateImpl(
     addSaleViewModel: AddSaleViewModel,
-    basedOnTicketId: Long?,
     onNavigateToCheckout: (Long) -> Unit
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
@@ -249,10 +248,6 @@ fun CreateTicketComposableStateImpl(
         }
     }
 
-    LaunchedEffect(basedOnTicketId) {
-        if (basedOnTicketId != null)
-            addSaleViewModel.onTicketDuplication(basedOnTicketId)
-    }
 }
 
 fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {

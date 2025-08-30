@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.imecatro.demosales.ui.sales.add.screens.CheckoutTicketComposableImpl
 import com.imecatro.demosales.ui.sales.add.screens.CreateTicketComposableStateImpl
 import com.imecatro.demosales.ui.sales.add.screens.ResumeTicketScreenImpl
+import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
 import com.imecatro.demosales.ui.sales.edit.EditSaleViewModel
@@ -33,8 +34,7 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
             val id = backStackEntry.toRoute<SalesDestinations.Add>().id
 
             CreateTicketComposableStateImpl(
-                addSaleViewModel = hiltViewModel(),
-                basedOnTicketId = id,
+                addSaleViewModel = hiltViewModel(creationCallback = { factory: AddSaleViewModel.Factory -> factory.create(id?:0L) }),
                 onNavigateToCheckout = { id ->
                     navController.navigate(SalesDestinations.Checkout(id))
                 })

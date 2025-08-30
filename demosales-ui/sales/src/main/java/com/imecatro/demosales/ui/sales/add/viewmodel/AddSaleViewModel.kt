@@ -22,6 +22,10 @@ import com.imecatro.demosales.ui.sales.add.mappers.toUi
 import com.imecatro.demosales.ui.sales.add.mappers.toUpdateQtyDomain
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import com.imecatro.demosales.ui.sales.edit.EditSaleViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,9 +43,9 @@ import javax.inject.Inject
 
 private const val TAG = "AddSaleViewModel"
 
-@HiltViewModel
-class AddSaleViewModel @Inject constructor(
-
+@HiltViewModel(assistedFactory = AddSaleViewModel.Factory::class)
+class AddSaleViewModel @AssistedInject constructor(
+    @Assisted("lastSaleId") private val lastSaleId: Long,
     private val addNewSaleToDatabaseUseCase: AddNewSaleToDatabaseUseCase,
     private val deleteTicketByIdUseCase: DeleteTicketByIdUseCase,
 
@@ -92,6 +96,10 @@ class AddSaleViewModel @Inject constructor(
             _ticketId = ticket.id
             _ticketSubtotal.update { ticket.totals.subTotal.toString() }
             send(ticket.toUi())
+        }
+    }.onStart {
+        if (lastSaleId >0L){
+            onTicketDuplication(lastSaleId)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
@@ -164,7 +172,10 @@ class AddSaleViewModel @Inject constructor(
         }
     }
 
-    fun onTicketDuplication(basedOnTicketId: Long) {
+    /**
+     * todo is failing
+     */
+    private fun onTicketDuplication(basedOnTicketId: Long) {
         viewModelScope.launch(dispatcher) {
            val sale =  getCartFlowUseCase(basedOnTicketId).first()
 
@@ -172,6 +183,13 @@ class AddSaleViewModel @Inject constructor(
                 addProductToCartUseCase.invoke(order)
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("lastSaleId") lastSaleId: Long
+        ): AddSaleViewModel
     }
 
 }
