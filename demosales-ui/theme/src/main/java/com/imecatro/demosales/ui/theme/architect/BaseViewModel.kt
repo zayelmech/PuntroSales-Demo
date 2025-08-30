@@ -18,7 +18,7 @@ abstract class BaseViewModel<T>(idle: T) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(30000L), idle)
 
 
-    fun onStart() = Unit
+    open fun onStart() = Unit
 
     fun updateState(state: T.() -> T) = _uiState.update(state)
 }

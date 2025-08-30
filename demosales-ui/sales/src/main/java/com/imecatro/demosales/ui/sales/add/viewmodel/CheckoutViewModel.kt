@@ -13,6 +13,9 @@ import com.imecatro.demosales.ui.sales.add.model.ClientResultUiModel
 import com.imecatro.demosales.ui.sales.add.model.SaleChargeUiModel
 import com.imecatro.demosales.ui.sales.add.state.TicketUiState
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,10 +25,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class CheckoutViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = CheckoutViewModel.Factory::class)
+class CheckoutViewModel @AssistedInject constructor(
+    @Assisted("saleId") private val saleId: Long,
     private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
     private val saveSaleUseCase: CheckoutSaleUseCase,
     private val searchClientUseCase: SearchClientUseCase,
@@ -42,7 +45,7 @@ class CheckoutViewModel @Inject constructor(
     private fun fetchMostPopularClients() {
         viewModelScope.launch {
             val result = filterClientsUseCase { limit = 10 }
-            result.onSuccess { list->
+            result.onSuccess { list ->
                 _results.update { list.toUi() }
             }
         }
@@ -55,7 +58,7 @@ class CheckoutViewModel @Inject constructor(
         }
     }
 
-    fun onGetDetailsAction(saleId: Long) {
+    private fun onGetDetailsAction(saleId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             val ticketD = getDetailsOfSaleByIdUseCase(saleId)
             updateState {
@@ -150,6 +153,15 @@ class CheckoutViewModel @Inject constructor(
                 copy(ticket = ticket.copy(ticketSaved = true))
             }
         }
+    }
+
+    override fun onStart() = onGetDetailsAction(saleId)
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("saleId") saleId: Long
+        ): CheckoutViewModel
     }
 
 }

@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CheckoutTicketComposable(
+    saleId: Long,
     client: String,
     onChangeClientClick: () -> Unit,
     note: String,
@@ -66,6 +67,7 @@ fun CheckoutTicketComposable(
             .padding(20.dp)
     ) {
 
+        Text(text = "Sale #$saleId", style = MaterialTheme.typography.titleLarge)
         //Cliente // search //guest
         Row(verticalAlignment = Alignment.CenterVertically) {
 
@@ -154,7 +156,6 @@ fun CheckoutTicketComposable(
 @Composable
 fun CheckoutTicketComposableImpl(
     checkoutViewModel: CheckoutViewModel,
-    saleId: Long,
     onTicketCheckedOut: (Long) -> Unit
 ) {
     val uiState by checkoutViewModel.uiState.collectAsState()
@@ -170,10 +171,6 @@ fun CheckoutTicketComposableImpl(
 
     var query by remember {
         mutableStateOf("")
-    }
-
-    LaunchedEffect(Unit) {
-        checkoutViewModel.onGetDetailsAction(saleId)
     }
 
     BottomSheetScaffold(
@@ -192,6 +189,7 @@ fun CheckoutTicketComposableImpl(
                     },
                     onClientClicked = {
                         checkoutViewModel.onAddClientAction(it)
+                        scope.launch { scaffoldState.bottomSheetState.hide() }
                     }
                 )
                 SearchClientBottomSheet(searchUiState)
@@ -199,6 +197,7 @@ fun CheckoutTicketComposableImpl(
         }) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             CheckoutTicketComposable(
+                saleId = uiState.ticket.id,
                 client = uiState.ticket.clientName,
                 onChangeClientClick = { scope.launch { scaffoldState.bottomSheetState.expand() } },
                 note = uiState.ticket.note,
@@ -239,6 +238,7 @@ fun PreviewCheckoutTicketComposable() {
     PuntroSalesDemoTheme {
         Surface {
             CheckoutTicketComposable(
+                saleId = 1,
 //                createFakeListOfProductsOnCart(50),
                 client = "unknown",
                 onChangeClientClick = {},
