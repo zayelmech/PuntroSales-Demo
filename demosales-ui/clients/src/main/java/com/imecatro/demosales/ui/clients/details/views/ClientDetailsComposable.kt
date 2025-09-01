@@ -1,7 +1,6 @@
 package com.imecatro.demosales.ui.clients.details.views
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,17 +11,19 @@ import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,13 +42,14 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
 import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
-import com.imecatro.demosales.ui.theme.ButtonFancy
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 private fun ClientDetailsComposable(
     clientDetails: ClientDetailsUiModel = ClientDetailsUiModel.dummy,
+    onNavigateBack: () -> Unit = {},
     onDeleteClicked: () -> Unit = {},
     onEditClicked: () -> Unit = {}
 ) {
@@ -58,7 +60,14 @@ private fun ClientDetailsComposable(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-
+            TopAppBar(title = { Text(text = "Client Details") }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.AutoMirrored.Default.ArrowBack,
+                        null
+                    )
+                }
+            })
             Spacer(modifier = Modifier.height(20.dp))
             Image(
                 painter =
@@ -145,7 +154,7 @@ private fun ClientDetailsComposable(
 @Composable
 fun ClientDetailsComposableImpl(
     clientDetailsViewModel: ClientDetailsViewModel,
-    onClientDeleted: () -> Unit = {},
+    onBackToList: () -> Unit = {},
     onEditClicked: () -> Unit = {}
 ) {
 
@@ -154,13 +163,14 @@ fun ClientDetailsComposableImpl(
 
     ClientDetailsComposable(
         clientDetails = uiState,
+        onNavigateBack = onBackToList,
         onDeleteClicked = { clientDetailsViewModel.onDeleteClientAction(uiState.clientId) },
         onEditClicked = onEditClicked
     )
 
     LaunchedEffect(key1 = uiState) {
         if (uiState.isClientDeleted) {
-            onClientDeleted()
+            onBackToList()
         }
     }
 }

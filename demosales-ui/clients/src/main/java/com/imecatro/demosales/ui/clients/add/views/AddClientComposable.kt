@@ -5,25 +5,35 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +64,7 @@ import com.imecatro.demosales.ui.clients.add.viewmodel.AddClientViewModel
 import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 internal fun AddClientComposable(
@@ -66,6 +78,7 @@ internal fun AddClientComposable(
     clientAddress: String = "",
     onClientAddressChange: (String) -> Unit = {},
     buttonSaveState: Boolean = false,
+    onNavigateBack: () -> Unit = {},
     onSaveButtonClicked: () -> Unit = {}
 ) {
 
@@ -74,8 +87,17 @@ internal fun AddClientComposable(
 
     LazyColumn {
         item {
+            TopAppBar(title = { Text(text = "Client") }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.AutoMirrored.Default.ArrowBack,
+                        null
+                    )
+                }
+            })
             if (isLoading)
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
             Column(modifier = Modifier.padding(10.dp)) {
 
                 Text(text = "Image", style = MaterialTheme.typography.titleMedium)
@@ -91,16 +113,16 @@ internal fun AddClientComposable(
                 ) {
                     Image(
                         painter =
-                        if (view.isInEditMode)
-                            painterResource(id = R.drawable.baseline_mood_24)
-                        else
-                            rememberAsyncImagePainter(
-                                ImageRequest.Builder(context)
-                                    .data(uri)
-                                    //.error(R.drawable.baseline_add_photo_alternate_24)
-                                    .crossfade(true)
-                                    .build()
-                            ),
+                            if (view.isInEditMode)
+                                painterResource(id = R.drawable.baseline_mood_24)
+                            else
+                                rememberAsyncImagePainter(
+                                    ImageRequest.Builder(context)
+                                        .data(uri)
+                                        //.error(R.drawable.baseline_add_photo_alternate_24)
+                                        .crossfade(true)
+                                        .build()
+                                ),
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
@@ -139,13 +161,18 @@ internal fun AddClientComposable(
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(60.dp))
-                ButtonFancy(
-                    text = "SAVE",
-                    paddingX = 0.dp,
-                    icon = Icons.Filled.Done,
-                    enable = buttonSaveState
-                ) {
-                    onSaveButtonClicked()
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Button(
+                        onClick = onSaveButtonClicked,
+                        enabled = buttonSaveState,
+                        modifier = Modifier
+                            .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
+                            .fillMaxWidth(),
+                        shape = MaterialTheme.shapes.large
+                    ) {
+                        Icon(Icons.Filled.Done, null)
+                        Text(text = stringResource(R.string.btn_save))
+                    }
                 }
             }
         }
@@ -165,7 +192,11 @@ internal fun AddClientComposable(
  * @param onClientSaved This lambda will be called when the client is saved
  */
 @Composable
-fun AddClientComposableImpl(addClientViewModel: AddClientViewModel, onClientSaved: () -> Unit) {
+fun AddClientComposableImpl(
+    addClientViewModel: AddClientViewModel,
+    onBackToList: () -> Unit,
+    onClientSaved: () -> Unit
+) {
 
 
     val uiState by addClientViewModel.uiState.collectAsState()
@@ -175,7 +206,7 @@ fun AddClientComposableImpl(addClientViewModel: AddClientViewModel, onClientSave
 
     val launcher = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.GetContent()
+            ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
         uriPicked?.let {
@@ -195,6 +226,7 @@ fun AddClientComposableImpl(addClientViewModel: AddClientViewModel, onClientSave
         clientAddress = formState.clientAddress,
         onClientAddressChange = { formState = formState.copy(clientAddress = it) },
         buttonSaveState = (formState.isFormValid && !uiState.isLoading),
+        onNavigateBack = onBackToList,
         onSaveButtonClicked = { addClientViewModel.saveClient(formState) }
     )
 

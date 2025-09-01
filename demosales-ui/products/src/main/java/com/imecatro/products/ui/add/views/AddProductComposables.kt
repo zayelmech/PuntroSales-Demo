@@ -49,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage

@@ -6,7 +6,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.imecatro.demosales.navigation.products.ProductsDestinations
 import com.imecatro.demosales.ui.clients.add.views.AddClientComposableImpl
 import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
 import com.imecatro.demosales.ui.clients.details.views.ClientDetailsComposableImpl
@@ -37,7 +36,7 @@ inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: Na
 
             ClientDetailsComposableImpl(
                 viewModel,
-                onClientDeleted = {
+                onBackToList = {
                     navController.navigate(ClientsList) {
                         popUpTo(ClientsList) { inclusive = true }
                     }
@@ -45,8 +44,12 @@ inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: Na
                 onEditClicked = { navController.navigate(EditClient(navArgs.id)) })
         }
         composable<AddClient> {
-            AddClientComposableImpl(hiltViewModel()) {
-                navController.navigate(ClientsList){
+            AddClientComposableImpl(hiltViewModel(), onBackToList = {
+                navController.navigate(ClientsList) {
+                    popUpTo(ClientsList) { inclusive = true }
+                }
+            }) {
+                navController.navigate(ClientsList) {
                     popUpTo(ClientsList) { inclusive = true }
                 }
             }
@@ -60,8 +63,8 @@ inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: Na
                 })
 
             EditClientComposableImpl(viewModel) {
-                navController.navigate(ClientsList){
-                    popUpTo(ClientsList){ inclusive = true }
+                navController.navigate(ClientsList) {
+                    popUpTo(ClientsList) { inclusive = true }
                 }
             }
         }
