@@ -65,7 +65,11 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
         }
         composable<ProductsDestinations.Add> {
 
-            AddProductComposableStateImpl(hiltViewModel()) {
+            AddProductComposableStateImpl(hiltViewModel(), onBackToList = {
+                navController.navigate(ProductsDestinations.List) {
+                    popUpTo(ProductsDestinations.List) { inclusive = true }
+                }
+            }) {
                 navController.navigate(ProductsDestinations.List) {
                     popUpTo(ProductsDestinations.List)
                 }
@@ -83,7 +87,11 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
                 })
 
 
-            UpdateProductComposableStateImpl(viewModel) {
+            UpdateProductComposableStateImpl(viewModel, onBackToList = {
+                navController.navigate(ProductsDestinations.List) {
+                    popUpTo(ProductsDestinations.List) { inclusive = true }
+                }
+            }) {
                 navController.navigate(ProductsDestinations.List) {
                     popUpTo(ProductsDestinations.List)
                 }

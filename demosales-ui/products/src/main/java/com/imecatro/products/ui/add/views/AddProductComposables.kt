@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,17 +15,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +51,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.ButtonFancy
 import com.imecatro.demosales.ui.theme.DropListPicker
-import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.R
@@ -52,33 +58,44 @@ import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
 fun AddProductComposable(
-    uri: Uri?,
-    onPickImage: () -> Unit,
-    productName: String,
-    onProductNameChange: (String) -> Unit,
-    productPrice: String,
-    onProductPriceChange: (String) -> Unit,
-    currencyList: List<String>,
-    currencyPicked: String,
-    onCurrencyChange: (String) -> Unit,
-    unitList: List<String>,
-    unitPicked: String,
-    onUnitPicked: (String) -> Unit,
-    stock: String,
-    onStockChange: (String) -> Unit,
-    isEditMode: Boolean,
-    detailsText: String,
-    onDetailsChange: (String) -> Unit,
-    buttonSaveState: Boolean,
-    onSaveButtonClicked: () -> Unit
+    uri: Uri? = null,
+    onPickImage: () -> Unit = {},
+    productName: String = "",
+    onProductNameChange: (String) -> Unit = {},
+    productPrice: String = "",
+    onProductPriceChange: (String) -> Unit = {},
+    currencyList: List<String> = emptyList(),
+    currencyPicked: String = "",
+    onCurrencyChange: (String) -> Unit = {},
+    unitList: List<String> = emptyList(),
+    unitPicked: String = "",
+    onUnitPicked: (String) -> Unit = {},
+    stock: String = "",
+    onStockChange: (String) -> Unit = {},
+    isEditMode: Boolean = false,
+    detailsText: String = "",
+    onDetailsChange: (String) -> Unit = {},
+    buttonSaveState: Boolean = false,
+    onBackToList: () -> Unit = {},
+    onSaveButtonClicked: () -> Unit = {}
 ) {
 
     val context = LocalContext.current
 
     LazyColumn {
         item {
+            TopAppBar(
+                title = { Text(text = if (!isEditMode) "New Product" else "Edit Product") },
+                navigationIcon = {
+                    IconButton(onClick = { onBackToList() }) {
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
+                    }
+                }
+            )
             Column(modifier = Modifier.padding(10.dp)) {
 
                 Text(text = "Image", style = Typography.labelMedium)
@@ -173,14 +190,20 @@ fun AddProductComposable(
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(60.dp))
-                ButtonFancy(
-                    text = "SAVE",
-                    paddingX = 0.dp,
-                    icon = Icons.Filled.Done,
-                    enable = buttonSaveState
-                ) {
-                    onSaveButtonClicked()
+                Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+                    Button(
+                        enabled = buttonSaveState,
+                        onClick = onSaveButtonClicked,
+                        modifier = Modifier
+                            .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
+                            .fillMaxWidth(),
+                        shape = MaterialTheme.shapes.large
+                    ) {
+                        Icon(Icons.Filled.Done, null)
+                        Text(text = stringResource(R.string.btn_save))
+                    }
                 }
+
             }
         }
     }
@@ -189,7 +212,11 @@ fun AddProductComposable(
 
 
 @Composable
-fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -> Unit) {
+fun AddProductComposableStateImpl(
+    addViewModel: AddViewModel,
+    onBackToList: () -> Unit,
+    onSaveAction: () -> Unit
+) {
 
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
@@ -258,6 +285,7 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
         buttonSaveState = buttonEnableState,
         stock = stock,
         isEditMode = false,
+        onBackToList = onBackToList,
         onStockChange = { stock = it }
     ) {
         addViewModel.onSaveAction(
@@ -272,40 +300,5 @@ fun AddProductComposableStateImpl(addViewModel: AddViewModel, onSaveAction: () -
             )
         )
         onSaveAction()
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun AddProductComposablePreview() {
-    PuntroSalesDemoTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            AddProductComposable(
-                uri = null,
-                onPickImage = { /*TODO*/ },
-                productName = "",
-                onProductNameChange = { },
-                productPrice = "",
-                onProductPriceChange = {},
-                currencyList = listOf("USD", "MXN", "EUR", "GBP"),
-                currencyPicked = "USD",
-                onCurrencyChange = {},
-                unitList = listOf("pz", "kg", "g", "m", "cm"),
-                unitPicked = "pz",
-                onUnitPicked = {},
-                detailsText = "",
-                onDetailsChange = {},
-                buttonSaveState = false,
-                stock = "1",
-                onStockChange = {},
-                isEditMode = false
-            ) {
-
-            }
-        }
     }
 }

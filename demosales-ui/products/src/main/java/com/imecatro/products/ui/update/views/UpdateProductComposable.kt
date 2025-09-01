@@ -20,6 +20,7 @@ import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 @Composable
 fun UpdateProductComposableStateImpl(
     updateProductViewModel: UpdateProductViewModel,
+    onBackToList: () -> Unit,
     onSaveAction: () -> Unit
 ) {
 
@@ -82,6 +83,7 @@ fun UpdateProductComposableStateImpl(
         buttonSaveState = buttonEnableState,
         stock = "${updateProductUiModel?.stock ?: 0f}",
         onStockChange = {},
+        onBackToList = onBackToList,
         isEditMode = true
     ) {
         updateProductViewModel.onSaveAction(

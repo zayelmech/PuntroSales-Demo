@@ -20,6 +20,17 @@ import androidx.navigation.compose.rememberNavController
 val appFeatures =
     listOf(NavigationDirections.ProductsFeature, NavigationDirections.SalesFeature, NavigationDirections.ClientsFeature)
 
+/**
+ * Composable function that displays the main bottom navigation bar of the application.
+ *
+ * This bottom bar allows users to navigate between the main features of the app:
+ * Products, Sales, and Clients. It highlights the currently selected feature and
+ * handles navigation logic, including popping up to the start destination to avoid
+ * a large back stack and ensuring a single top instance of each destination.
+ *
+ * @param navController The [NavHostController] used for navigation between screens.
+ *                      Defaults to a new [NavHostController] if not provided.
+ */
 @Preview(showBackground = true)
 @Composable
 fun MainBottomBar(
@@ -55,7 +66,21 @@ fun MainBottomBar(
 
                     }
 
-                }
+                },
+//                modifier = Modifier.pointerInput(null){
+//                    detectTapGestures (
+//                        onDoubleTap = {
+//                            navController.navigate(screen) {
+//                                popUpTo(navController.graph.findStartDestination().id) {
+//                                    saveState = true
+//                                }
+//                                launchSingleTop = true
+//                                restoreState = true
+//
+//                            }
+//                        }
+//                    )
+//                }
             )
         }
     }
