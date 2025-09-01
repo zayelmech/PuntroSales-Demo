@@ -50,13 +50,13 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
             DetailsComposableStateImpl(
                 viewModel,
                 onNavigateBack = {
-                    navController.navigate(ProductsDestinations.List) {
-                        popUpTo(ProductsDestinations.List) { inclusive = true }
+                    navController.navigate(ProductsDestinations.ListAndDetails) {
+                        popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
                     }
                 },
                 onProductDeleted = {
-                    navController.navigate(ProductsDestinations.List) {
-                        popUpTo(ProductsDestinations.List) { inclusive = true }
+                    navController.navigate(ProductsDestinations.ListAndDetails) {
+                        popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
                     }
                 }, onNavigateToEdit = {
                     navController.navigate(ProductsDestinations.Edit(navArgs.id))
@@ -66,12 +66,12 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
         composable<ProductsDestinations.Add> {
 
             AddProductComposableStateImpl(hiltViewModel(), onBackToList = {
-                navController.navigate(ProductsDestinations.List) {
-                    popUpTo(ProductsDestinations.List) { inclusive = true }
+                navController.navigate(ProductsDestinations.ListAndDetails) {
+                    popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
                 }
             }) {
-                navController.navigate(ProductsDestinations.List) {
-                    popUpTo(ProductsDestinations.List)
+                navController.navigate(ProductsDestinations.ListAndDetails) {
+                    popUpTo(ProductsDestinations.ListAndDetails)
                 }
             }
         }
@@ -88,12 +88,12 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
 
 
             UpdateProductComposableStateImpl(viewModel, onBackToList = {
-                navController.navigate(ProductsDestinations.List) {
-                    popUpTo(ProductsDestinations.List) { inclusive = true }
+                navController.navigate(ProductsDestinations.ListAndDetails) {
+                    popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
                 }
             }) {
-                navController.navigate(ProductsDestinations.List) {
-                    popUpTo(ProductsDestinations.List)
+                navController.navigate(ProductsDestinations.ListAndDetails) {
+                    popUpTo(ProductsDestinations.ListAndDetails)
                 }
             }
         }
