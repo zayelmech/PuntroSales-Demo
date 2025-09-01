@@ -15,11 +15,15 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
@@ -27,6 +31,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,6 +61,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DetailsComposableStateImpl(
     productDetailsViewModel: ProductsDetailsViewModel,
+    onNavigateBack: () -> Unit,
     onProductDeleted: () -> Unit,
     onNavigateToEdit: () -> Unit,
 ) {
@@ -72,6 +78,9 @@ fun DetailsComposableStateImpl(
     val scope = rememberCoroutineScope()
 
     Column(Modifier.fillMaxSize()) {
+        TopAppBar(title = { Text(text = "Product Details")}, navigationIcon = {
+            IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, null) }
+        })
         PrimaryTabRow(
             selectedTabIndex = pagerState.currentPage,
             indicator = {
@@ -98,7 +107,9 @@ fun DetailsComposableStateImpl(
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth().weight(1f) // take remaining space
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f) // take remaining space
         ) { page ->
             when (page) {
                 0 -> DetailsComposable(
@@ -145,15 +156,15 @@ fun DetailsComposable(
         ) {
             Image(
                 painter =
-                if (view.isInEditMode)
-                    painterResource(id = R.drawable.baseline_insert_photo_24)
-                else rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(productDetails?.imageUrl)
-                        .error(R.drawable.baseline_insert_photo_24)
-                        .crossfade(true)
-                        .build()
-                ),
+                    if (view.isInEditMode)
+                        painterResource(id = R.drawable.baseline_insert_photo_24)
+                    else rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current)
+                            .data(productDetails?.imageUrl)
+                            .error(R.drawable.baseline_insert_photo_24)
+                            .crossfade(true)
+                            .build()
+                    ),
                 contentDescription = null,
                 modifier = Modifier
                     .requiredSizeIn(maxHeight = 280.dp)

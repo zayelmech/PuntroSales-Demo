@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp.plugin)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -72,6 +73,7 @@ dependencies {
     implementation project(':demosales-domain:clients')
     implementation project(':demosales-domain:core')
     implementation project(path: ':demosales-data:clients')
+    implementation libs.androidx.constraintlayout.compose
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
@@ -88,6 +90,11 @@ dependencies {
     implementation libs.hilt.android
     ksp libs.hilt.compiler
     implementation libs.androidx.hilt.navigation.compose
+
+
+    implementation "androidx.compose.material3.adaptive:adaptive:1.1.0"
+    implementation "androidx.compose.material3.adaptive:adaptive-layout:1.1.0"
+    implementation "androidx.compose.material3.adaptive:adaptive-navigation:1.1.0"
 
 //    debugImplementation('com.squareup.leakcanary:leakcanary-android:2.12') {
 //        configurations {

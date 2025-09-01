@@ -14,5 +14,8 @@ sealed class ProductsDestinations {
 
     @Serializable
     data class Details(val id: Long)
+
+    @Serializable
+    data object ListAndDetails
 }
 

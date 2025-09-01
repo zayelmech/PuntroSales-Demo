@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
+import com.imecatro.demosales.navigation.ListAndDetailsPane
 import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
@@ -17,7 +17,15 @@ import com.imecatro.products.ui.update.views.UpdateProductComposableStateImpl
 private const val TAG = "ProductsNavigation"
 
 inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: NavHostController) {
-    navigation<T>(startDestination = ProductsDestinations.List) {
+    navigation<T>(startDestination = ProductsDestinations.ListAndDetails) {
+        composable<ProductsDestinations.ListAndDetails> {
+
+            ListAndDetailsPane(onAddProduct = {
+                navController.navigate(ProductsDestinations.Add)
+            }, onEditProduct = { id ->
+                navController.navigate(ProductsDestinations.Edit(id))
+            })
+        }
         composable<ProductsDestinations.List> {
             ListOfProductsStateImpl(productsViewModel = hiltViewModel()) {
                 it?.let {
@@ -39,7 +47,13 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
                     )
                 })
 
-            DetailsComposableStateImpl(viewModel,
+            DetailsComposableStateImpl(
+                viewModel,
+                onNavigateBack = {
+                    navController.navigate(ProductsDestinations.List) {
+                        popUpTo(ProductsDestinations.List) { inclusive = true }
+                    }
+                },
                 onProductDeleted = {
                     navController.navigate(ProductsDestinations.List) {
                         popUpTo(ProductsDestinations.List) { inclusive = true }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,14 +13,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -34,7 +31,6 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,6 +78,8 @@ fun ListOfProducts(
     var text by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
+    val scrollState = rememberLazyListState()
+
     LaunchedEffect(text) {
         snapshotFlow { text }
             .debounce(300)
@@ -90,19 +88,21 @@ fun ListOfProducts(
             }
     }
 
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(
-            onClick = { onNavigateAction() },
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-        }
-    },
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onNavigateAction() },
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
+        },
         topBar = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                SearchBar(inputField = {
+                SearchBar(
+                    inputField = {
                     SearchBarDefaults.InputField(
                         query = text,
                         onQueryChange = { text = it },
@@ -139,46 +139,29 @@ fun ListOfProducts(
                     })
             }
 
-        }) { padding ->
+        }) { innerPadding ->
 
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth(),
+            state = scrollState,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = innerPadding
         ) {
-//            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-//                TextButton(onClick = { showFilters = true }) {
-//                    Icon(Icons.Filled.ArrowDropDown, null)
-//                    Text("Most popular")
-//                }
-//                if (!showFilters) {
-//                    DropdownMenu(expanded = false, onDismissRequest = { showFilters = false }) {
-//                        DropdownMenuItem(text = { Text("Most popular") }, onClick = {})
-//                        DropdownMenuItem(text = { Text("Most popular..") }, onClick = {})
-//                    }
-//                }
-//
-//            }
-            LazyColumn(
-                modifier = Modifier.sizeIn(maxWidth = 411.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                if (isLoading) {
+            if (isLoading) {
 
-                    items(10) {
-                        ShimmerListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                    }
+                items(10) {
+                    ShimmerListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
 
-                } else {
-                    items(list) { product ->
+            } else {
+                items(list) { product ->
 
-                        ProductCardCompose(product = product) { onCardClicked(product.id) }
-                        HorizontalDivider()
-                    }
+                    ProductCardCompose(product = product) { onCardClicked(product.id) }
+                    HorizontalDivider()
                 }
             }
         }

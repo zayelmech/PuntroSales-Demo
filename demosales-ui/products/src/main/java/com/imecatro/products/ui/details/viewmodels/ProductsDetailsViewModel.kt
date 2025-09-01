@@ -13,16 +13,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = ProductsDetailsViewModel.Factory::class)
 class ProductsDetailsViewModel @AssistedInject constructor(
-    @Assisted("productId") private val productId: Long,
+    @Assisted("productId") private var productId: Long,
     private val productsRepository: ProductsRepository
 ) : BaseViewModel<ProductDetailsUiModel>(ProductDetailsUiModel.idle) {
 
@@ -73,6 +71,15 @@ class ProductsDetailsViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             productsRepository.deleteProductById(productId)
             _product.update { it.copy(productDeleted = true) }
+        }
+    }
+
+    fun loadDetailsForProduct(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val response =
+                productsRepository.getProductDetailsById(id)?.toUiModel()
+            productId = id
+            response?.let { _product.update { response } }
         }
     }
 
