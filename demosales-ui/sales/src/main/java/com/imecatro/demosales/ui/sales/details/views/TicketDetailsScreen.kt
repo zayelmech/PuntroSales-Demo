@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -32,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -121,9 +123,9 @@ fun ResumeTicketScreen(
                 Spacer(Modifier.weight(1f))
             }
             if (ticketDetails.note.isNotBlank())
-               Column(Modifier.padding(horizontal = 20.dp, vertical = 5.dp)) {
-                   Text(ticketDetails.note, style = MaterialTheme.typography.bodySmall)
-               }
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 5.dp)) {
+                    Text(ticketDetails.note, style = MaterialTheme.typography.bodySmall)
+                }
 
 
             // Products
@@ -166,6 +168,7 @@ fun ResumeTicketScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TicketDetailsComposableImpl(
     ticketDetailsVM: TicketDetailsViewModel,
@@ -225,15 +228,17 @@ fun TicketDetailsComposableImpl(
         }
     }
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("Sale details", style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.weight(1f))
+
+        TopAppBar(
+            title = { Text(text = "Sale Details") },
+            navigationIcon = {
+                IconButton(onClick = { onBackToList() }) { Icon(Icons.Default.ArrowBack, null) }
+            }, actions = {
                 IconButton(onClick = { onShareTicket.invoke() }) {
                     Icon(Icons.Default.Share, contentDescription = "Share ticket")
                 }
             }
-        }
+        )
         HorizontalDivider()
         Column(Modifier.weight(1f)) {
             ResumeTicketScreen(ticketDetails = saleSelected)

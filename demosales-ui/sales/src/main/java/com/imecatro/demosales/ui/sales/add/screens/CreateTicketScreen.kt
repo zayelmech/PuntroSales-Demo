@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.BottomSheetScaffold
@@ -20,16 +21,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,16 +44,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
-import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.sales.add.components.OrderOnCartComposable
 import com.imecatro.demosales.ui.sales.add.components.SearchBottomSheetComposable
 import com.imecatro.demosales.ui.sales.add.components.SearchEngineUiModel
+import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
+import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTicketComposable(
     productsOnCart: List<ProductOnCartUiModel>,
@@ -68,15 +71,6 @@ fun CreateTicketComposable(
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Text("New Sale", style = MaterialTheme.typography.titleMedium)
-        }
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,9 +125,11 @@ fun CreateTicketComposable(
 
             if (productsOnCart.isEmpty()) {
                 item {
-                    Column(Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp)) {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    ) {
 
                         Text(
                             text = "Add products to this section, when is done press Continue.\n\nNote: if you need to delete a product, just swipe to left the item",
@@ -185,6 +181,7 @@ fun CreateTicketComposable(
 @Composable
 fun CreateTicketComposableStateImpl(
     addSaleViewModel: AddSaleViewModel,
+    onBackToList: () -> Unit = {},
     onNavigateToCheckout: (Long) -> Unit
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
@@ -220,7 +217,15 @@ fun CreateTicketComposableStateImpl(
                 SearchBottomSheetComposable(searchUiState)
             }
         }) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Column (modifier = Modifier.padding(innerPadding)) {
+            TopAppBar(
+                title = { Text(text = "New Sale") },
+                navigationIcon = {
+                    IconButton(onClick = { onBackToList() }) {
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
+                    }
+                }
+            )
             CreateTicketComposable(
                 productsOnCart = productsOnCart.toMutableStateList(),
                 ticketSubtotal = ticketSubtotal,

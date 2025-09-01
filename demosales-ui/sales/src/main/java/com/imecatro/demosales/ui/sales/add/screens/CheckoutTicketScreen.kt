@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +48,7 @@ import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutTicketComposable(
     saleId: Long,
@@ -64,10 +66,9 @@ fun CheckoutTicketComposable(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(horizontal = 20.dp)
     ) {
-
-        Text(text = "Sale #$saleId", style = MaterialTheme.typography.titleLarge)
+        TopAppBar(title = { Text(text = "Sale #$saleId") })
         //Cliente // search //guest
         Row(verticalAlignment = Alignment.CenterVertically) {
 

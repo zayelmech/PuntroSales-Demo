@@ -36,6 +36,11 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
 
             CreateTicketComposableStateImpl(
                 addSaleViewModel = hiltViewModel(creationCallback = { factory: AddSaleViewModel.Factory -> factory.create(id?:0L) }),
+                onBackToList = {
+                    navController.navigate(SalesDestinations.List) {
+                        popUpTo(SalesDestinations.List) { inclusive = true }
+                    }
+                },
                 onNavigateToCheckout = { id ->
                     navController.navigate(SalesDestinations.Checkout(id))
                 })
