@@ -1,4 +1,4 @@
-package com.imecatro.demosales.datasource.room
+package com.imecatro.demosales.datasource
 
 import android.content.Context
 import androidx.room.Database
@@ -20,7 +20,7 @@ import com.imecatro.products.data.model.StockRoomEntity
     entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class, StockRoomEntity::class],
     version = 8
 )
-abstract class ProductsRoomDatabase : RoomDatabase() {
+abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
     abstract fun salesRoomDao(): SalesRoomDao
 
@@ -35,10 +35,10 @@ abstract class ProductsRoomDatabase : RoomDatabase() {
         private var ordersDao: OrdersRoomDao? = null
         private var clientsDao: ClientsDao? = null
 
-        fun initDatabase(context: Context): ProductsRoomDatabase {
+        fun initDatabase(context: Context): AppRoomDatabase {
             val db = Room.databaseBuilder(
                 context,
-                ProductsRoomDatabase::class.java,
+                AppRoomDatabase::class.java,
                 "puntrosales_demo_database"
             )
                 .addMigrations( MIGRATION_6_7, MIGRATION_7_8)

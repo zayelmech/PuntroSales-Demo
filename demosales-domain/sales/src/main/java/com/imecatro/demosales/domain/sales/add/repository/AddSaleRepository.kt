@@ -1,6 +1,5 @@
 package com.imecatro.demosales.domain.sales.add.repository
 
-import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import kotlinx.coroutines.flow.Flow

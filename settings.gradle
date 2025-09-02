@@ -16,7 +16,6 @@ rootProject.name = "PuntroSales-Demo"
 include ':app'
 include ':demosales-data:products'
 include ':demosales-ui:products'
-include ':demosales-datasource:room'
 include ':demosales-domain:sales'
 include ':demosales-domain:products'
 include ':demosales-ui:sales'

@@ -66,7 +66,6 @@ dependencies {
     implementation project(path: ':demosales-ui:products')
     implementation project(path: ':demosales-ui:sales')
     implementation project(path: ':demosales-ui:theme')
-    implementation project(path: ':demosales-datasource:room')
     implementation project(path: ':demosales-domain:products')
     implementation project(path: ':demosales-domain:sales')
     implementation project(':demosales-ui:clients')
@@ -96,6 +95,9 @@ dependencies {
     implementation "androidx.compose.material3.adaptive:adaptive-layout:1.1.0"
     implementation "androidx.compose.material3.adaptive:adaptive-navigation:1.1.0"
 
+    implementation libs.androidx.room.ktx
+    ksp libs.androidx.room.compiler
+    androidTestImplementation libs.androidx.room.testing
 //    debugImplementation('com.squareup.leakcanary:leakcanary-android:2.12') {
 //        configurations {
 //            debugImplementation.exclude group: "junit", module: "junit"

@@ -1,6 +1,5 @@
 package com.imecatro.demosales.di
 
-import com.imecatro.demosales.datasource.room.di.RoomModule
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import dagger.Module
 import dagger.Provides
@@ -10,30 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
-@Module(includes = [RoomModule::class])
-@InstallIn(SingletonComponent::class)
-interface CoreModule
-
 @Module
 @InstallIn(SingletonComponent::class)
-class FakeRepoImpl() {
-//    @Provides
-//    fun provideAddSaleDummyRepoImpl(): AddSaleDummyRepoImpl = AddSaleDummyRepoImpl()
-//
-//    @Provides
-//    fun provideRoomRepositoryImplementation(dao: ProductsDao): ProductsRepositoryImpl =
-//        ProductsRepositoryImpl(dao)
-
-//    @Provides
-//    fun provideAllSalesDummyImpl(): AllSalesRepository = AllSalesRepositoryDummy()
-
+object CoroutinesModuleProvider {
 
     @Provides
     fun providesCoroutineDispatcher(): CoroutineProvider = CoroutineDispatcherImpl()
-
-//    @Singleton
-//    @Provides
-//    fun providesClientsRepository(): ClientsRepository = DummyClientsRepositoryImpl()
 }
 
 

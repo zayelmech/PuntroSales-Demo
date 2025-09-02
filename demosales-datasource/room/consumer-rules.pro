@@ -1,2 +1,0 @@
--dontwarn com.imecatro.products.data.datasource.ProductsDao
--dontwarn com.imecatro.products.data.model.ProductRoomEntity
