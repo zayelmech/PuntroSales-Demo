@@ -29,6 +29,18 @@ internal fun Order.toUi(): ProductResultUiModel =
         imageUri = this.imgUri?.toUri()
     )
 
+
+fun List<Order>.toUi(): List<ProductOnCartUiModel> {
+    return map {
+        ProductOnCartUiModel(
+            orderId = it.id,
+            product = it.toUi(),
+            qty = it.qty,
+            subtotal = (it.qty * (it.productPrice)).toBigDecimal()
+        )
+    }
+}
+
 fun List<ProductOnCartUiModel>.toDomainModel(): SaleDomainModel {
 
     return SaleDomainModel(

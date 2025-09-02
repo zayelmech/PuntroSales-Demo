@@ -13,6 +13,8 @@ import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.UpdateTicketStatusUseCase
+import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.toAddSaleUi
 import com.imecatro.demosales.ui.sales.add.mappers.toDomain
@@ -46,7 +48,7 @@ private const val TAG = "AddSaleViewModel"
 @HiltViewModel(assistedFactory = AddSaleViewModel.Factory::class)
 class AddSaleViewModel @AssistedInject constructor(
     @Assisted("lastSaleId") private val lastSaleId: Long,
-    private val addNewSaleToDatabaseUseCase: AddNewSaleToDatabaseUseCase,
+    private val updateTicketStatusUseCase: UpdateTicketStatusUseCase,
     private val deleteTicketByIdUseCase: DeleteTicketByIdUseCase,
 
     private val addProductToCartUseCase: AddProductToCartUseCase,
@@ -58,8 +60,6 @@ class AddSaleViewModel @AssistedInject constructor(
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
 
-    //private val addStockUseCase: AddStockUseCase,
-    private val removeFromStockUseCase: RemoveFromStockUseCase,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -127,13 +127,13 @@ class AddSaleViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * The purpose us to save current ticket as initialized, stock wont be deducted here, it will be deducted on pending or completed
+     */
     fun onSaveTicketAction() {
 
-        val saleModelDomain: SaleDomainModel = cartList.value.toDomainModel().copy(
-            date = System.currentTimeMillis().toString(),
-        )
         viewModelScope.launch(dispatcher) {
-            val response = addNewSaleToDatabaseUseCase(saleModelDomain)
+            val response = updateTicketStatusUseCase(_ticketId, OrderStatus.INITIALIZED)
             response.onSuccess {
 
             }
@@ -141,13 +141,7 @@ class AddSaleViewModel @AssistedInject constructor(
 
             }
 
-            cartList.first().forEach { product ->
-                removeFromStockUseCase(
-                    reference = "Sale #$_ticketId",
-                    productId = product.product.id,
-                    amount = product.qty
-                )
-            }
+
         }
     }
 

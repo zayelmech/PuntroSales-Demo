@@ -7,8 +7,10 @@ import com.imecatro.demosales.data.sales.datasource.OrdersRoomDao
 import com.imecatro.demosales.data.sales.datasource.SalesRoomDao
 import com.imecatro.demosales.data.sales.list.mappers.toOrderStatus
 import com.imecatro.demosales.data.sales.model.SaleDataRoomModel
+import com.imecatro.demosales.data.sales.model.SaleTotals
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.model.Order
+import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -25,13 +27,18 @@ class AddSaleRepositoryImpl(
 
     private var ticketId: Long? = null
     override suspend fun saveSale(sale: SaleDomainModel) {
-        val id = salesRoomDao.saveSaleState(sale = sale.toData(ticketId ?: 0))
-        Log.d(TAG, "createNewSale: $id")
+        salesRoomDao.saveSaleState(sale = sale.toData(ticketId ?: 0))
+        ticketId?.let { updateSubtotal(it) }
+    }
+
+    override suspend fun updateSaleStatus(id: Long, status: OrderStatus) {
+        salesRoomDao.updateSaleStatus(id, status.str)
     }
 
     override suspend fun addProductToCart(order: Order) {
         this.ticketId?.let { id ->
             ordersRoomDao.saveOrder(order.toDataSource(id))
+            updateSubtotal(id)
         } ?: run {
             Log.e(TAG, "addProductToCart: ", Throwable("Missing ticket id $ticketId"))
         }
@@ -40,30 +47,44 @@ class AddSaleRepositoryImpl(
     override suspend fun updateProductQtyOnCart(order: Order) {
         withContext(Dispatchers.IO) {
             ordersRoomDao.updateOrderQty(order.id, order.qty)
+            ticketId?.let { updateSubtotal(it) }
         }
     }
 
     override suspend fun deleteProductOnCart(id: Long) {
         withContext(Dispatchers.IO) {
             ordersRoomDao.deleteOrderById(id)
+            ticketId?.let { updateSubtotal(it) }
         }
     }
 
+    private suspend fun updateSubtotal(id: Long) {
+        val subtotal = ordersRoomDao.calculateTotalForSale(id)
+        val currentSale = salesRoomDao.getSaleById(id)
+
+        val discount = currentSale.totals?.discount ?: 0.0
+        val extra = currentSale.totals?.extra ?: 0.0
+        val total = subtotal + extra - discount
+
+        val newSale = currentSale.copy(
+            totals = currentSale.totals?.copy(subtotal = subtotal, total = total)?: SaleTotals(subtotal = subtotal, total = total)
+        )
+        salesRoomDao.saveSaleState(newSale)
+    }
 
     override suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel> {
         val id: Long =
             saleId
-                ?: withContext(Dispatchers.IO) { salesRoomDao.insertSaleOnLocalDatabase(sale = SaleDataRoomModel()) }
+                ?: withContext(Dispatchers.IO) { salesRoomDao.insertSaleOnLocalDatabase(sale = SaleDataRoomModel(creationDateMillis = System.currentTimeMillis())) }
         this.ticketId = id
 
         val itemsList = ordersRoomDao.getListOfProductsOnSaleWithId(id)
         val saleFlow = salesRoomDao.getFlowSaleById(id)
 
         return combine(itemsList, saleFlow) { products, sale ->
-            val total = ordersRoomDao.calculateTotalForSale(id)
             SaleDomainModel(
                 id = sale.id,
-                clientId = sale.clientId,
+                clientId = sale.clientId ?: 0L,
                 date = sale.creationDateMillis.toString(),//TODO
                 productsList = products.map {
                     Order(
@@ -75,9 +96,10 @@ class AddSaleRepositoryImpl(
                     )
                 },
                 totals = SaleDomainModel.Costs(
-                    subTotal = total,
-                    extraCost = sale.extra,
-                    total = (total + sale.extra)
+                    subTotal = sale.totals?.subtotal ?: 0.0,
+                    discount = sale.totals?.discount ?: 0.0,
+                    extraCost = sale.totals?.extra ?: 0.0,
+                    total = sale.totals?.total ?: 0.0,
                 ),
                 status = sale.status.toOrderStatus()
             )

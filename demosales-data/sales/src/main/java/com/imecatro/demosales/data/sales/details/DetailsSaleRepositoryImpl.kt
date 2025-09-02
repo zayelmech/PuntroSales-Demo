@@ -13,7 +13,6 @@ import kotlinx.coroutines.withContext
 class DetailsSaleRepositoryImpl(
     private val salesRoomDao: SalesRoomDao,
     private val ordersRoomDao: OrdersRoomDao,
-    //TODO clients Dao
 ) : DetailsSaleRepository {
     override suspend fun getSaleDetailsById(id: Long): SaleDetailsDomainModel =
         withContext(Dispatchers.IO) {
@@ -27,12 +26,11 @@ class DetailsSaleRepositoryImpl(
                 },
                 status = OrderStatus.entries.find { it.str == sale.status }
                     ?: OrderStatus.INITIALIZED,
-                clientId = sale.clientId,
-                note = sale.note ?: "",
-                shippingCost = 0.0,
-                tax = 0.0,
-                extra = sale.extra,
-                total = ordersRoomDao.calculateTotalForSale(id) + sale.extra //TODO
+                clientId = sale.clientId?:0,
+                note = sale.note,
+                discount = sale.totals?.discount?:0.0,
+                extra = sale.totals?.extra?:0.0,
+                total = sale.totals?.total?:0.0,
             )
         }
 

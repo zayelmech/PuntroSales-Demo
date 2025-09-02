@@ -6,12 +6,16 @@ import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.domain.clients.usecases.FilterClientsUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
+import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.CheckoutSaleUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
+import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
+import com.imecatro.demosales.ui.sales.add.mappers.toUi
 import com.imecatro.demosales.ui.sales.add.model.ClientResultUiModel
 import com.imecatro.demosales.ui.sales.add.model.SaleChargeUiModel
 import com.imecatro.demosales.ui.sales.add.state.TicketUiState
+import com.imecatro.demosales.ui.sales.add.viewmodel.toUi
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -21,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -33,8 +38,9 @@ class CheckoutViewModel @AssistedInject constructor(
     private val saveSaleUseCase: CheckoutSaleUseCase,
     private val searchClientUseCase: SearchClientUseCase,
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
-    private val filterClientsUseCase: FilterClientsUseCase
-) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
+    private val filterClientsUseCase: FilterClientsUseCase,
+    private val removeFromStockUseCase: RemoveFromStockUseCase,
+    ) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
 
     private val _results: MutableStateFlow<List<ClientResultUiModel>> =
         MutableStateFlow(emptyList())
@@ -65,6 +71,8 @@ class CheckoutViewModel @AssistedInject constructor(
                 val updatedTicket = ticket.copy(
                     id = saleId,
                     note = ticketD.note,
+                    products = ticketD.list.toUi(),
+                    status = ticketD.status.str,
                     totals = ticket.totals.copy(subtotal = ticketD.total, extra = ticketD.extra)
                 )
                 copy(ticket = updatedTicket)
@@ -117,6 +125,7 @@ class CheckoutViewModel @AssistedInject constructor(
                 clientId = currentTicket.clientId
                 tickedPaid = true
             }
+            deductStock(currentTicket.id)
             updateState {
                 copy(ticket = ticket.copy(ticketSaved = true))
             }
@@ -149,9 +158,27 @@ class CheckoutViewModel @AssistedInject constructor(
                 clientId = currentTicket.clientId
                 tickedPaid = false
             }
+            deductStock(currentTicket.id)
+
             updateState {
                 copy(ticket = ticket.copy(ticketSaved = true))
             }
+        }
+    }
+
+    private suspend fun deductStock(saleId: Long) {
+        val currentTicket = uiState.value.ticket
+
+        //todo improve this mechanism on db
+        // Validates products already deducted when sale was pending
+        if (currentTicket.status == OrderStatus.PENDING.str) return
+
+        currentTicket.products.forEach { product ->
+            removeFromStockUseCase(
+                reference = "Sale #$saleId",
+                productId = product.product.id,
+                amount = product.qty
+            )
         }
     }
 

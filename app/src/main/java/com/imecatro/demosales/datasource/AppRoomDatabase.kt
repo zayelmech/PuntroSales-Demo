@@ -18,7 +18,7 @@ import com.imecatro.products.data.model.StockRoomEntity
 
 @Database(
     entities = [ProductRoomEntity::class, SaleDataRoomModel::class, OrderDataRoomModel::class, ClientRoomEntity::class, StockRoomEntity::class],
-    version = 8
+    version = 9
 )
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -41,7 +41,7 @@ abstract class AppRoomDatabase : RoomDatabase() {
                 AppRoomDatabase::class.java,
                 "puntrosales_demo_database"
             )
-                .addMigrations( MIGRATION_6_7, MIGRATION_7_8)
+                .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                 .build()
 
             productsDao = db.productsRoomDao()
@@ -58,46 +58,99 @@ abstract class AppRoomDatabase : RoomDatabase() {
 
     }
 }
-//
-//val MIGRATION_5_6 = object : Migration(5, 6) {
-//    override fun migrate(db: SupportSQLiteDatabase) {
-//        // Round to, say, 6 decimals (adjust to your domain needs)
-//        db.execSQL("""
-//            UPDATE stock_table
-//            SET amount = ROUND(amount, 6)
-//        """.trimIndent())
-//
-//        db.execSQL("""
-//            UPDATE order_table
-//            SET qty = ROUND(qty, 6)
-//        """.trimIndent())
-//    }
-//}
 
-val MIGRATION_6_7 = object : Migration(6,7) {
+val MIGRATION_6_7 = object : Migration(6, 7) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // Round to, say, 6 decimals (adjust to your domain needs)
-        db.execSQL("""
+        db.execSQL(
+            """
             UPDATE products_table
             SET price = ROUND(price, 6)
-        """.trimIndent())
+        """.trimIndent()
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             UPDATE order_table
             SET productPrice = ROUND(productPrice, 6)
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 }
-val MIGRATION_7_8 = object : Migration(7,8) {
+val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE sales_table ADD COLUMN extra REAL NOT NULL DEFAULT 0.0")
     }
 }
 
-val MIGRATION_8_9 = object : Migration(8,9) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        // Round to, say, 6 decimals (adjust to your domain needs)
-        db.execSQL("ALTER TABLE sales_table ADD COLUMN name REAL NOT NULL DEFAULT 0.0")
 
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Evitar conflictos por FKs durante recreate
+        db.execSQL("PRAGMA foreign_keys=OFF")
+
+        // Renombrar tabla vieja
+        db.execSQL("ALTER TABLE `sales_table` RENAME TO `sales_table_old`")
+
+        // Esquema nuevo: totals_* son NULLABLE y SIN DEFAULT (porque totals es @Embedded nullable)
+        db.execSQL("""
+      CREATE TABLE IF NOT EXISTS `sales_table` (
+        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        `clientId` INTEGER,
+        `creationDateMillis` INTEGER NOT NULL,
+        `status` TEXT NOT NULL,
+        `note` TEXT NOT NULL,
+        `totals_subtotal` REAL,
+        `totals_discount` REAL,
+        `totals_extra` REAL,
+        `totals_total` REAL,
+        `client_name_at_sale` TEXT,
+        `client_address_at_sale` TEXT
+      )
+    """.trimIndent())
+
+        // Detectar si la tabla vieja tenía columna 'extra'
+        val hasExtra = db.query("PRAGMA table_info(`sales_table_old`)").use { c ->
+            var found = false
+            val nameIdx = c.getColumnIndex("name")
+            while (c.moveToNext()) {
+                if (nameIdx >= 0 && c.getString(nameIdx) == "extra") { found = true; break }
+            }
+            found
+        }
+        val extraExpr = if (hasExtra) "COALESCE(s.extra, 0.0)" else "0.0"
+
+        // Copiar datos calculando totales
+        db.execSQL("""
+      INSERT INTO `sales_table` (
+        id, clientId, creationDateMillis, status, note,
+        totals_subtotal, totals_discount, totals_extra, totals_total,
+        client_name_at_sale, client_address_at_sale
+      )
+      SELECT
+        s.id,
+        s.clientId,
+        s.creationDateMillis,
+        s.status,
+        s.note,
+        /* subtotal */ COALESCE((SELECT SUM(o.qty * o.productPrice)
+                                  FROM order_table o
+                                  WHERE o.sale_id = s.id), 0.0),
+        /* discount */ 0.0,
+        /* extra    */ $extraExpr,
+        /* total    */ COALESCE((SELECT SUM(o.qty * o.productPrice)
+                                  FROM order_table o
+                                  WHERE o.sale_id = s.id), 0.0) + $extraExpr,
+        /* snapshot antiguos: NULL */
+        NULL,
+        NULL
+      FROM `sales_table_old` s
+    """.trimIndent())
+
+        // Limpiar vieja y recrear índice
+        db.execSQL("DROP TABLE `sales_table_old`")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_sales_table_clientId` ON `sales_table` (`clientId`)")
+
+        db.execSQL("PRAGMA foreign_keys=ON")
     }
 }

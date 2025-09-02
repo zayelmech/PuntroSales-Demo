@@ -34,6 +34,13 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         sales.add(sale)
     }
 
+    override suspend fun updateSaleStatus(
+        id: Long,
+        status: OrderStatus
+    ) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun addProductToCart(order: Order) {
 //        productsOnCart.emit(cartList.apply { add(order) })
         ticketOnCache.emit(currentTicket.apply { productsList = cartList.apply { add(order) } })

@@ -13,7 +13,7 @@ class AllSalesRepositoryImpl(
     salesRoomDao: SalesRoomDao,
 ) : AllSalesRepository {
 
-    private val allSales = salesRoomDao.getSalesForList()
+    private val allSales = salesRoomDao.getAllSales()
 
     override fun getAllSales(): Flow<List<SaleOnListDomainModel>> =
         allSales.map { lst -> lst.map { it.toDomain() } }.flowOn(Dispatchers.IO)

@@ -1,5 +1,7 @@
 package com.imecatro.demosales.ui.sales.add.state
 
+import com.imecatro.demosales.domain.sales.model.Order
+import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.SaleChargeUiModel
 import com.imecatro.demosales.ui.sales.add.model.SaleUiModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel

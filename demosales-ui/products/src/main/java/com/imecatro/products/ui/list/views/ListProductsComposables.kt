@@ -163,6 +163,13 @@ fun ListOfProducts(
                     ProductCardCompose(product = product) { onCardClicked(product.id) }
                     HorizontalDivider()
                 }
+//                if (list.isEmpty()){
+//                    item {
+//                        Text(text = "There is no products yet, to start to run your business you need to add a product, click the button (+) below to do it")
+//
+//                        // TODO if you prefer, import from excel file or connect with your backend to get the products
+//                    }
+//                }
             }
         }
     }

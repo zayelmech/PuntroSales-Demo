@@ -1,12 +1,14 @@
 package com.imecatro.demosales.domain.sales.add.repository
 
 import com.imecatro.demosales.domain.sales.model.Order
+import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import kotlinx.coroutines.flow.Flow
 
 
 interface AddSaleRepository {
     suspend fun saveSale(sale: SaleDomainModel)
+    suspend fun updateSaleStatus(id: Long, status: OrderStatus)
     suspend fun addProductToCart(order: Order)
 
     suspend fun updateProductQtyOnCart(order: Order)
