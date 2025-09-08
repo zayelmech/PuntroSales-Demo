@@ -15,8 +15,10 @@ data class TicketDetailsUiModel(
     val total: String = "",
     val status: String = "",
     val statusColor: Color = Color.Unspecified,
-    val isEditable: Boolean = true,
+    val isReadyToPay: Boolean = false,
     val isCancelable: Boolean = false,
+    val isDraft : Boolean = true,
+    val isAlreadyPaid : Boolean = false
 ) {
     data class Client(
         val id: Long = 0,

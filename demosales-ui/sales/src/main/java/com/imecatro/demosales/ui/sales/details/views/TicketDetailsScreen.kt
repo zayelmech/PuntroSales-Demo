@@ -259,20 +259,35 @@ fun TicketDetailsComposableImpl(
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.secondary
                     )
-                ) { Icon(Icons.Outlined.Delete, "Delete"); Text("Cancel & Refund") }
+                ) {
+                    Icon(Icons.Outlined.Delete, "Delete")
+                    if (saleSelected.isDraft)
+                        Text("Cancel")
+                    else
+                        Text("Cancel & refund ")
+                }
 
-            if (saleSelected.isEditable) {
+            if (saleSelected.isReadyToPay) {
                 Button(
                     onClick = { onEditTicket(saleId) },
                     modifier = Modifier
                         .sizeIn(maxWidth = 320.dp)
                 ) { Text("$ Go to Checkout") }
-            } else {
+            }
+            if (saleSelected.isAlreadyPaid || !saleSelected.isCancelable)
                 Button(
                     onClick = { onDuplicateTicket(saleId) },
                     modifier = Modifier
                         .sizeIn(maxWidth = 320.dp)
                 ) { Icon(Icons.Outlined.ShoppingCart, "Duplicate"); Text("Duplicate sale") }
+
+
+            if (saleSelected.isDraft) {
+                Button(
+                    onClick = { onDuplicateTicket(saleId) },
+                    modifier = Modifier
+                        .sizeIn(maxWidth = 320.dp)
+                ) { Icon(Icons.Outlined.ShoppingCart, "Duplicate"); Text("Continue editing") }
             }
         }
 

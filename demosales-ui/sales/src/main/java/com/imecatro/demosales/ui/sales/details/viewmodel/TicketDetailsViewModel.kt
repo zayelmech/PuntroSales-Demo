@@ -35,12 +35,16 @@ class TicketDetailsViewModel @AssistedInject constructor(
         MutableStateFlow(TicketDetailsUiModel(list = listOf()))
     val sale: StateFlow<TicketDetailsUiModel> = _sale.onStart {
         onGetDetailsAction()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), TicketDetailsUiModel( list = emptyList()))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        TicketDetailsUiModel(list = emptyList())
+    )
 
     private fun onGetDetailsAction() {
         viewModelScope.launch(Dispatchers.IO) {
             val details = getDetailsOfSaleByIdUseCase.invoke(saleId)
-            _sale.update { details.toUi() .copy(id = saleId)}
+            _sale.update { details.toUi().copy(id = saleId) }
             getClientDetailsByIdUseCase.execute(details.clientId)
                 .onSuccess { result ->
                     _sale.update { it.copy(client = result.toUi()) }
@@ -54,12 +58,15 @@ class TicketDetailsViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             updateSaleStatus.invoke(saleId, OrderStatus.CANCEL)
             //re-add stock
-            sale.value.list.forEach { product ->
-                addStockUseCase(
-                    reference = "Sale #${saleId} Cancelled",
-                    productId = product.id,
-                    amount = product.qty
-                )
+            if (sale.value.status !== OrderStatus.PENDING.str) {
+                sale.value.list.forEach { product ->
+                    // todo creates re-stock use case to avoid logic here
+                    addStockUseCase(
+                        reference = "Sale #${saleId} Cancelled",
+                        productId = product.id,
+                        amount = product.qty
+                    )
+                }
             }
         }
     }

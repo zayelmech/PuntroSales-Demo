@@ -94,8 +94,8 @@ class UseCasesModule {
         UpdateProductOnCartUseCase(addSaleRepository)
 
     @Provides
-    fun providesGetCartFlowUseCase(addSaleRepository: AddSaleRepository): GetCartFlowUseCase =
-        GetCartFlowUseCase(addSaleRepository)
+    fun providesGetCartFlowUseCase(addSaleRepository: AddSaleRepository, detailsSaleRepository: DetailsSaleRepository): GetCartFlowUseCase =
+        GetCartFlowUseCase(addSaleRepository, detailsSaleRepository)
 
     @Provides
     fun provideDispatcher(): CoroutineDispatcher = Dispatchers.IO

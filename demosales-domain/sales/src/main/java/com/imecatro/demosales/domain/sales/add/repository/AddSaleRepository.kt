@@ -15,6 +15,7 @@ interface AddSaleRepository {
     suspend fun deleteProductOnCart(id: Long)
     suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel>
 
+    suspend fun duplicateProductsFromSale(saleId: Long) : Long
 
     /**
      * Filter popular products

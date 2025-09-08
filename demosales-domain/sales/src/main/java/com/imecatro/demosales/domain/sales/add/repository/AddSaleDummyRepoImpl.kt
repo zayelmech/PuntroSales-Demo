@@ -58,6 +58,10 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         return ticketOnCache
     }
 
+    override suspend fun duplicateProductsFromSale(saleId: Long): Long {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun filterPopularProducts(n: Int): List<Long> {
         TODO("Not yet implemented")
     }

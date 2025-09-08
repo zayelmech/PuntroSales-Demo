@@ -15,7 +15,9 @@ import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.withContext
 
 private const val TAG = "AddSaleRepositoryImpl"
@@ -67,7 +69,10 @@ class AddSaleRepositoryImpl(
         val total = subtotal + extra - discount
 
         val newSale = currentSale.copy(
-            totals = currentSale.totals?.copy(subtotal = subtotal, total = total)?: SaleTotals(subtotal = subtotal, total = total)
+            totals = currentSale.totals?.copy(subtotal = subtotal, total = total) ?: SaleTotals(
+                subtotal = subtotal,
+                total = total
+            )
         )
         salesRoomDao.saveSaleState(newSale)
     }
@@ -75,7 +80,13 @@ class AddSaleRepositoryImpl(
     override suspend fun getCartFlow(saleId: Long?): Flow<SaleDomainModel> {
         val id: Long =
             saleId
-                ?: withContext(Dispatchers.IO) { salesRoomDao.insertSaleOnLocalDatabase(sale = SaleDataRoomModel(creationDateMillis = System.currentTimeMillis())) }
+                ?: withContext(Dispatchers.IO) {
+                    salesRoomDao.insertSaleOnLocalDatabase(
+                        sale = SaleDataRoomModel(
+                            creationDateMillis = System.currentTimeMillis()
+                        )
+                    )
+                }
         this.ticketId = id
 
         val itemsList = ordersRoomDao.getListOfProductsOnSaleWithId(id)
@@ -105,6 +116,29 @@ class AddSaleRepositoryImpl(
                 status = sale.status.toOrderStatus()
             )
         }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun duplicateProductsFromSale(saleId: Long): Long {
+
+        val itemsList = ordersRoomDao.getListOfProductsOnSaleWithId(saleId).first()
+
+        val newSaleId: Long =
+            withContext(Dispatchers.IO) {
+                salesRoomDao.insertSaleOnLocalDatabase(
+                    sale = SaleDataRoomModel(
+                        creationDateMillis = System.currentTimeMillis()
+                    )
+                )
+            }
+
+        withContext(Dispatchers.IO) {
+            itemsList.forEach { order ->
+                ordersRoomDao.saveOrder(order.copy(id = 0, saleId = newSaleId))
+            }
+            updateSubtotal(newSaleId)
+        }
+
+        return newSaleId
     }
 
     override suspend fun filterPopularProducts(n: Int): List<Long> {

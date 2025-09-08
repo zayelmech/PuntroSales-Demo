@@ -12,6 +12,7 @@ import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateTicketStatusUseCase
+import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.add.mappers.toAddSaleUi
 import com.imecatro.demosales.ui.sales.add.mappers.toDomain
@@ -33,9 +34,13 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
 private const val TAG = "AddSaleViewModel"
@@ -54,7 +59,7 @@ class AddSaleViewModel @AssistedInject constructor(
     private val getMostPopularProductsUseCase: GetMostPopularProductsUseCase,
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
-
+    private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
     private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -84,14 +89,13 @@ class AddSaleViewModel @AssistedInject constructor(
     val ticketId get() = _ticketId
 
     val cartList: StateFlow<List<ProductOnCartUiModel>> = channelFlow {
-        getCartFlowUseCase().collectLatest { ticket ->
+        // edit mechanism
+        val id: Long? = if (lastSaleId > 0L) lastSaleId else null
+
+        getCartFlowUseCase(id).collectLatest { ticket ->
             _ticketId = ticket.id
             _ticketSubtotal.update { ticket.totals.subTotal.toString() }
             send(ticket.toUi())
-        }
-    }.onStart {
-        if (lastSaleId > 0L) {
-            onTicketDuplication(lastSaleId)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
@@ -125,7 +129,7 @@ class AddSaleViewModel @AssistedInject constructor(
             val productOnCart = cartList.value.firstOrNull { it.product.id == product.id }
             if (productOnCart != null)
                 updateProductOnCartUseCase.invoke(productOnCart.toUpdateQtyDomain(productOnCart.qty + 1))
-            else{
+            else {
                 Log.d(TAG, "onAddProductToCartAction: ${product.imageUri}")
                 addProductToCartUseCase.invoke(product.toDomain())
             }
@@ -193,18 +197,6 @@ class AddSaleViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Mechanism for duplicating ticket, it get all products from ticket with id basedOnTicketID and add them to current cart
-     */
-    private fun onTicketDuplication(basedOnTicketId: Long) {
-        viewModelScope.launch(dispatcher) {
-            val sale = getCartFlowUseCase(basedOnTicketId).first()
-
-            sale.productsList.forEach { order ->
-                addProductToCartUseCase.invoke(order)
-            }
-        }
-    }
 
     @AssistedFactory
     interface Factory {
