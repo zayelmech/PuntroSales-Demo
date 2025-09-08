@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="delete_ticket">Are you sure you want to delete this ticket ?</string>
+    <string name="delete_ticket">Do you want to delete this ticket ?</string>
     <string name="btn_cancel">Cancel / Refund</string>
     <string name="txt_filter_state">Status</string>
     <string name="txt_filter_date">Date</string>
+    <string name="delete_item_message">Do you want to delete this item from ticket: %1s ?</string>
 </resources>

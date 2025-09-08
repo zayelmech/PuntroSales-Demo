@@ -34,13 +34,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ClientResultUiModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.Typography
 
 @Composable
 fun SearchClientBottomSheet(
@@ -68,12 +66,12 @@ fun SearchClientBottomSheet(
         ) {
             items(searchEngineUiModel.list) { client ->
                 ClientResultCardComposable(
-                    client= client,
+                    client = client,
                     onClientClicked = { searchEngineUiModel.onClientClicked(client) })
             }
             if (searchEngineUiModel.list.size < 4) {
-                repeat(4){
-                    item {  Box(modifier = Modifier.size(20.dp))}
+                repeat(4) {
+                    item { Box(modifier = Modifier.size(20.dp)) }
                 }
 
             }
@@ -92,11 +90,12 @@ data class SearchClientEngineModel(
 fun ClientResultCardComposable(client: ClientResultUiModel, onClientClicked: (Long) -> Unit) {
     val context = LocalContext.current
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onClientClicked(client.id ?: 0) }
-        .padding(5.dp)
-        .wrapContentSize(Alignment.TopEnd)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClientClicked(client.id ?: 0) }
+            .padding(5.dp)
+            .wrapContentSize(Alignment.TopEnd)
     ) {
         ElevatedCard(
             modifier = Modifier.fillMaxSize(),
@@ -117,17 +116,17 @@ fun ClientResultCardComposable(client: ClientResultUiModel, onClientClicked: (Lo
                 contentScale = ContentScale.FillWidth
             )
             Column(modifier = Modifier.padding(5.dp)) {
-                val name = client.name ?: "Unknown"
-                Text(text = name, fontSize = 16.sp, style = Typography.titleMedium)
-
-
+                Text(text = client.name, style = MaterialTheme.typography.labelMedium)
             }
 
         }
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = null,
-            modifier = Modifier.background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50)),
+            modifier = Modifier.background(
+                MaterialTheme.colorScheme.primary,
+                RoundedCornerShape(50)
+            ),
             tint = Color.White
         )
     }

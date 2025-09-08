@@ -55,9 +55,6 @@ fun EditTicketComposableStateImpl(
                 onQueryChange = {
                     query = it
                     addSaleViewModel.onSearchProductAction(query)
-                },
-                onProductClicked = {
-                    addSaleViewModel.onAddProductToCartAction(it)
                 }
             )
             SearchBottomSheetComposable(searchUiState)

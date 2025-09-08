@@ -92,6 +92,7 @@ class AddSaleRepositoryImpl(
                         productId = it.productId,
                         productName = it.productName,
                         productPrice = it.productPrice,
+                        imgUri = it.productImage,
                         qty = it.qty
                     )
                 },

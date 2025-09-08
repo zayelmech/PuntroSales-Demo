@@ -2,16 +2,18 @@ package com.imecatro.demosales.ui.sales.add.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -19,16 +21,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +46,9 @@ import com.imecatro.demosales.ui.theme.Typography
 
 @Composable
 fun SearchBottomSheetComposable(
-    searchEngineUiModel: SearchEngineUiModel = SearchEngineUiModel()
+    searchEngineUiModel: SearchEngineUiModel = SearchEngineUiModel(),
+    onDeductProductClicked: (ProductResultUiModel) -> Unit = {},
+    onAddProductClicked: (ProductResultUiModel) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -64,15 +69,19 @@ fun SearchBottomSheetComposable(
             })
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 128.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(vertical = 5.dp)
         ) {
             items(searchEngineUiModel.list) { product ->
                 ProductResultCardComposable(
                     product = product,
-                    onProductClicked = { searchEngineUiModel.onProductClicked(product) })
+                    onDeductProductClicked = { onDeductProductClicked(product) },
+                    onAddProductClicked = { onAddProductClicked(product) })
             }
             if (searchEngineUiModel.list.size < 4) {
-                repeat(4){
-                    item {  Box(modifier = Modifier.size(20.dp))}
+                repeat(4) {
+                    item { Box(modifier = Modifier.size(20.dp)) }
                 }
 
             }
@@ -83,24 +92,22 @@ fun SearchBottomSheetComposable(
 data class SearchEngineUiModel(
     val list: List<ProductResultUiModel> = listOf(),
     val query: String = "",
-    val onQueryChange: (String) -> Unit = {},
-    val onProductClicked: (ProductResultUiModel) -> Unit = {}
+    val onQueryChange: (String) -> Unit = {}
 )
 
 @Composable
-fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked: (Long) -> Unit) {
+fun ProductResultCardComposable(
+    product: ProductResultUiModel,
+    onDeductProductClicked: (Long) -> Unit = {},
+    onAddProductClicked: (Long) -> Unit = {}
+) {
     val context = LocalContext.current
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onProductClicked(product.id ?: 0) }
-        .padding(5.dp)
-        .wrapContentSize(Alignment.TopEnd)
+    ElevatedCard(
+        modifier = Modifier.fillMaxSize(),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
     ) {
-        ElevatedCard(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-
+        Box {
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(context)
@@ -115,21 +122,53 @@ fun ProductResultCardComposable(product: ProductResultUiModel, onProductClicked:
                     .height(100.dp),
                 contentScale = ContentScale.FillWidth
             )
-            Column(modifier = Modifier.padding(5.dp)) {
-                val name = product.name ?: "Unknown"
-                Text(text = name, fontSize = 16.sp, style = Typography.titleMedium)
-
-                val price = "$ ${product.price ?: 0}"
-                Text(text = price, fontSize = 18.sp, style = Typography.titleMedium)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (product.qty == 0.0) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { onAddProductClicked(product.id) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = null,
+                            modifier = Modifier.background(
+                                MaterialTheme.colorScheme.secondaryContainer,
+                                RoundedCornerShape(50)
+                            ),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                } else
+                    PlusDeductItem(
+                        modifier = Modifier.background(
+                            color = MaterialTheme.colorScheme.surfaceContainerLow.copy(
+                                alpha = 0.5f
+                            ), shape = RoundedCornerShape(5.dp)
+                        ),
+                        value = "${product.qty}",
+                        readOnly = true,
+                        onPlusClicked = { onAddProductClicked(product.id) },
+                        onMinusClick = { onDeductProductClicked(product.id) })
             }
+        }
+        Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 5.dp)) {
+            val name = product.name
+            Text(text = name, fontSize = 16.sp, style = Typography.titleMedium)
+
+            val price = "$ ${product.price}"
+            Text(text = price, style = MaterialTheme.typography.labelMedium)
+
+            val stockWarning =
+                if (product.stock <= 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+            Text(
+                text = "Stock: ${product.stock}",
+                color = stockWarning,
+                style = MaterialTheme.typography.bodyMedium
+            )
 
         }
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = null,
-            modifier = Modifier.background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50)),
-            tint = Color.White
-        )
+
     }
 }
 
@@ -156,7 +195,7 @@ fun PreviewSearchBottomSheetComposable() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val x = SearchEngineUiModel(createFakeList(4), "a", {}, {})
+            val x = SearchEngineUiModel(createFakeList(4), "a", {})
             SearchBottomSheetComposable(x)
         }
     }

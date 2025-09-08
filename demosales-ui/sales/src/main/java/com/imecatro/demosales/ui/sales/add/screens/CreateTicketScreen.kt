@@ -1,10 +1,10 @@
 package com.imecatro.demosales.ui.sales.add.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,20 +16,27 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -41,9 +48,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.components.OrderOnCartComposable
 import com.imecatro.demosales.ui.sales.add.components.SearchBottomSheetComposable
 import com.imecatro.demosales.ui.sales.add.components.SearchEngineUiModel
@@ -51,20 +60,22 @@ import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
+import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
+import com.imecatro.demosales.ui.theme.dialogs.DialogType
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CreateTicketComposable(
     productsOnCart: List<ProductOnCartUiModel>,
     ticketSubtotal: String,
     onDeleteProduct: (Long) -> Unit,
-    onProductPlusClicked: (ProductOnCartUiModel) -> Unit,
-    onProductMinusClicked: (ProductOnCartUiModel) -> Unit,
-    onQtyValueChange: (ProductOnCartUiModel, String) -> Unit,
-    onContinueTicketClicked: () -> Unit,
-    onAddProductClicked: () -> Unit
+    onProductPlusClicked: (ProductOnCartUiModel) -> Unit = {},
+    onProductMinusClicked: (ProductOnCartUiModel) -> Unit = {},
+    onQtyValueChange: (ProductOnCartUiModel, String) -> Unit = { _, _ -> },
+    onSaveAsDraftTicketClicked: () -> Unit = {},
+    onContinueTicketClicked: () -> Unit = {},
+    onAddProductClicked: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -74,23 +85,27 @@ fun CreateTicketComposable(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f)
         ) {
             itemsIndexed(productsOnCart) { index, item ->
                 val dismissState = rememberSwipeToDismissBoxState()
                 val scope = rememberCoroutineScope()
 
                 if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                    OnDeleteItemDialog(item.product.name, {
-                        scope.launch {
-                            dismissState.reset()
-                        }
-                    }) {
-                        scope.launch {
-                            onDeleteProduct(item.orderId)
-                            dismissState.reset()
-                        }
-                    }
+                    ActionDialog(
+                        dialogType = DialogType.Delete,
+                        message =
+                            stringResource(R.string.delete_item_message, item.product.name),
+                        onDismissRequest = {
+                            scope.launch {
+                                dismissState.reset()
+                            }
+                        },
+                        onConfirmClicked = {
+                            scope.launch {
+                                onDeleteProduct(item.orderId)
+                                dismissState.reset()
+                            }
+                        })
                 }
 
                 SwipeToDismissBox(
@@ -163,16 +178,56 @@ fun CreateTicketComposable(
                 }
             }
         }
-
-        Button(
-            onClick = onContinueTicketClicked,
-            modifier = Modifier
-                .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
-                .fillMaxWidth(),
-            enabled = productsOnCart.isNotEmpty(),
-            shape = MaterialTheme.shapes.large
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Continue")
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = onContinueTicketClicked,
+                modifier = Modifier
+                    .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
+                    .fillMaxWidth(),
+                enabled = productsOnCart.isNotEmpty(),
+                shape = MaterialTheme.shapes.large
+            ) {
+                Text(text = "Continue")
+            }
+            Spacer(modifier = Modifier.size(10.dp))
+            Row {
+                Spacer(modifier = Modifier.size(48.dp)) // for center text btn
+                TextButton(
+                    onClick = onSaveAsDraftTicketClicked,
+                    enabled = productsOnCart.isNotEmpty(),
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
+                ) {
+                    Text(text = "Save as draft sale")
+                }
+
+                val state = rememberTooltipState()
+                val scope = rememberCoroutineScope()
+                TooltipBox(
+
+                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    tooltip = {
+                        PlainTooltip { Text("This option does not deduct stock products from inventory. But you can continue with the sale later.") }
+                    },
+                    state = state
+                ) {
+                    IconButton(
+                        onClick = { scope.launch { state.show() } },
+                        enabled = productsOnCart.isNotEmpty()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Info,
+                            contentDescription = "Info"
+                        )
+                    }
+                }
+            }
+
+
         }
     }
 }
@@ -209,15 +264,20 @@ fun CreateTicketComposableStateImpl(
                     onQueryChange = {
                         query = it
                         addSaleViewModel.onSearchProductAction(query)
+                    }
+                )
+                SearchBottomSheetComposable(
+                    searchUiState,
+                    onDeductProductClicked = {
+                        addSaleViewModel.onDeductProductWithId(it.id)
                     },
-                    onProductClicked = {
+                    onAddProductClicked = {
                         addSaleViewModel.onAddProductToCartAction(it)
                     }
                 )
-                SearchBottomSheetComposable(searchUiState)
             }
         }) { innerPadding ->
-        Column (modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding)) {
             TopAppBar(
                 title = { Text(text = "New Sale") },
                 navigationIcon = {
@@ -239,6 +299,7 @@ fun CreateTicketComposableStateImpl(
                 onQtyValueChange = { product, number ->
                     addSaleViewModel.onQtyValueChangeAtPos(product, number)
                 },
+                onSaveAsDraftTicketClicked = { addSaleViewModel.onSaveTicketAction() },
                 onContinueTicketClicked = { onNavigateToCheckout(addSaleViewModel.ticketId) },
                 onAddProductClicked = { scope.launch { scaffoldState.bottomSheetState.expand() } }
             )
@@ -253,9 +314,12 @@ fun CreateTicketComposableStateImpl(
         }
     }
 
+
+    // User confirmation dialog
+
 }
 
-fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
+private fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel> {
     val list: MutableList<ProductOnCartUiModel> = mutableListOf()
     for (i in 1L..num) {
         val new = ProductResultUiModel(

@@ -36,10 +36,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -65,9 +67,6 @@ class AddSaleViewModel @AssistedInject constructor(
 
     private val _results: MutableStateFlow<List<ProductResultUiModel>> =
         MutableStateFlow(emptyList())
-    val productsFound: StateFlow<List<ProductResultUiModel>> = _results.onStart {
-        fetchMostPopularProducts()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private fun fetchMostPopularProducts() {
         viewModelScope.launch {
@@ -98,10 +97,22 @@ class AddSaleViewModel @AssistedInject constructor(
             send(ticket.toUi())
         }
     }.onStart {
-        if (lastSaleId >0L){
+        if (lastSaleId > 0L) {
             onTicketDuplication(lastSaleId)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+
+
+    val productsFound: StateFlow<List<ProductResultUiModel>> = _results.onStart {
+        fetchMostPopularProducts()
+    }.combine(cartList) { results, cart ->
+        // add cart qty to results
+        results.map { result ->
+            val productOnCart = cart.firstOrNull { it.product.id == result.id }
+            val cartQty = productOnCart?.qty ?: 0.0
+            result.copy(qty = cartQty)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private val _ticketSubtotal: MutableStateFlow<String> = MutableStateFlow("0.0")
     val ticketSubtotal: StateFlow<String> = _ticketSubtotal.asStateFlow()
@@ -117,7 +128,14 @@ class AddSaleViewModel @AssistedInject constructor(
 
     fun onAddProductToCartAction(product: ProductResultUiModel) {
         viewModelScope.launch(dispatcher) {
-            addProductToCartUseCase.invoke(product.toDomain())
+            // verify if products is already in cart
+            val productOnCart = cartList.value.firstOrNull { it.product.id == product.id }
+            if (productOnCart != null)
+                updateProductOnCartUseCase.invoke(productOnCart.toUpdateQtyDomain(productOnCart.qty + 1))
+            else{
+                Log.d(TAG, "onAddProductToCartAction: ${product.imageUri}")
+                addProductToCartUseCase.invoke(product.toDomain())
+            }
         }
     }
 
@@ -146,11 +164,23 @@ class AddSaleViewModel @AssistedInject constructor(
     }
 
     fun onQtyValueChangeAtPos(product: ProductOnCartUiModel, newQty: String) {
+        // Validate input newQty
+        if (newQty.isEmpty()) return
+
         val qty = additional(product.qty, newQty)
 
         viewModelScope.launch {
             updateProductOnCartUseCase.invoke(product.toUpdateQtyDomain(qty))
             Log.d(TAG, "onQtyValueChangeAtPos: $product > $qty")
+        }
+    }
+
+    fun onDeductProductWithId(id: Long) {
+        viewModelScope.launch {
+            val product: ProductOnCartUiModel =
+                cartList.value.firstOrNull { it.product.id == id } ?: return@launch
+
+            onQtyValueChangeAtPos(product, "-1")
         }
     }
 
@@ -167,11 +197,11 @@ class AddSaleViewModel @AssistedInject constructor(
     }
 
     /**
-     * todo is failing
+     * Mechanism for duplicating ticket, it get all products from ticket with id basedOnTicketID and add them to current cart
      */
     private fun onTicketDuplication(basedOnTicketId: Long) {
         viewModelScope.launch(dispatcher) {
-           val sale =  getCartFlowUseCase(basedOnTicketId).first()
+            val sale = getCartFlowUseCase(basedOnTicketId).first()
 
             sale.productsList.forEach { order ->
                 addProductToCartUseCase.invoke(order)

@@ -56,7 +56,8 @@ import com.imecatro.demosales.ui.sales.details.model.ProductOnTicketUiModel
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.dialogs.OnDeleteItemDialog
+import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
+import com.imecatro.demosales.ui.theme.dialogs.DialogType
 import kotlinx.coroutines.launch
 
 private fun getFakeItems(): List<ProductOnTicketUiModel> {
@@ -277,7 +278,8 @@ fun TicketDetailsComposableImpl(
 
     }
     if (showDeleteTicketDialog) {
-        OnDeleteItemDialog(
+        ActionDialog(
+            dialogType = DialogType.Delete,
             message = stringResource(id = R.string.delete_ticket),
             onDismissRequest = { showDeleteTicketDialog = false },
             onConfirmClicked = {

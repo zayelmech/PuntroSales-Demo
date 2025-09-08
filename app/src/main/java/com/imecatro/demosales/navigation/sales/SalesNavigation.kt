@@ -4,6 +4,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.imecatro.demosales.ui.sales.add.screens.CheckoutTicketComposableImpl
@@ -31,7 +32,6 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
             }
         }
         composable<SalesDestinations.Add> { backStackEntry ->
-
             val id = backStackEntry.toRoute<SalesDestinations.Add>().id
 
             CreateTicketComposableStateImpl(
