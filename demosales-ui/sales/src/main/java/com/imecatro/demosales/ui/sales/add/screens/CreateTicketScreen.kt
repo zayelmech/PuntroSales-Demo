@@ -39,6 +39,7 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -299,7 +300,12 @@ fun CreateTicketComposableStateImpl(
                 onQtyValueChange = { product, number ->
                     addSaleViewModel.onQtyValueChangeAtPos(product, number)
                 },
-                onSaveAsDraftTicketClicked = { addSaleViewModel.onSaveTicketAction() },
+                onSaveAsDraftTicketClicked = {
+                    scope.launch {
+                        addSaleViewModel.onSaveTicketAction()
+                        onBackToList()
+                    }
+                },
                 onContinueTicketClicked = { onNavigateToCheckout(addSaleViewModel.ticketId) },
                 onAddProductClicked = { scope.launch { scaffoldState.bottomSheetState.expand() } }
             )

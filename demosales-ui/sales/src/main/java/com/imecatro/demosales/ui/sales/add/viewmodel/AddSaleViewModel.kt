@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
-import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
-import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
@@ -15,16 +13,13 @@ import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUs
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateTicketStatusUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
-import com.imecatro.demosales.domain.sales.model.SaleDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.toAddSaleUi
 import com.imecatro.demosales.ui.sales.add.mappers.toDomain
-import com.imecatro.demosales.ui.sales.add.mappers.toDomainModel
 import com.imecatro.demosales.ui.sales.add.mappers.toListAddSaleUi
 import com.imecatro.demosales.ui.sales.add.mappers.toUi
 import com.imecatro.demosales.ui.sales.add.mappers.toUpdateQtyDomain
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
-import com.imecatro.demosales.ui.sales.edit.EditSaleViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -41,9 +36,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 private const val TAG = "AddSaleViewModel"
 
