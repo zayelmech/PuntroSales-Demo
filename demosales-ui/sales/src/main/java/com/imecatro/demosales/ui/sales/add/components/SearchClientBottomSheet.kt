@@ -138,6 +138,8 @@ private fun createFakeClientList(num: Int): List<ClientResultUiModel> {
         val new = ClientResultUiModel(
             id = i.toLong(),
             name = "Product name $i",
+            address = "",
+            imageUri = null,
         )
         list.add(new)
     }

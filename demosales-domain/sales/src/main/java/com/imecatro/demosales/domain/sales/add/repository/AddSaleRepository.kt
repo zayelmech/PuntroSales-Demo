@@ -17,6 +17,8 @@ interface AddSaleRepository {
 
     suspend fun duplicateProductsFromSale(saleId: Long) : Long
 
+    suspend fun updateClientOnSale(sale : SaleDomainModel.Client, saleId : Long)
+
     /**
      * Filter popular products
      * Will search the [n] most popular products from the order table if there any

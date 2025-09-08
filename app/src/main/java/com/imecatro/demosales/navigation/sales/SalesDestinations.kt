@@ -12,9 +12,6 @@ sealed class SalesDestinations {
     data class Add(val id: Long? = null)
 
     @Serializable
-    data class Edit(val id: Long)
-
-    @Serializable
     data class Details(val id: Long)
 
     @Serializable

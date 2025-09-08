@@ -9,7 +9,8 @@ data class SaleUiModel(
     var totals: SaleChargeUiModel,
     var status: String,
     var note: String,
-    val ticketSaved: Boolean = false
+    val ticketSaved: Boolean = false,
+    val clientAddress: String = ""
 )
 
 data class SaleChargeUiModel(

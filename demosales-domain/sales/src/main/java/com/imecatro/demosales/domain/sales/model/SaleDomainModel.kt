@@ -31,6 +31,13 @@ data class SaleDomainModel(
         val subTotal: Double = 0.0,
         var total: Double = 0.0,
     )
+
+    data class Client(
+        val id: Long? = null,
+        val name: String? = null,
+        val address: String? = null,
+        val avatarUri: String? = null
+    )
 }
 
 data class Order(

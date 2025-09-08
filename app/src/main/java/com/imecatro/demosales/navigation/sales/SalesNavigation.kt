@@ -4,7 +4,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.imecatro.demosales.ui.sales.add.screens.CheckoutTicketComposableImpl
@@ -14,8 +13,6 @@ import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
-import com.imecatro.demosales.ui.sales.edit.EditSaleViewModel
-import com.imecatro.demosales.ui.sales.edit.EditTicketComposableStateImpl
 import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl
 
 inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHostController) {
@@ -58,22 +55,6 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
                 }
             }
         }
-        composable<SalesDestinations.Edit> { backStackEntry ->
-            val navArgs = backStackEntry.toRoute<SalesDestinations.Edit>()
-
-            val viewModel: EditSaleViewModel =
-                hiltViewModel(creationCallback = { factory: EditSaleViewModel.Factory ->
-                    factory.create(
-                        navArgs.id
-                    )
-                })
-
-            EditTicketComposableStateImpl(viewModel) { id ->
-                navController.navigate(SalesDestinations.Checkout(id))
-            }
-
-        }
-
         composable<SalesDestinations.SuccessDetails> { backStackEntry ->
             val navArgs = backStackEntry.toRoute<SalesDestinations.Details>()
 

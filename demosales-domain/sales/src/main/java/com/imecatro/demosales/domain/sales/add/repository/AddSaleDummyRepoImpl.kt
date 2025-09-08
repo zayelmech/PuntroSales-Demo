@@ -62,6 +62,13 @@ class AddSaleDummyRepoImpl : AddSaleRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateClientOnSale(
+        sale: SaleDomainModel.Client,
+        saleId: Long
+    ) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun filterPopularProducts(n: Int): List<Long> {
         TODO("Not yet implemented")
     }

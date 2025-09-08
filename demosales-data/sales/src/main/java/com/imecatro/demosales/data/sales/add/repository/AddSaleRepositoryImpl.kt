@@ -141,6 +141,9 @@ class AddSaleRepositoryImpl(
         return newSaleId
     }
 
+    override suspend fun updateClientOnSale(sale: SaleDomainModel.Client, saleId: Long) =
+        salesRoomDao.updateClientOnSale(sale.name, sale.address, saleId)
+
     override suspend fun filterPopularProducts(n: Int): List<Long> {
         return withContext(Dispatchers.IO) {
             ordersRoomDao.getMostPopularProducts(n)

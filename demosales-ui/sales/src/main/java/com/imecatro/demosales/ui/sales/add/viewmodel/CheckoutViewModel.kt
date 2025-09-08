@@ -1,5 +1,6 @@
 package com.imecatro.demosales.ui.sales.add.viewmodel
 
+import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
@@ -8,6 +9,7 @@ import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCas
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
 import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.CheckoutSaleUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.UpdateSaleClientUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel
@@ -15,7 +17,6 @@ import com.imecatro.demosales.ui.sales.add.mappers.toUi
 import com.imecatro.demosales.ui.sales.add.model.ClientResultUiModel
 import com.imecatro.demosales.ui.sales.add.model.SaleChargeUiModel
 import com.imecatro.demosales.ui.sales.add.state.TicketUiState
-import com.imecatro.demosales.ui.sales.add.viewmodel.toUi
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -25,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -40,7 +40,8 @@ class CheckoutViewModel @AssistedInject constructor(
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
     private val filterClientsUseCase: FilterClientsUseCase,
     private val removeFromStockUseCase: RemoveFromStockUseCase,
-    ) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
+    private val updateSaleClientUseCase: UpdateSaleClientUseCase
+) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
 
     private val _results: MutableStateFlow<List<ClientResultUiModel>> =
         MutableStateFlow(emptyList())
@@ -122,7 +123,11 @@ class CheckoutViewModel @AssistedInject constructor(
                 note = currentTicket.note
                 date = System.currentTimeMillis().toString()
                 totals = currentTicket.totals.toDomain()
-                clientId = currentTicket.clientId
+                client = SaleDomainModel.Client(
+                    id = currentTicket.clientId,
+                    name = currentTicket.clientName,
+                    address = currentTicket.clientAddress
+                )
                 tickedPaid = true
             }
             deductStock(currentTicket.id)
@@ -141,11 +146,25 @@ class CheckoutViewModel @AssistedInject constructor(
         }
     }
 
+    //todo save client data on db
     fun onAddClientAction(client: ClientResultUiModel) {
-        updateState {
-            val updatedTicket = ticket.copy(clientName = client.name, clientId = client.id)
-            copy(ticket = updatedTicket)
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("TAG", "onAddClientAction: $client")
+            updateSaleClientUseCase(saleId) {
+                id = client.id
+                name = client.name
+                address = client.address
+            }
+            updateState {
+                val updatedTicket = ticket.copy(
+                    clientName = client.name,
+                    clientId = client.id,
+                    clientAddress = client.address
+                )
+                copy(ticket = updatedTicket)
+            }
         }
+
     }
 
     fun onSavePendingTicked() {
@@ -155,7 +174,11 @@ class CheckoutViewModel @AssistedInject constructor(
                 note = currentTicket.note
                 date = System.currentTimeMillis().toString()
                 totals = currentTicket.totals.toDomain()
-                clientId = currentTicket.clientId
+                client = SaleDomainModel.Client(
+                    id = currentTicket.clientId,
+                    name = currentTicket.clientName,
+                    address = currentTicket.clientAddress
+                )
                 tickedPaid = false
             }
             deductStock(currentTicket.id)
@@ -198,6 +221,7 @@ private fun List<ClientDomainModel>.toUi(): List<ClientResultUiModel> {
         ClientResultUiModel(
             id = client.id,
             name = client.name,
+            address = client.shipping,
             imageUri = client.avatarUri?.toUri()
         )
     }

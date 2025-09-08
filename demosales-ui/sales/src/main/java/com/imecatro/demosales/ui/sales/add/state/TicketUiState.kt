@@ -27,7 +27,14 @@ data class TicketUiState(
 
         private val initCharges = SaleChargeUiModel(0.0, 0.0, 0.0, 0.0, 0.0)
 
-        private val initialTicket = SaleUiModel(0, "", 0, "", listOf(), initCharges, "", "")
+        private val initialTicket = SaleUiModel(
+            clientName = "",
+            date = "",
+            products = listOf(),
+            totals = initCharges,
+            status = "",
+            note = "",
+        )
 
         override val idle: TicketUiState
             get() = TicketUiState(ticket = initialTicket)

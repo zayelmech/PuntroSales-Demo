@@ -15,8 +15,10 @@ class CheckoutSaleUseCase(
         val c = CheckoutDomainModel().apply(sale)
         addSaleRepository.saveSale(
             currentSal.copy(
-                clientId = c.clientId,
                 status = if (c.tickedPaid) OrderStatus.COMPLETED else OrderStatus.PENDING,
+                clientName = c.client.name?:"",
+                clientAddress = c.client.address?:"",
+                clientId = c.client.id?:0,
                 note = c.note,
                 date = c.date,
                 totals = c.totals
@@ -29,6 +31,7 @@ data class CheckoutDomainModel(
     var note: String = "",
     var date: String = "",
     var totals: SaleDomainModel.Costs = SaleDomainModel.Costs(),
-    var clientId: Long = 0,
+
+    var client : SaleDomainModel.Client = SaleDomainModel.Client(),
     var tickedPaid: Boolean = false
 )

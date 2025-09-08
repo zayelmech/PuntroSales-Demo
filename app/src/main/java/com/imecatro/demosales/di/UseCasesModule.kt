@@ -25,6 +25,7 @@ import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
+import com.imecatro.demosales.domain.sales.add.usecases.UpdateSaleClientUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateTicketStatusUseCase
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
@@ -92,6 +93,10 @@ class UseCasesModule {
     @Provides
     fun provideUpdateProductToCartUseCase(addSaleRepository: AddSaleRepository): UpdateProductOnCartUseCase =
         UpdateProductOnCartUseCase(addSaleRepository)
+
+    @Provides
+    fun provideUpdateSaleClientUseCase(addSaleRepository: AddSaleRepository): UpdateSaleClientUseCase =
+        UpdateSaleClientUseCase(addSaleRepository)
 
     @Provides
     fun providesGetCartFlowUseCase(addSaleRepository: AddSaleRepository, detailsSaleRepository: DetailsSaleRepository): GetCartFlowUseCase =

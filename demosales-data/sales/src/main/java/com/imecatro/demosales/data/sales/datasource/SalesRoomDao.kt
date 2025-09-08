@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.imecatro.demosales.data.sales.model.SaleDataRoomModel
-import com.imecatro.demosales.data.sales.model.SaleFullTransactionModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -32,5 +31,8 @@ interface SalesRoomDao {
 
     @Query("UPDATE sales_table SET status = :status WHERE id = :id")
     suspend fun updateSaleStatus(id : Long, status : String)
+
+    @Query("UPDATE sales_table SET client_name_at_sale = :name, client_address_at_sale = :address WHERE id = :saleId")
+    fun updateClientOnSale(name : String?, address : String?, saleId : Long)
 
 }
