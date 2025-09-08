@@ -93,7 +93,7 @@ fun ClientResultCardComposable(client: ClientResultUiModel, onClientClicked: (Lo
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClientClicked(client.id ?: 0) }
+            .clickable { onClientClicked(client.id) }
             .padding(5.dp)
             .wrapContentSize(Alignment.TopEnd)
     ) {

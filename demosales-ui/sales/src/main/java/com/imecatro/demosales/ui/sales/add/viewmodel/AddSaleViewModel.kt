@@ -170,7 +170,11 @@ class AddSaleViewModel @AssistedInject constructor(
         val qty = additional(product.qty, newQty)
 
         viewModelScope.launch {
-            updateProductOnCartUseCase.invoke(product.toUpdateQtyDomain(qty))
+            if (qty <= 0.0)
+                deleteProductOnCartUseCase.invoke(product.orderId)
+            else
+                updateProductOnCartUseCase.invoke(product.toUpdateQtyDomain(qty))
+
             Log.d(TAG, "onQtyValueChangeAtPos: $product > $qty")
         }
     }
