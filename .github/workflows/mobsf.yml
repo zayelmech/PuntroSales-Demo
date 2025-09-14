@@ -36,7 +36,15 @@ jobs:
         with:
           args: . --sarif --output results.sarif || true
 
-      - name: Upload mobsfscan report
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
+
+      # Optional: keep a downloadable copy of the report
+      - name: Upload SARIF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobsfscan-sarif
+          path: results.sarif
+          if-no-files-found: warn
