@@ -54,6 +54,7 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.architect.isLoading
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
@@ -206,7 +207,7 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
         }, headlineContent = {
             Text(text = product.name ?: "Product name")
         }, supportingContent = {
-            Text(text = "$${product.price}")
+            Text(text = "${product.price?.formatAsCurrency()}")
         }, trailingContent = {
             val color =
                 if (product.stock.contains("-")) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
