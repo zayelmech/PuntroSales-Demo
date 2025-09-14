@@ -208,7 +208,9 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
         }, supportingContent = {
             Text(text = "$${product.price}")
         }, trailingContent = {
-            Text(text = "${product.stock}  ${product.unit}")
+            val color =
+                if (product.stock.contains("-")) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+            Text(text = "${product.stock}  ${product.unit}", color = color)
         })
     }
 
