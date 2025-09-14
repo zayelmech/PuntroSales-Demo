@@ -57,14 +57,7 @@ fun String.formatAsCurrency(
 @Composable
 @ReadOnlyComposable
 private fun Context.getCurrentLocale(): Locale {
-    // En API level 24+ (Android 7.0+), configuration.locales es la forma preferida.
-    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-        this.resources.configuration.locales.get(0)
-    } else {
-        // Para versiones anteriores, esto es un fallback.
-        @Suppress("DEPRECATION")
-        this.resources.configuration.locale
-    }
+    return this.resources.configuration.locales.get(0)
 }
 
 // ------ Ejemplo de Uso ------
