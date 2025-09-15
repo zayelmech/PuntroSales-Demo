@@ -4,7 +4,13 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
+import java.math.BigDecimal
 import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
 
 internal object Money{
@@ -73,3 +79,74 @@ private fun Context.getCurrentLocale(): Locale {
 //     val anotherPrice = "99.9"
 //     Text(text = "Otro Precio: ${anotherPrice.formatAsCurrency(defaultLocale = Locale("es", "MX"))}")
 // }
+
+
+
+/**
+ * A [VisualTransformation] that formats the input text as currency.
+ *
+ * This transformation will:
+ * - Filter out non-digit characters from the input.
+ * - Interpret the remaining digits as the minor currency unit (e.g., cents for USD).
+ * - Format the resulting numeric value as a currency string according to the provided
+ *   `locale`, `currency`, and `fractionDigits`.
+ * - Optionally display "0" formatted as currency if the input is empty and
+ *   `showZeroWhenEmpty` is true.
+ *
+ * The [OffsetMapping] is simplified: it always maps the original cursor position to the
+ * end of the transformed text, and the transformed cursor position to the end of the
+ * original text. This is a common approach for input fields where the formatting
+ * can significantly change the text length and structure.
+ *
+ * @param locale The [Locale] to use for formatting the currency. Defaults to the system's
+ *   default locale.
+ * @param currency The [Currency] to use for formatting. Defaults to the currency
+ *   associated with the `locale`.
+ * @param fractionDigits The number of fraction digits to display. Defaults to the
+ *   currency's default number of fraction digits. If the currency's default is unknown (-1),
+ *   it falls back to 2.
+ * @param showZeroWhenEmpty If `true`, displays the formatted currency representation of zero
+ *   (e.g., "$0.00") when the input text is empty. If `false`, displays an empty string.
+ *   Defaults to `false`.
+ * @return A [VisualTransformation] that applies currency formatting.
+ */
+fun CurrencyVisualTransformation(
+    locale: Locale = Locale.getDefault(),
+    currency: Currency = Currency.getInstance(locale),
+    // Usa los decimales por defecto de la moneda; si es -1 (desconocido), cae a 2.
+    fractionDigits: Int = currency.defaultFractionDigits.let { if (it < 0) 2 else it },
+    showZeroWhenEmpty: Boolean = false
+): VisualTransformation {
+    val formatter = NumberFormat.getCurrencyInstance(locale).apply {
+        this.currency = currency
+        minimumFractionDigits = fractionDigits
+        maximumFractionDigits = fractionDigits
+    }
+
+    return VisualTransformation { text ->
+        val digits = text.text.filter(Char::isDigit)
+
+        val amount = if (digits.isNotEmpty()) {
+            // Evita overflow usando BigDecimal y mueve el punto según fractionDigits
+            BigDecimal(digits).movePointLeft(fractionDigits)
+        } else {
+            BigDecimal.ZERO
+        }
+
+        val formatted = if (digits.isNotEmpty() || showZeroWhenEmpty) {
+            formatter.format(amount)
+        } else {
+            ""
+        }
+
+        val originalLen = text.text.length
+        val transformedLen = formatted.length
+
+        val mapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int = transformedLen
+            override fun transformedToOriginal(offset: Int): Int = originalLen
+        }
+
+        TransformedText(AnnotatedString(formatted), mapping)
+    }
+}

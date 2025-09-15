@@ -51,6 +51,8 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.demosales.ui.theme.Typography
+import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
@@ -130,6 +132,7 @@ fun AddProductComposable(
                 OutlinedTextField(
                     value = productName,
                     supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_name_txt)) },
+                    singleLine = true,
                     onValueChange = onProductNameChange
                 )
 
@@ -138,9 +141,11 @@ fun AddProductComposable(
                     OutlinedTextField(
                         value = productPrice,
                         onValueChange = onProductPriceChange,
-                        placeholder = { Text("0.0") },
+                        placeholder = { Text("0.0".formatAsCurrency()) },
                         supportingText = { if (productPrice.isBlank()) Text(stringResource(R.string.supporting_price_txt)) },
+                        singleLine = true,
                         modifier = Modifier.weight(1f),
+                        visualTransformation = CurrencyVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
@@ -165,7 +170,7 @@ fun AddProductComposable(
                     enabled = !isEditMode,
                     value = stock,
                     placeholder = { Text("0.0") },
-                    supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_stock_txt)) },
+                    supportingText = { if (stock.isBlank()) Text(stringResource(R.string.supporting_stock_txt)) },
                     singleLine = true,
                     onValueChange = onStockChange,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
