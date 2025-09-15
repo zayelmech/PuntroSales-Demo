@@ -25,6 +25,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
@@ -35,6 +36,7 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
@@ -44,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
@@ -249,69 +252,74 @@ fun CreateTicketComposableStateImpl(
     }
 
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
 
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        // Add this line to fix the error:
+        confirmValueChange = { true }, // Add a default confirmValueChange lambda
+    )
+    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
 
-    BottomSheetScaffold(
-        scaffoldState =
-            scaffoldState, sheetPeekHeight = 0.dp, sheetContent = {
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val searchUiState = SearchEngineUiModel(
-                    list = resultsList.toMutableStateList(),
-                    query = query,
-                    onQueryChange = {
-                        query = it
-                        addSaleViewModel.onSearchProductAction(query)
-                    }
-                )
-                SearchBottomSheetComposable(
-                    searchUiState,
-                    onDeductProductClicked = {
-                        addSaleViewModel.onDeductProductWithId(it.id)
-                    },
-                    onAddProductClicked = {
-                        addSaleViewModel.onAddProductToCartAction(it)
-                    }
-                )
-            }
-        }) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            TopAppBar(
-                title = { Text(text = "New Sale") },
-                navigationIcon = {
-                    IconButton(onClick = { onBackToList() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
-                    }
+    Column {
+        TopAppBar(
+            title = { Text(text = "New Sale") },
+            navigationIcon = {
+                IconButton(onClick = { onBackToList() }) {
+                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
                 }
-            )
-            CreateTicketComposable(
-                productsOnCart = productsOnCart.toMutableStateList(),
-                ticketSubtotal = ticketSubtotal,
-                onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
-                onProductMinusClicked = { product ->
-                    addSaleViewModel.onQtyValueChangeAtPos(product, "-1")
-                },
-                onProductPlusClicked = { product ->
-                    addSaleViewModel.onQtyValueChangeAtPos(product, "+1")
-                },
-                onQtyValueChange = { product, number ->
-                    addSaleViewModel.onQtyValueChangeAtPos(product, number)
-                },
-                onSaveAsDraftTicketClicked = {
-                    scope.launch {
-                        addSaleViewModel.onSaveTicketAction()
-                        onBackToList()
-                    }
-                },
-                onContinueTicketClicked = { onNavigateToCheckout(addSaleViewModel.ticketId) },
-                onAddProductClicked = { scope.launch { scaffoldState.bottomSheetState.expand() } }
-            )
-        }
-
+            }
+        )
+        CreateTicketComposable(
+            productsOnCart = productsOnCart.toMutableStateList(),
+            ticketSubtotal = ticketSubtotal,
+            onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
+            onProductMinusClicked = { product ->
+                addSaleViewModel.onQtyValueChangeAtPos(product, "-1")
+            },
+            onProductPlusClicked = { product ->
+                addSaleViewModel.onQtyValueChangeAtPos(product, "+1")
+            },
+            onQtyValueChange = { product, number ->
+                addSaleViewModel.onQtyValueChangeAtPos(product, number)
+            },
+            onSaveAsDraftTicketClicked = {
+                scope.launch {
+                    addSaleViewModel.onSaveTicketAction()
+                    onBackToList()
+                }
+            },
+            onContinueTicketClicked = { onNavigateToCheckout(addSaleViewModel.ticketId) },
+            onAddProductClicked = { scope.launch { openBottomSheet = true } }
+        )
     }
+
+    if (openBottomSheet)
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = { openBottomSheet = false }, content = {
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val searchUiState = SearchEngineUiModel(
+                        list = resultsList.toMutableStateList(),
+                        query = query,
+                        onQueryChange = {
+                            query = it
+                            addSaleViewModel.onSearchProductAction(query)
+                        }
+                    )
+                    SearchBottomSheetComposable(
+                        searchUiState,
+                        onDeductProductClicked = {
+                            addSaleViewModel.onDeductProductWithId(it.id)
+                        },
+                        onAddProductClicked = {
+                            addSaleViewModel.onAddProductToCartAction(it)
+                        }
+                    )
+                }
+            })
 
     DisposableEffect(key1 = Unit) {
         onDispose {
