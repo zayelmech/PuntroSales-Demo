@@ -53,6 +53,7 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
+import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.R
@@ -287,7 +288,7 @@ fun AddProductComposableStateImpl(
         productName = productName,
         onProductNameChange = { productName = it },
         productPrice = productPrice,
-        onProductPriceChange = { productPrice = it.filter { c -> c.isDigit() || c == '.' } },
+        onProductPriceChange = { productPrice = it },
         currencyList = addViewModel.getCurrencies(),
         currencyPicked = currencySelected,
         onCurrencyChange = { currencySelected = it },
@@ -305,7 +306,7 @@ fun AddProductComposableStateImpl(
         addViewModel.onSaveAction(
             AddProductUiModel(
                 name = productName,
-                price = productPrice,
+                price = Money.toDouble(productPrice).toString(),
                 currency = currencySelected,
                 unit = unitSelected,
                 imageUri = imageUri,

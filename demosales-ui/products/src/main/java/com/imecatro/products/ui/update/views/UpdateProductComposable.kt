@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
+import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
@@ -90,7 +91,7 @@ fun UpdateProductComposableStateImpl(
             UpdateProductUiModel(
                 id = 0,
                 name = productName,
-                price = productPrice,
+                price = Money.toDouble(productPrice?:"0.0").toString(),
                 currency = currencySelected,
                 unit = unitSelected,
                 imageUri = imageUri,

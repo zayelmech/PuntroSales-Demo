@@ -91,6 +91,7 @@ class CheckoutViewModel @AssistedInject constructor(
      * @param extra is the amount extra that must be added to the total
      */
     fun onExtraChargeAdded(extra: String) {
+        Log.d("TAG", "onExtraChargeAdded: $extra")
         // Attempt to parse the string to a Double.
         // toDoubleOrNull() is safer as it returns null for invalid input.
         val extraAmount = extra.toDoubleOrNull()

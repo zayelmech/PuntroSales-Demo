@@ -9,11 +9,12 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 
-internal object Money{
+object Money{
     fun format(double : String, locale: Locale = Locale("es", "MX")): String {
 
         val nf = NumberFormat.getCurrencyInstance(locale)
@@ -24,6 +25,20 @@ internal object Money{
 
         val nf = NumberFormat.getCurrencyInstance(locale)
         return nf.format(double)
+    }
+
+    fun toDouble(
+        formatted: String,
+        locale: Locale = Locale.getDefault(),
+        currency: Currency = Currency.getInstance(locale),
+        fractionDigits: Int = currency.defaultFractionDigits.let { if (it < 0) 2 else it }
+    ): Double {
+        if (formatted.isBlank()) return 0.0
+        val digits = formatted.filter(Char::isDigit)
+        if (digits.isEmpty()) return 0.0
+        return BigDecimal(digits)
+            .movePointLeft(fractionDigits) // "5500" -> 55.00 si fractionDigits=2
+            .toDouble()
     }
 }
 
@@ -152,41 +167,67 @@ private fun Context.getCurrentLocale(): Locale {
  *   Defaults to `false`.
  * @return A [VisualTransformation] that applies currency formatting.
  */
+
 fun CurrencyVisualTransformation(
     locale: Locale = Locale.getDefault(),
-    currency: Currency = Currency.getInstance(locale),
-    // Usa los decimales por defecto de la moneda; si es -1 (desconocido), cae a 2.
-    fractionDigits: Int = currency.defaultFractionDigits.let { if (it < 0) 2 else it },
+    fractionDigits: Int = 2,            // ajusta según tu moneda si quieres
     showZeroWhenEmpty: Boolean = false
 ): VisualTransformation {
-    val formatter = NumberFormat.getCurrencyInstance(locale).apply {
+    val df = (NumberFormat.getCurrencyInstance(locale) as DecimalFormat).apply {
         this.currency = currency
         minimumFractionDigits = fractionDigits
         maximumFractionDigits = fractionDigits
+        // Ocultar símbolo de moneda
+        decimalFormatSymbols = decimalFormatSymbols.apply { currencySymbol = "" }
+        // Limpia espacios duros u otros restos alrededor
+        positivePrefix = positivePrefix.trim().trim('\u00A0')
+        positiveSuffix = positiveSuffix.trim().trim('\u00A0')
+        negativePrefix = negativePrefix.trim().trim('\u00A0')
+        negativeSuffix = negativeSuffix.trim().trim('\u00A0')
     }
 
     return VisualTransformation { text ->
-        val digits = text.text.filter(Char::isDigit)
+        val raw = text.text.trim()
 
-        val amount = if (digits.isNotEmpty()) {
-            // Evita overflow usando BigDecimal y mueve el punto según fractionDigits
-            BigDecimal(digits).movePointLeft(fractionDigits)
-        } else {
-            BigDecimal.ZERO
+        val amount: BigDecimal = when {
+            raw.isBlank() -> BigDecimal.ZERO
+            // Si el usuario usa '.' o ',' tratamos como decimales reales (no centavos)
+            raw.any { it == '.' || it == ',' } -> {
+                // Conserva solo dígitos, '.', ',' y signo
+                var s = raw.replace(Regex("[^0-9,.-]"), "")
+                val lastDot = s.lastIndexOf('.')
+                val lastComma = s.lastIndexOf(',')
+                val decimalSep = when {
+                    lastDot >= 0 && lastComma >= 0 -> if (lastDot > lastComma) '.' else ','
+                    lastDot >= 0 -> '.'
+                    lastComma >= 0 -> ','
+                    else -> null
+                }
+                // Quita separadores de miles y normaliza a '.'
+                if (decimalSep != null) {
+                    s = if (decimalSep == '.') {
+                        s.replace(",", "")
+                    } else {
+                        s.replace(".", "").replace(',', '.')
+                    }
+                }
+                s.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            }
+            else -> {
+                // Sin separador: interpreta como centavos
+                val digits = raw.filter(Char::isDigit)
+                if (digits.isEmpty()) BigDecimal.ZERO
+                else BigDecimal(digits).movePointLeft(fractionDigits)
+            }
         }
 
-        val formatted = if (digits.isNotEmpty() || showZeroWhenEmpty) {
-            formatter.format(amount)
-        } else {
-            ""
-        }
+        val formattedRaw = if (raw.isNotBlank() || showZeroWhenEmpty) df.format(amount) else ""
+        val formatted = formattedRaw.trim().trim('\u00A0')
 
-        val originalLen = text.text.length
-        val transformedLen = formatted.length
-
+        val originalLen = raw.length
         val mapping = object : OffsetMapping {
-            override fun originalToTransformed(offset: Int): Int = transformedLen
-            override fun transformedToOriginal(offset: Int): Int = originalLen
+            override fun originalToTransformed(offset: Int) = formatted.length
+            override fun transformedToOriginal(offset: Int) = originalLen
         }
 
         TransformedText(AnnotatedString(formatted), mapping)

@@ -27,15 +27,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 
+
+enum class Type {
+    Money, Decimal
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun InputNumberDialogComposable(
     initialValue: String = "",
     supportingMessage: String = "Write the new value",
+    type: Type = Type.Decimal,
     extendedContent : @Composable ColumnScope.() -> Unit={},
     onDismissRequest: () -> Unit = {},
     onConfirmClicked: (String) -> Unit = {}
@@ -60,9 +68,11 @@ fun InputNumberDialogComposable(
             Spacer(modifier = Modifier.height(20.dp))
             OutlinedTextField(
                 value = qty,
-                placeholder = { Text("0.0") },
+                placeholder = { Text(if (type == Type.Money) "0.00".formatAsCurrency() else "0.0") },
                 onValueChange = { qty = it.filter { c -> c.isDigit() || c == '.' } },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                visualTransformation = if (type == Type.Money) CurrencyVisualTransformation() else VisualTransformation.None
             )
             extendedContent()
             Spacer(modifier = Modifier.size(20.dp))
