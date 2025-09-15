@@ -1,9 +1,9 @@
 package com.imecatro.demosales.ui.sales.list.views
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -77,79 +77,73 @@ fun SalesListComposable(
         }
 
     }) { innerPadding ->
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-                .padding(innerPadding),
-            state = scrollState,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(innerPadding)
         ) {
-            item {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                Spacer(modifier = Modifier.size(20.dp))
 
-                Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Start) {
-                    Spacer(modifier = Modifier.size(20.dp))
-
-                    FilterChip(
-                        onClick = { statusFilter = true },
-                        label = {
-                            Text(stringResource(R.string.txt_filter_state))
-                        },
-                        selected = statusList.any { it.isChecked },
-                        leadingIcon = {
-                            if (statusList.any { it.isChecked }) {
-                                Icon(Icons.Filled.Done, null)
-                            } else {
-                                Icon(Icons.Filled.ArrowDropDown, null)
-                            }
+                FilterChip(
+                    onClick = { statusFilter = true },
+                    label = {
+                        Text(stringResource(R.string.txt_filter_state))
+                    },
+                    selected = statusList.any { it.isChecked },
+                    leadingIcon = {
+                        if (statusList.any { it.isChecked }) {
+                            Icon(Icons.Filled.Done, null)
+                        } else {
+                            Icon(Icons.Filled.ArrowDropDown, null)
                         }
-                    )
-
-                    Spacer(modifier = Modifier.size(20.dp))
-//                    OutlinedButton(
-//                        onClick = { dateFilter = true },
-//                        shape = MaterialTheme.shapes.medium
-//                    ) {
-//                        Icon(Icons.Filled.ArrowDropDown, null)
-//                        Text(stringResource(R.string.txt_filter_date))
-//                    }
-                }
+                    }
+                )
             }
-            items(list) { sale ->
-                CardOfSaleComposable(sale = sale) { onCardClicked(sale.id) }
-            }
-        }
-
-        if (dateFilter)
-            ModalBottomSheet(onDismissRequest = { dateFilter = false }) {
-                Text(text = "Any time")
-                Text(text = "One week ago")
-                ListItem(leadingContent = {
-                    RadioButton(selected = true, onClick = {})
-                }, headlineContent = {
-                    Text(text = "One month ago")
-                })
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(text = "Custom Range")
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                state = scrollState,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(list) { sale ->
+                    CardOfSaleComposable(sale = sale) { onCardClicked(sale.id) }
                 }
             }
 
-        if (statusFilter)
-            ModalBottomSheet(onDismissRequest = { statusFilter = false }) {
-                LazyColumn {
-                    items(statusList) { status ->
-                        ListItem(
-                            leadingContent = {
-                                Checkbox(
-                                    checked = status.isChecked,
-                                    onCheckedChange = { onCheckedChange(status) })
-                            },
-                            headlineContent = {
-                                Text(text = status.text)
-                            }
-                        )
+
+            if (dateFilter)
+                ModalBottomSheet(onDismissRequest = { dateFilter = false }) {
+                    Text(text = "Any time")
+                    Text(text = "One week ago")
+                    ListItem(leadingContent = {
+                        RadioButton(selected = true, onClick = {})
+                    }, headlineContent = {
+                        Text(text = "One month ago")
+                    })
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Custom Range")
                     }
                 }
-            }
+
+            if (statusFilter)
+                ModalBottomSheet(onDismissRequest = { statusFilter = false }) {
+                    LazyColumn {
+                        items(statusList) { status ->
+                            ListItem(
+                                leadingContent = {
+                                    Checkbox(
+                                        checked = status.isChecked,
+                                        onCheckedChange = { onCheckedChange(status) })
+                                },
+                                headlineContent = {
+                                    Text(text = status.text)
+                                }
+                            )
+                        }
+                    }
+                }
+        }
     }
 }
 
