@@ -12,4 +12,11 @@
     <string name="supporting_name_txt">Name is required</string>
     <string name="supporting_price_txt">Price is required</string>
     <string name="btn_save">Save</string>
+    <string name="filter_order_a_to_z">Name A-Z</string>
+    <string name="filter_order_z_to_a">Name Z-A</string>
+    <string name="filter_price_high_to_low">Price Low to High</string>
+    <string name="filter_price_low_to_high">Price High to Low</string>
+    <string name="filter_stock_low_to_high">Stock Low to High</string>
+    <string name="filter_stock_high_to_low">Stock High to Low</string>
+    <string name="filter_created_date_new_to_old">Creation date old to new</string>
 </resources>
