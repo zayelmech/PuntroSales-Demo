@@ -31,7 +31,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +42,7 @@ import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.Typography
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 
 @Composable
 fun SearchBottomSheetComposable(
@@ -156,7 +156,7 @@ fun ProductResultCardComposable(
             val name = product.name
             Text(text = name, fontSize = 16.sp, style = Typography.titleMedium)
 
-            val price = "$ ${product.price}"
+            val price = product.price.formatAsCurrency()
             Text(text = price, style = MaterialTheme.typography.labelMedium)
 
             val stockWarning =

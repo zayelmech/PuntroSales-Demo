@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.localDate
 
 @Preview(showBackground = true)
@@ -37,7 +38,7 @@ fun CardOfSaleComposable(
         ListItem(
             modifier = Modifier.sizeIn(maxWidth = 411.dp),
             headlineContent = {
-                Text(text = "$${sale.total}")
+                Text(text = sale.total.formatAsCurrency())
             },
             overlineContent = {
                 Text(text = sale.clientName)

@@ -19,6 +19,12 @@ internal object Money{
         val nf = NumberFormat.getCurrencyInstance(locale)
         return nf.format(double.toDouble())
     }
+
+    fun format(double : Double, locale: Locale = Locale("es", "MX")): String {
+
+        val nf = NumberFormat.getCurrencyInstance(locale)
+        return nf.format(double)
+    }
 }
 
 /**
@@ -34,6 +40,42 @@ internal object Money{
 fun String.formatAsCurrency(
     defaultLocale: Locale? = null,
     onErrorReturn: String = this // Devuelve la cadena original en caso de error por defecto
+): String {
+    val context = LocalContext.current
+    val localeToUse = defaultLocale ?: context.getCurrentLocale()
+
+    // Si tu Money.format ya maneja el String, puedes llamarlo directamente.
+    // Si no, necesitarías parsear 'this' (el String) a un número (Double, BigDecimal) primero.
+    // Asumiendo que Money.format puede manejar un String que es un número:
+    return try {
+        Money.format(this, localeToUse)
+        // O si Money.format espera un número y no un String:
+        // val numericValue = this.toBigDecimalOrNull()
+        // if (numericValue != null) {
+        //     Money.format(numericValue, localeToUse) // Necesitarías un Money.format(BigDecimal, Locale)
+        // } else {
+        //     onErrorReturn
+        // }
+    } catch (e: Exception) {
+        // Captura genérica por si Money.format lanza alguna otra excepción no esperada.
+        // Podrías ser más específico con los tipos de excepción.
+        onErrorReturn
+    }
+}
+
+/**
+ * Formatea una cadena que representa un valor numérico como una cadena de moneda
+ * utilizando el Locale primario del contexto actual o un Locale específico.
+ *
+ * @param defaultLocale El Locale a usar si no se desea el del contexto. Si es null, se usa el del contexto.
+ * @param onErrorReturn El valor a devolver si la cadena no puede ser formateada como moneda.
+ * @return La cadena formateada como moneda o el valor de `onErrorReturn`.
+ */
+@Composable
+@ReadOnlyComposable // Indica que la función solo lee el estado de Compose (LocalContext)
+fun Double.formatAsCurrency(
+    defaultLocale: Locale? = null,
+    onErrorReturn: String = "0.0" // Devuelve la cadena original en caso de error por defecto
 ): String {
     val context = LocalContext.current
     val localeToUse = defaultLocale ?: context.getCurrentLocale()

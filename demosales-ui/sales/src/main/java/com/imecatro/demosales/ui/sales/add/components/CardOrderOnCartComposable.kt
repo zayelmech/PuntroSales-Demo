@@ -39,6 +39,7 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import java.math.BigDecimal
 
 
@@ -94,7 +95,7 @@ fun OrderOnCartComposable(
                 Text(text = product.product.name)
             },
             supportingContent = {
-                Text(text = "$${product.subtotal}")
+                Text(text = product.subtotal.toDouble().formatAsCurrency())
             }, trailingContent = {
                 PlusDeductItem(
                     value = "${product.qty}",

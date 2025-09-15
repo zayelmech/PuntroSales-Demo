@@ -44,6 +44,7 @@ import com.imecatro.demosales.ui.sales.add.components.SearchClientBottomSheet
 import com.imecatro.demosales.ui.sales.add.components.SearchClientEngineModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import kotlinx.coroutines.launch
 
@@ -101,7 +102,7 @@ fun CheckoutTicketComposable(
             Row {
                 Text("Subtotal")
                 Spacer(modifier = Modifier.weight(1f))
-                Text("$$subtotal")
+                Text(subtotal.formatAsCurrency())
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Extra")
@@ -109,7 +110,7 @@ fun CheckoutTicketComposable(
                 IconButton(onClick = { onExtraClick() }) {
                     Icon(Icons.Default.AddCircle, null)
                 }
-                Text("$$extra")
+                Text(extra.formatAsCurrency())
             }
 
 //            Row(verticalAlignment = Alignment.CenterVertically) {
@@ -125,7 +126,7 @@ fun CheckoutTicketComposable(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Total")
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "$${total}")
+                Text(text = total.formatAsCurrency())
 
             }
         }

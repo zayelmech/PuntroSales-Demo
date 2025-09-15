@@ -56,6 +56,7 @@ import com.imecatro.demosales.ui.sales.details.model.ProductOnTicketUiModel
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
 import com.imecatro.demosales.ui.theme.dialogs.DialogType
 import kotlinx.coroutines.launch
@@ -138,8 +139,8 @@ fun ResumeTicketScreen(
                 Text(product.name, modifier = Modifier.weight(3f))
                 Text("x${product.qty}", modifier = Modifier.weight(1f))
                 Text(
-                    text = "$${product.subtotal}",
-                    modifier = Modifier.weight(1f),
+                    text = product.subtotal.formatAsCurrency(),
+                    modifier = Modifier.weight(2f),
                     textAlign = TextAlign.End
                 )
             }
@@ -153,13 +154,13 @@ fun ResumeTicketScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Extra")
                 Spacer(Modifier.weight(1f))
-                Text("$${ticketDetails.extra}")
+                Text(ticketDetails.extra.formatAsCurrency())
             }
             // Total
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Total")
                 Spacer(Modifier.weight(1f))
-                Text("$${ticketDetails.total}")
+                Text(ticketDetails.total.formatAsCurrency())
             }
             Spacer(Modifier.size(20.dp))
 

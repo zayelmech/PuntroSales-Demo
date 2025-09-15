@@ -60,6 +60,7 @@ import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
 import com.imecatro.demosales.ui.theme.dialogs.DialogType
 import kotlinx.coroutines.launch
@@ -173,7 +174,7 @@ fun CreateTicketComposable(
                     Row {
                         Text("Subtotal")
                         Spacer(modifier = Modifier.weight(1f))
-                        Text(ticketSubtotal)
+                        Text(ticketSubtotal.formatAsCurrency())
                     }
                 }
             }
