@@ -15,7 +15,7 @@ fun ProductDomainModel.toUiModel(): ProductDetailsUiModel {
         imageUrl = this.imageUri,
         details = this.details,
         stockQty = "${this.stock.quantity}",
-        stockPrice = "$${this.stock.cost} ${this.currency}",
+        stockPrice = "${this.stock.cost}",
         stockHistory = this.stock.history.toUi()
     )
 }

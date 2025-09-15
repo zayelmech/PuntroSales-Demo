@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.localDate
 import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import com.imecatro.products.ui.R
@@ -42,7 +43,7 @@ import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 @Composable
 fun StockComposable(
     stock: String = "1",
-    cost: String = "$212.0",
+    cost: String = "212.0",
     list: List<ProductDetailsUiModel.History> = listOf(
         ProductDetailsUiModel.History(
             "da",
@@ -84,7 +85,7 @@ fun StockComposable(
                     style = MaterialTheme.typography.headlineSmall
                 )
                 Text(
-                    text = cost,
+                    text = cost.formatAsCurrency(),
                     style = MaterialTheme.typography.headlineSmall
                 )
             }

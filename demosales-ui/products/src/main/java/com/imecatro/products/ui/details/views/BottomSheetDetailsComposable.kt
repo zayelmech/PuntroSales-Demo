@@ -51,10 +51,13 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import kotlinx.coroutines.launch
+import java.util.Currency
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -188,8 +191,10 @@ fun DetailsComposable(
                     style = MaterialTheme.typography.headlineSmall
                 )
                 //price
+                val locale : Locale = Locale.getDefault()
+                val currency = Currency.getInstance(locale)
                 Text(
-                    text = "$${productDetails?.price ?: "0.00"} ${productDetails?.currency ?: ""}",
+                    text = "${productDetails?.price?.formatAsCurrency() ?: "0.00"} ${productDetails?.currency ?: currency.symbol}",
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Spacer(modifier = Modifier.height(20.dp))

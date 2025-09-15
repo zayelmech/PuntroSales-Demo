@@ -33,6 +33,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +58,8 @@ import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
+import java.util.Currency
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +89,12 @@ fun AddProductComposable(
 ) {
 
     val context = LocalContext.current
+    val locale: Locale = Locale.getDefault()
+    val currency = Currency.getInstance(locale)
+
+    LaunchedEffect(currencyList) {
+        onCurrencyChange(currency.currencyCode)
+    }
 
     LazyColumn {
         item {
@@ -137,7 +146,7 @@ fun AddProductComposable(
                 )
 
                 Text(text = "Price", style = Typography.labelMedium)
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.Top) {
                     OutlinedTextField(
                         value = productPrice,
                         onValueChange = onProductPriceChange,
@@ -146,15 +155,16 @@ fun AddProductComposable(
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         visualTransformation = CurrencyVisualTransformation(),
+                        suffix = { Text(currencyPicked) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
-
-                    DropListPicker(
-                        currencyList, currencyPicked
-                    ) { currency ->
-                        onCurrencyChange(currency)
-                    }
+// This is not needed so far, be might change in future
+//                    DropListPicker(
+//                        currencyList, currencyPicked
+//                    ) { currency ->
+//                        onCurrencyChange(currency)
+//                    }
 
                 }
                 Text(text = "Unit", style = Typography.labelMedium)
