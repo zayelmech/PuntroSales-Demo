@@ -2,9 +2,14 @@ package com.imecatro.demosales.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +38,15 @@ fun MainScaffoldApp() {
                 ss.value?.destination?.route?.contains("List") ?: false
             if (showBottomBar)
                 MainBottomBar(navController)
+            else {
+                val windowInsets: WindowInsets = NavigationBarDefaults.windowInsets
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(windowInsets)
+                        .height(5.dp)
+                )
+            }
         }
     ) { padding ->
         NavHost(
