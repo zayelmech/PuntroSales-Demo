@@ -79,10 +79,10 @@ fun SalesListComposable(
     }) { innerPadding ->
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(innerPadding),
             state = scrollState,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = innerPadding
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
 
