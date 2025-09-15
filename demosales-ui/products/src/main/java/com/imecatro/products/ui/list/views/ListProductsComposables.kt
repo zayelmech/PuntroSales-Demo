@@ -204,11 +204,7 @@ fun ListOfProducts(
                         },
                         selected = orderList.any { it.isChecked },
                         leadingIcon = {
-                            if (orderList.any { it.isChecked }) {
-                                Icon(Icons.Filled.Done, null)
-                            } else {
-                                Icon(Icons.Filled.ArrowDropDown, null)
-                            }
+                            Icon(painterResource(R.drawable.filter_sorting), null)
                         }
                     )
 
