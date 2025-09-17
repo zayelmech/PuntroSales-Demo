@@ -18,7 +18,8 @@ data class TicketDetailsUiModel(
     val isReadyToPay: Boolean = false,
     val isCancelable: Boolean = false,
     val isDraft : Boolean = true,
-    val isAlreadyPaid : Boolean = false
+    val isAlreadyPaid : Boolean = false,
+    val allProductsWereRefunded : Boolean = false
 ) {
     data class Client(
         val id: Long = 0,

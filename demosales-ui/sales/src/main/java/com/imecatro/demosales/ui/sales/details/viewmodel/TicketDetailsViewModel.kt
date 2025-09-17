@@ -58,7 +58,7 @@ class TicketDetailsViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             updateSaleStatus.invoke(saleId, OrderStatus.CANCEL)
             //re-add stock
-            if (sale.value.status !== OrderStatus.PENDING.str) {
+            if (sale.value.status !== OrderStatus.INITIALIZED.str) {
                 sale.value.list.forEach { product ->
                     // todo creates re-stock use case to avoid logic here
                     addStockUseCase(
@@ -68,6 +68,7 @@ class TicketDetailsViewModel @AssistedInject constructor(
                     )
                 }
             }
+            _sale.update { it.copy(allProductsWereRefunded = true) }
         }
     }
 
