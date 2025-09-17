@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import java.time.Instant
-import java.time.LocalDateTime.now
 import java.time.format.DateTimeFormatter
 
 class ProductsRepositoryImpl(
@@ -90,6 +89,9 @@ class ProductsRepositoryImpl(
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStockAndUpdateProduct(stock = stock)
+
+        if (reference.contains("Stock")) // This will change in future
+            productsDao?.rebuildProductStock(productId)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -105,5 +107,8 @@ class ProductsRepositoryImpl(
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStockAndUpdateProduct(stock = stock)
+
+        if (reference.contains("Stock")) // This will change in future
+            productsDao?.rebuildProductStock(productId)
     }
 }
