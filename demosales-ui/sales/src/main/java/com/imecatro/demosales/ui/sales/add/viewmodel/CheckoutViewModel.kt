@@ -90,32 +90,19 @@ class CheckoutViewModel @AssistedInject constructor(
     /**
      * @param extra is the amount extra that must be added to the total
      */
-    fun onExtraChargeAdded(extra: String) {
-        Log.d("TAG", "onExtraChargeAdded: $extra")
-        // Attempt to parse the string to a Double.
-        // toDoubleOrNull() is safer as it returns null for invalid input.
-        val extraAmount = extra.toDoubleOrNull()
-
-        // Validate the parsed amount.
-        // 1. Check if parsing failed (extraAmount is null).
-        // 2. Check if the amount is negative.
-        if (extraAmount == null || extraAmount < 0) {
-            // Handle invalid input appropriately.
-            // For example, log an error, show a message to the user, etc.
-            println("Invalid extra charge amount: $extra") // Replace with actual error handling
-            return
-        }
+    fun onExtraChargeAdded(extra: Double) {
         updateState {
-            val updatedTicket = ticket.copy(
-                totals = ticket.totals.copy(
-                    extra = extraAmount,
-                    total = ticket.totals.subtotal + extraAmount
-                )
-            )
+            val updatedTicket = ticket.copy(totals = ticket.totals.copy(extra = extra))
             copy(ticket = updatedTicket)
         }
     }
 
+    fun onDiscountAdded(discount: Double) {
+        updateState {
+            val updatedTicket = ticket.copy(totals = ticket.totals.copy(discount = discount))
+            copy(ticket = updatedTicket)
+        }
+    }
 
     fun onCheckoutAction() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -232,6 +219,7 @@ private fun List<ClientDomainModel>.toUi(): List<ClientResultUiModel> {
 private fun SaleChargeUiModel.toDomain(): SaleDomainModel.Costs {
     return SaleDomainModel.Costs(
         extraCost = this.extra,
+        discount = this.discount,
         subTotal = this.subtotal,
         total = this.total
     )

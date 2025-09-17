@@ -1,6 +1,5 @@
 package com.imecatro.demosales.ui.sales.add.screens
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,11 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +50,6 @@ import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
-import com.imecatro.demosales.ui.theme.dialogs.InputNumberDialogComposable
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
@@ -127,6 +123,7 @@ fun CheckoutTicketComposable(
                         .sizeIn(maxWidth = 150.dp),
                     value = extra,
                     onValueChange = onExtraChange,
+                    prefix = {Text(text = "+")},
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
                     visualTransformation = CurrencyVisualTransformation(),
@@ -134,22 +131,23 @@ fun CheckoutTicketComposable(
                 )
             }
             Spacer(modifier = Modifier.size(5.dp))
-//
-//            Row(verticalAlignment = Alignment.CenterVertically) {
-//                Text(text = "Discount")
-//                Spacer(modifier = Modifier.weight(1f))
-//
-//                OutlinedTextField(
-//                    modifier = Modifier
-//                        .sizeIn(maxWidth = 150.dp),
-//                    value = discount,
-//                    onValueChange = onDiscountChange,
-//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//                    textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
-//                    visualTransformation = CurrencyVisualTransformation(),
-//                    singleLine = true
-//                )
-//            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Discount")
+                Spacer(modifier = Modifier.weight(1f))
+
+                OutlinedTextField(
+                    modifier = Modifier
+                        .sizeIn(maxWidth = 150.dp),
+                    value = discount,
+                    onValueChange = onDiscountChange,
+                    prefix = {Text(text = "-")},
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
+                    visualTransformation = CurrencyVisualTransformation(),
+                    singleLine = true
+                )
+            }
             Spacer(modifier = Modifier.size(10.dp))
 
             HorizontalDivider()
@@ -221,8 +219,14 @@ fun CheckoutTicketComposableImpl(
         snapshotFlow { extra }
             .debounce(300)
             .collect {
-                val extraCharge = Money.toDouble(it)
-                checkoutViewModel.onExtraChargeAdded(extraCharge.toString())
+                checkoutViewModel.onExtraChargeAdded(Money.toDouble(it))
+            }
+    }
+    LaunchedEffect(discount) {
+        snapshotFlow { discount }
+            .debounce(300)
+            .collect {
+                checkoutViewModel.onDiscountAdded(Money.toDouble(it))
             }
     }
     CheckoutTicketComposable(

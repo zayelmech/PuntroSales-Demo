@@ -14,11 +14,13 @@ data class SaleUiModel(
 )
 
 data class SaleChargeUiModel(
-    var subtotal: Double,
-    var shippingCost: Double,
-    var tax: Double,
-    var extra: Double,
-    var total: Double
-)
+    var subtotal: Double = 0.0,
+    var shippingCost: Double = 0.0,
+    var tax: Double = 0.0,
+    val discount: Double = 0.0,
+    var extra: Double = 0.0
+) {
+    val total get() = subtotal + shippingCost + tax - discount + extra
+}
 
 

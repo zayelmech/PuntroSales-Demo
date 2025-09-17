@@ -48,7 +48,7 @@ fun SearchClientBottomSheet(
         modifier = Modifier
             .fillMaxWidth()
             .sizeIn(minHeight = 300.dp)
-            .padding(5.dp)
+            .padding(horizontal = 5.dp)
     ) {
         OutlinedTextField(
             value = searchEngineUiModel.query,

@@ -153,13 +153,21 @@ fun ResumeTicketScreen(
 
             // Extra
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Extra")
+                Text(stringResource(R.string.txt_extra))
                 Spacer(Modifier.weight(1f))
-                Text(ticketDetails.extra.formatAsCurrency())
+                Text("+ " + ticketDetails.extra.formatAsCurrency())
             }
+
+            // Discount
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.txt_discount))
+                Spacer(Modifier.weight(1f))
+                Text("- " + ticketDetails.discount.formatAsCurrency())
+            }
+
             // Total
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Total")
+                Text(stringResource(R.string.txt_total))
                 Spacer(Modifier.weight(1f))
                 Text(ticketDetails.total.formatAsCurrency())
             }

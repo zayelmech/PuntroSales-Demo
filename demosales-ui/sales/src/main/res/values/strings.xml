@@ -5,4 +5,7 @@
     <string name="txt_filter_state">Status</string>
     <string name="txt_filter_date">Date</string>
     <string name="delete_item_message">Do you want to remove this item from ticket: %1s ?</string>
+    <string name="txt_discount">Discount</string>
+    <string name="txt_extra">Extra</string>
+    <string name="txt_total">Total</string>
 </resources>
