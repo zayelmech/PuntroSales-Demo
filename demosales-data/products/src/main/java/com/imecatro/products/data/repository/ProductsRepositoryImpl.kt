@@ -78,7 +78,7 @@ class ProductsRepositoryImpl(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun addStock(reference: String, productId: Long, amount: Double) {
+    override suspend fun addStock(reference: String, productId: Long, amount: Double) {
         val now = Instant.now()
         val dateIso = DateTimeFormatter.ISO_INSTANT.format(now) // e.g. "2025-08-24T01:23:45Z"
 
@@ -89,14 +89,11 @@ class ProductsRepositoryImpl(
             date = dateIso,// ISO-8601 UTC → ideal for filtering/sorting
             timeStamp = System.currentTimeMillis().toString()
         )
-        productsDao?.addStock(stock = stock)
-        val currentQty: Double =
-            productsDao?.getProductStockHistory(productId)?.sumOf { it.amount } ?: 0.0
-        productsDao?.updateProductStock(currentQty, productId)
+        productsDao?.addStockAndUpdateProduct(stock = stock)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun removeStock(reference: String, productId: Long, amount: Double) {
+    override suspend fun removeStock(reference: String, productId: Long, amount: Double) {
         val now = Instant.now()
         val dateIso = DateTimeFormatter.ISO_INSTANT.format(now) // e.g. "2025-08-24T01:23:45Z"
 
@@ -107,9 +104,6 @@ class ProductsRepositoryImpl(
             date = dateIso,// ISO-8601 UTC → ideal for filtering/sorting
             timeStamp = System.currentTimeMillis().toString()
         )
-        productsDao?.addStock(stock = stock)
-        val currentQty: Double =
-            productsDao?.getProductStockHistory(productId)?.sumOf { it.amount } ?: 0.0
-        productsDao?.updateProductStock(currentQty, productId)
+        productsDao?.addStockAndUpdateProduct(stock = stock)
     }
 }

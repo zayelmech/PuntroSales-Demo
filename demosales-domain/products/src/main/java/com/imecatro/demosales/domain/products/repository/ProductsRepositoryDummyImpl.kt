@@ -46,12 +46,19 @@ class ProductsRepositoryDummyImpl(
         TODO("Not yet implemented")
     }
 
-
-    override fun addStock(reference: String, productId: Long, amount: Double) {
+    override suspend fun addStock(
+        reference: String,
+        productId: Long,
+        amount: Double
+    ) {
         TODO("Not yet implemented")
     }
 
-    override fun removeStock(reference: String, productId: Long, amount: Double) {
+    override suspend fun removeStock(
+        reference: String,
+        productId: Long,
+        amount: Double
+    ) {
         TODO("Not yet implemented")
     }
 

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.imecatro.products.data.model.ProductRoomEntity
 import com.imecatro.products.data.model.StockRoomEntity
@@ -42,4 +43,16 @@ interface ProductsDao {
 
     @Query("UPDATE products_table SET stock = :newStock WHERE id = :id")
     fun updateProductStock(newStock : Double, id: Long)
+
+    @Query("UPDATE products_table SET stock = stock + :delta WHERE id = :productId")
+    suspend fun bumpProductStock(productId: Long, delta: Double)
+
+    // --- API pública: UNA sola transacción ---
+    @Transaction
+    suspend fun addStockAndUpdateProduct(stock: StockRoomEntity) {
+        // 1) Inserta el movimiento de inventario (positivo o negativo)
+        addStock(stock)
+        // 2) Ajusta el stock acumulado del producto
+        bumpProductStock(stock.productId, stock.amount)
+    }
 }
