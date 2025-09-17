@@ -51,11 +51,11 @@ class ProductsViewModel @Inject constructor(
                 val orderSelected: OrderedFilterUiModel = filters.first { it.isChecked }
 
                 when (orderSelected.type) {
-                    OrderedFilterUiModel.Type.NAME -> products.sortedBy { filter -> filter.name }
+                    OrderedFilterUiModel.Type.NAME -> products.sortedBy { filter -> filter.name?.lowercase() }
                     OrderedFilterUiModel.Type.PRICE -> products.sortedBy { filter -> filter.price }
                     OrderedFilterUiModel.Type.STOCK -> products.sortedBy { filter -> filter.stock }
                     OrderedFilterUiModel.Type.DATE -> products.sortedBy { filter -> filter.id }
-                    OrderedFilterUiModel.Type.NAME_INVERSE -> products.sortedByDescending { filter -> filter.name }
+                    OrderedFilterUiModel.Type.NAME_INVERSE -> products.sortedByDescending { filter -> filter.name?.lowercase() }
                     OrderedFilterUiModel.Type.PRICE_INVERSE -> products.sortedByDescending { filter -> filter.price }
                     OrderedFilterUiModel.Type.STOCK_INVERSE -> products.sortedByDescending { filter -> filter.stock }
                     OrderedFilterUiModel.Type.DATE_INVERSE -> products.sortedByDescending { filter -> filter.id }

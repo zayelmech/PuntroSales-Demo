@@ -18,5 +18,6 @@
     <string name="filter_price_low_to_high">Price High to Low</string>
     <string name="filter_stock_low_to_high">Stock Low to High</string>
     <string name="filter_stock_high_to_low">Stock High to Low</string>
-    <string name="filter_created_date_new_to_old">Creation date old to new</string>
+    <string name="filter_created_date_new_to_old">Creation date new to old</string>
+    <string name="filter_created_date_old_to_new">Creation date old to new</string>
 </resources>

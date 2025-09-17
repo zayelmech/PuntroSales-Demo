@@ -18,7 +18,7 @@ data class OrderedFilterUiModel(
             OrderedFilterUiModel(R.string.filter_stock_low_to_high, type = Type.STOCK),
             OrderedFilterUiModel(R.string.filter_stock_high_to_low, type = Type.STOCK_INVERSE),
             OrderedFilterUiModel(R.string.filter_created_date_new_to_old, type = Type.DATE_INVERSE),
-            OrderedFilterUiModel(R.string.filter_created_date_new_to_old, true, type = Type.DATE)
+            OrderedFilterUiModel(R.string.filter_created_date_old_to_new, true, type = Type.DATE)
         )
     }
 
