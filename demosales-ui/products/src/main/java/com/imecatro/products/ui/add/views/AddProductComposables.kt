@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -118,17 +119,19 @@ fun AddProductComposable(
                         painter = rememberAsyncImagePainter(
                             ImageRequest.Builder(context)
                                 .data(uri)
+                                .placeholder(R.drawable.baseline_add_photo_alternate_24)
                                 .error(R.drawable.baseline_add_photo_alternate_24)
                                 .crossfade(true)
                                 .build()
                         ),
                         contentDescription = null,
                         modifier = Modifier
-                            .sizeIn(maxWidth = 150.dp)
+                            .sizeIn(maxWidth = 100.dp)
                             .fillMaxSize()
                             .clip(RoundedCornerShape(25)),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
+                    Spacer(modifier = Modifier.width(20.dp))
                     Column {
                         FilledTonalButton(onClick = { onPickImage() }) {
                             Icon(painterResource(R.drawable.gallery_images), null)

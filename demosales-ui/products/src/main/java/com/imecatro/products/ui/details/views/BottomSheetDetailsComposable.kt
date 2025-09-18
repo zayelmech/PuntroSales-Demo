@@ -36,7 +36,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +55,8 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
+import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
+import com.imecatro.demosales.ui.theme.dialogs.DialogType
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
@@ -80,8 +85,10 @@ fun DetailsComposableStateImpl(
     val pagerState = rememberPagerState(initialPage = 0) { titles.size }
     val scope = rememberCoroutineScope()
 
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Column(Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text(text = "Product Details")}, navigationIcon = {
+        TopAppBar(title = { Text(text = "Product Details") }, navigationIcon = {
             IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, null) }
         })
         PrimaryTabRow(
@@ -117,9 +124,10 @@ fun DetailsComposableStateImpl(
             when (page) {
                 0 -> DetailsComposable(
                     productDetails = productSelected,
-                    onDeleteClicked = { productDetailsViewModel.onDeleteAction() },
+                    onDeleteClicked = { showDeleteDialog = true },
                     onEditClicked = onNavigateToEdit
                 )
+
                 1 -> StockComposable(
                     stock = productSelected.stockQty,
                     cost = productSelected.stockPrice,
@@ -130,7 +138,19 @@ fun DetailsComposableStateImpl(
             }
         }
     }
-
+    if (showDeleteDialog)
+        ActionDialog(
+            dialogType = DialogType.Delete,
+            message =
+                stringResource(
+                    R.string.delete_product_message),
+            onDismissRequest = {
+                showDeleteDialog = false
+            },
+            onConfirmClicked = {
+                showDeleteDialog = false
+                productDetailsViewModel.onDeleteAction()
+            })
 
 }
 
@@ -191,7 +211,7 @@ fun DetailsComposable(
                     style = MaterialTheme.typography.headlineSmall
                 )
                 //price
-                val locale : Locale = Locale.getDefault()
+                val locale: Locale = Locale.getDefault()
                 val currency = Currency.getInstance(locale)
                 Text(
                     text = "${productDetails?.price?.formatAsCurrency() ?: "0.00"} ${productDetails?.currency ?: currency.symbol}",
