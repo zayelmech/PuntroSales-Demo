@@ -1,6 +1,7 @@
 package com.imecatro.products.ui.list.viewmodels
 
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.text.lowercase
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
@@ -42,25 +45,16 @@ class ProductsViewModel @Inject constructor(
         productsRepository.getAllProducts()
             .onStart {
                 updateState { copy(isFetchingProducts = true) }
-            }.onEach {
-                updateState { copy(isFetchingProducts = false) }
             }
             .combine(filtersState) { products, filters ->
                 // Filter by order
-                val orderSelected: OrderedFilterUiModel = filters.first { it.isChecked }
-
-                when (orderSelected.type) {
-                    OrderedFilterUiModel.Type.NAME -> products.sortedBy { filter -> filter.name?.lowercase() }
-                    OrderedFilterUiModel.Type.PRICE -> products.sortedBy{ filter -> filter.price }
-                    OrderedFilterUiModel.Type.STOCK -> products.sortedBy { filter -> filter.stock.quantity }
-                    OrderedFilterUiModel.Type.DATE -> products.sortedBy { filter -> filter.id }
-                    OrderedFilterUiModel.Type.NAME_INVERSE -> products.sortedByDescending { filter -> filter.name?.lowercase() }
-                    OrderedFilterUiModel.Type.PRICE_INVERSE -> products.sortedByDescending { filter -> filter.price }
-                    OrderedFilterUiModel.Type.STOCK_INVERSE -> products.sortedByDescending { filter -> filter.stock.quantity }
-                    OrderedFilterUiModel.Type.DATE_INVERSE -> products.sortedByDescending { filter -> filter.id }
-                }
+                applyOrderFilter(products, filters)
             }
             .map { it.toProductUiModel() }
+            .onEach {
+                updateState { copy(isFetchingProducts = false) }
+            }
+            .flowOn(Dispatchers.Default) // Perform combine and map on Default dispatcher
             .catch {
                 updateState { copy(isFetchingProducts = false) }
 
@@ -69,7 +63,25 @@ class ProductsViewModel @Inject constructor(
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
+    private fun applyOrderFilter(
+        products: List<ProductDomainModel>, // Assuming products from repository are Domain models
+        filters: List<OrderedFilterUiModel>
+    ): List<ProductDomainModel> {
+        val orderSelected: OrderedFilterUiModel? = filters.firstOrNull { it.isChecked }
 
+        return orderSelected?.let { selectedFilter ->
+            when (selectedFilter.type) {
+                OrderedFilterUiModel.Type.NAME -> products.sortedBy { it.name?.lowercase() }
+                OrderedFilterUiModel.Type.PRICE -> products.sortedBy { it.price }
+                OrderedFilterUiModel.Type.STOCK -> products.sortedBy { it.stock.quantity }
+                OrderedFilterUiModel.Type.DATE -> products.sortedBy { it.id } // Consider if 'id' is appropriate for date sorting
+                OrderedFilterUiModel.Type.NAME_INVERSE -> products.sortedByDescending { it.name?.lowercase() }
+                OrderedFilterUiModel.Type.PRICE_INVERSE -> products.sortedByDescending { it.price }
+                OrderedFilterUiModel.Type.STOCK_INVERSE -> products.sortedByDescending { it.stock.quantity }
+                OrderedFilterUiModel.Type.DATE_INVERSE -> products.sortedByDescending { it.id } // Same consideration for 'id'
+            }
+        } ?: products // Return original list if no filter is selected or if orderSelected is null
+    }
     fun onSearchAction(query: String) {
         viewModelScope.launch(iODispatcher) {
 
