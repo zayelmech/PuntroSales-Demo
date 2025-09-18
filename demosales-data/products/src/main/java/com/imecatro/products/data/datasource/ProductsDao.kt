@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.imecatro.products.data.model.ProductAnCategoryDetailsRoomModel
+import com.imecatro.products.data.model.ProductFullDetailsRoomModel
 import com.imecatro.products.data.model.ProductRoomEntity
 import com.imecatro.products.data.model.StockRoomEntity
 import kotlinx.coroutines.flow.Flow
@@ -17,8 +19,17 @@ interface ProductsDao {
     fun addProduct(product: ProductRoomEntity): Long
 
 
+    @Deprecated("Use [getProductsFullDetailsByd] instead")
     @Query("SELECT * FROM products_table ORDER BY id")
     fun getAllProducts(): Flow<List<ProductRoomEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM products_table ORDER BY name")
+    fun getProductsWithCategories(): Flow<List<ProductAnCategoryDetailsRoomModel>>
+
+    @Transaction
+    @Query("SELECT * FROM products_table WHERE id = :id ORDER BY name")
+    fun getProductFullDetailsByd(id: Long): ProductFullDetailsRoomModel
 
     @Query("DELETE FROM products_table WHERE id = :id")
     fun deleteProductById(id: Long)

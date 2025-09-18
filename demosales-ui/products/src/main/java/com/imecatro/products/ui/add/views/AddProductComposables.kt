@@ -35,14 +35,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -53,12 +52,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.DropListPicker
-import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.createImageFile
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
+import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
@@ -68,6 +67,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:width=1280dp,height=800dp,dpi=240")
 @Composable
 fun AddProductComposable(
     uri: Uri? = null,
@@ -83,6 +83,10 @@ fun AddProductComposable(
     unitList: List<String> = emptyList(),
     unitPicked: String = "",
     onUnitPicked: (String) -> Unit = {},
+    categories: List<String> = emptyList(),
+    categoryPicked: String = "",
+    onCategoryPicked: (String) -> Unit = {},
+    onAddNewCategory: () -> Unit = {},
     stock: String = "",
     onStockChange: (String) -> Unit = {},
     isEditMode: Boolean = false,
@@ -113,7 +117,7 @@ fun AddProductComposable(
             )
             Column(modifier = Modifier.padding(10.dp)) {
 
-                Text(text = "Image", style = Typography.labelMedium)
+                Text(text = "Image", style = MaterialTheme.typography.labelLarge)
                 Row(Modifier.height(100.dp)) {
                     Image(
                         painter = rememberAsyncImagePainter(
@@ -147,7 +151,7 @@ fun AddProductComposable(
                     }
                 }
 
-                Text(text = "Product name", style = Typography.labelMedium)
+                Text(text = "Product name", style = MaterialTheme.typography.labelLarge)
                 OutlinedTextField(
                     value = productName,
                     supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_name_txt)) },
@@ -155,62 +159,62 @@ fun AddProductComposable(
                     onValueChange = onProductNameChange
                 )
 
-                Text(text = "Price", style = Typography.labelMedium)
-                Row(verticalAlignment = Alignment.Top) {
-                    OutlinedTextField(
-                        value = productPrice,
-                        onValueChange = onProductPriceChange,
-                        placeholder = { Text("0.0".formatAsCurrency()) },
-                        supportingText = { if (productPrice.isBlank()) Text(stringResource(R.string.supporting_price_txt)) },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f),
-                        visualTransformation = CurrencyVisualTransformation(),
-                        suffix = { Text(currencyPicked) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
+                Text(text = "Price", style = MaterialTheme.typography.labelLarge)
+                OutlinedTextField(
+                    value = productPrice,
+                    onValueChange = onProductPriceChange,
+                    placeholder = { Text("0.0".formatAsCurrency()) },
+                    supportingText = { if (productPrice.isBlank()) Text(stringResource(R.string.supporting_price_txt)) },
+                    singleLine = true,
+                    modifier = Modifier.sizeIn(minWidth = 150.dp),
+                    visualTransformation = CurrencyVisualTransformation(),
+                    suffix = { Text(currencyPicked) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
 
-// This is not needed so far, be might change in future
-//                    DropListPicker(
-//                        currencyList, currencyPicked
-//                    ) { currency ->
-//                        onCurrencyChange(currency)
-//                    }
-
-                }
-                Text(text = "Unit", style = Typography.labelMedium)
-
-
-                DropListPicker(
-                    unitList, unitPicked
-                ) { unitPicked ->
-                    onUnitPicked(unitPicked)
-                }
-                Text(text = "Stock", style = Typography.labelMedium)
+                Text(text = "Stock", style = MaterialTheme.typography.labelLarge)
                 OutlinedTextField(
                     enabled = !isEditMode,
                     value = stock,
                     placeholder = { Text("0.0") },
                     supportingText = { if (stock.isBlank()) Text(stringResource(R.string.supporting_stock_txt)) },
                     singleLine = true,
+                    modifier = Modifier.sizeIn(minWidth = 150.dp),
                     onValueChange = onStockChange,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
-                //Details
-                Text(text = "Details", style = Typography.labelMedium)
-                HorizontalDivider(
-                    modifier = Modifier.padding(0.dp, 5.dp),
-                    thickness = 2.dp,
-                    color = Color.LightGray
-                )
+                Row {
+                    Column {
+                        Text(text = "Unit", style = MaterialTheme.typography.labelLarge)
+                        DropListPicker(
+                            unitList, unitPicked
+                        ) { unitPicked ->
+                            onUnitPicked(unitPicked)
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Column {
+                        Text(text = "Category", style = MaterialTheme.typography.labelLarge)
+                        DropListPicker(
+                            categories, categoryPicked, onAddItem = onAddNewCategory
+                        ) { category ->
+                            onCategoryPicked(category)
+                        }
+                    }
 
+                }
+
+                //Details
+                Text(text = "Details", style = MaterialTheme.typography.labelLarge)
+                HorizontalDivider(modifier = Modifier.padding(0.dp, 5.dp), thickness = 2.dp)
 
                 OutlinedTextField(
                     value = detailsText,
                     onValueChange = onDetailsChange,
                     singleLine = false,
                     modifier = Modifier
-                        .height(100.dp)
+                        .sizeIn(maxWidth = 500.dp, minHeight = 100.dp)
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(60.dp))
@@ -284,7 +288,6 @@ fun AddProductComposableStateImpl(
     }
 
 
-
     var productName by remember {
         mutableStateOf("")
     }
@@ -298,6 +301,11 @@ fun AddProductComposableStateImpl(
     var unitSelected by remember {
         mutableStateOf("pz")
     }
+
+    var showAddNewCategory by remember {
+        mutableStateOf(false)
+    }
+
     var details by remember {
         mutableStateOf("")
     }
@@ -314,7 +322,7 @@ fun AddProductComposableStateImpl(
         buttonEnableState = true
     }
 
-
+    val uiState by addViewModel.uiState.collectAsState()
 
     AddProductComposable(
         uri = imageUri,
@@ -330,6 +338,10 @@ fun AddProductComposableStateImpl(
         unitList = addViewModel.getUnities(),
         unitPicked = unitSelected,
         onUnitPicked = { unitSelected = it },
+        categories = uiState.categories,
+        categoryPicked = uiState.category,
+        onCategoryPicked = { addViewModel.onCategoryPicked(it) },
+        onAddNewCategory = { showAddNewCategory = true },
         detailsText = details,
         onDetailsChange = { details = it },
         buttonSaveState = buttonEnableState,
@@ -346,9 +358,20 @@ fun AddProductComposableStateImpl(
                 unit = unitSelected,
                 imageUri = imageUri,
                 details = details,
-                stock = stock
+                stock = stock,
+                category = uiState.category
             )
         )
         onSaveAction()
+    }
+
+    if (showAddNewCategory) {
+        InputTextDialogComposable(
+            supportingMessage = stringResource(R.string.add_new_category)
+        ) {
+            addViewModel.onAddCategory(it)
+            showAddNewCategory = false
+        }
+
     }
 }

@@ -10,7 +10,7 @@ import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
-import com.imecatro.demosales.domain.products.search.GetProductsLikeUseCase
+import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase

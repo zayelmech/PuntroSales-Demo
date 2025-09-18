@@ -1,4 +1,4 @@
-package com.imecatro.demosales.domain.products.search
+package com.imecatro.demosales.domain.products.usecases
 
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository

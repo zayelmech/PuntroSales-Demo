@@ -3,55 +3,63 @@ package com.imecatro.products.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
+import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
+import com.imecatro.products.data.datasource.CategoriesDao
 import com.imecatro.products.data.datasource.ProductsDao
+import com.imecatro.products.data.mappers.toCategoryListDomain
 import com.imecatro.products.data.mappers.toData
 import com.imecatro.products.data.mappers.toDomain
-import com.imecatro.products.data.mappers.toListDomain
+import com.imecatro.products.data.mappers.toProductListDomain
+import com.imecatro.products.data.mappers.toProductsListDomain
+import com.imecatro.products.data.model.CategoryRoomEntity
 import com.imecatro.products.data.model.StockRoomEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 class ProductsRepositoryImpl(
-    private val productsDao: ProductsDao?
+    private val productsDao: ProductsDao?,
+    private val categoriesDao: CategoriesDao?
 ) : ProductsRepository {
 
     @WorkerThread
-    override fun addProduct(product: ProductDomainModel?) {
-        product?.let {
-            val productId = productsDao?.addProduct(product = it.toData())
+    override suspend fun addProduct(product: ProductDomainModel) {
 
-            val stock = StockRoomEntity(
-                productId = productId ?: 0L,
-                description = "Initial Stock",
-                amount = product.stock.quantity,
-                date = "",
-                timeStamp = System.currentTimeMillis().toString()
-            )
-            productsDao?.addStock(stock = stock)
-        }
-        //TODO implement error
+        val productId = productsDao?.addProduct(product = product.toData())
+
+        val stock = StockRoomEntity(
+            productId = productId ?: 0L,
+            description = "Initial Stock",
+            amount = product.stock.quantity,
+            date = "",
+            timeStamp = System.currentTimeMillis().toString()
+        )
+        productsDao?.addStock(stock = stock)
+
+        val categoryName = product.category?.name
+        if (categoryName.isNullOrBlank()) return
+
+        val category = categoriesDao?.getCategoryByName(categoryName)
+
+        if (category != null && category.id > 0 && productId != null)
+            categoriesDao.assignCategory(productId, category.id)
     }
 
-//    private var allProducts: List<ProductDomainModel> = listOf()
+    override fun getAllProducts(): Flow<List<ProductDomainModel>> =
+        productsDao?.getProductsWithCategories()?.map { it.toProductListDomain() } ?: emptyFlow()
 
-    override fun getAllProducts(): Flow<List<ProductDomainModel>> {
-        if (productsDao == null) throw IOException("DAO ENGINE NOT INITIALIZED")
-
-        return productsDao.getAllProducts().map { it.toListDomain() }
-    }
-
-    override fun deleteProductById(id: Long) {
+    override suspend fun deleteProductById(id: Long) {
         productsDao?.deleteProductById(id)
     }
 
 
     @WorkerThread
-    override fun updateProduct(product: ProductDomainModel?) {
+    override suspend fun updateProduct(product: ProductDomainModel?) {
         product?.let {
             val currentStock: Double =
                 productsDao?.getProductStockHistory(product.id!!)?.sumOf { c -> c.amount } ?: 0.0
@@ -60,11 +68,9 @@ class ProductsRepositoryImpl(
         //TODO implement error null
     }
 
-    override fun getProductDetailsById(id: Long): ProductDomainModel? {
-        try {
-            val basicDetails = productsDao?.getProductDetailsById(id)
-            val stock = productsDao?.getProductStockHistory(id)
-            return basicDetails?.toDomain(stock ?: emptyList())
+    override suspend fun getProductDetailsById(id: Long): ProductDomainModel? {
+        return try {
+            productsDao?.getProductFullDetailsByd(id)?.toDomain()
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -73,7 +79,7 @@ class ProductsRepositoryImpl(
 
     override fun searchProducts(letter: String): Flow<List<ProductDomainModel>> {
         if (productsDao == null) throw IOException("DAO ENGINE NOT INITIALIZED")
-        return productsDao.searchProducts(letter).map { it.toListDomain() }
+        return productsDao.searchProducts(letter).map { it.toProductsListDomain() }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -110,5 +116,19 @@ class ProductsRepositoryImpl(
 
         if (reference.contains("Stock")) // This will change in future
             productsDao?.rebuildProductStock(productId)
+    }
+
+    override val categories: Flow<List<ProductCategoryDomainModel>>
+        get() = categoriesDao?.getAll()?.map { it.toCategoryListDomain() } ?: emptyFlow()
+
+    override suspend fun addCategory(category: ProductCategoryDomainModel): Long {
+        if (category.name.isBlank()) return 0L
+        val id = categoriesDao?.insertCategory(CategoryRoomEntity(name = category.name))
+        return id ?: 0L
+    }
+
+    override suspend fun updateCategory(category: ProductCategoryDomainModel) {
+        if (category.id == null) return
+        categoriesDao?.updateCategory(CategoryRoomEntity(id = category.id!!, name = category.name))
     }
 }

@@ -14,73 +14,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/**
- * @param value: String
- * @param listener: (String) -> Unit
- * @param prompt: String
- */
-@Preview(showBackground = true)
-@Composable
-fun TextFieldCompose(
-    value: String = "Write here!",
-    listener: (String) -> Unit = {},
-    prompt: String = ""
-) {
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = { listener(it) },
-        label = {
-            Text(
-                text = prompt,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        },
-        modifier = Modifier
-            .height(60.dp),
-        shape = RoundedCornerShape(2),
-        singleLine = true
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ButtonFancy(
-    text: String = "Click here!",
-    color: Color = MaterialTheme.colorScheme.primary,
-    paddingX: Dp = 10.dp,
-    icon: ImageVector? = Icons.Filled.Edit,
-    enable: Boolean = true,
-    onClicked: () -> Unit = {}
-) {
-    Button(
-        onClick = { onClicked() },
-        modifier = Modifier
-            .sizeIn(minWidth = 100.dp, maxWidth = 320.dp)
-            .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = color),
-        shape = RoundedCornerShape(50),
-        enabled = enable
-    ) {
-        icon?.let { imageVector ->
-            Icon(
-                imageVector = imageVector,
-                contentDescription = null,
-//                tint = Color.White,
-                modifier = Modifier.padding(4.dp)
-            )
-        }
-        Text(text = text, style = MaterialTheme.typography.labelLarge)
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
 fun DropListPicker(
     list: List<String> = listOf(),
     itemSelected: String = "hey",
-    // expanded: Boolean = false,
-//    onExpanded: () -> Unit,
+    onAddItem : (() -> Unit)? = null,
     onItemClicked: (String) -> Unit = {}
 ) {
 
@@ -136,6 +76,22 @@ fun DropListPicker(
                     HorizontalDivider()
                 }
 
+            }
+            if (onAddItem != null) {
+                DropdownMenuItem(
+                    text = { Text("Add") },
+                    onClick = {
+                        expanded = false
+                        onAddItem()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = null
+                        )
+                    },
+                    modifier = Modifier.padding(0.5.dp)
+                )
             }
         }
     }

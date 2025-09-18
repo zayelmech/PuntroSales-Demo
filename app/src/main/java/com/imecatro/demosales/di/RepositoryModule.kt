@@ -14,6 +14,7 @@ import com.imecatro.demosales.domain.sales.add.repository.AddSaleDummyRepoImpl
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
+import com.imecatro.products.data.datasource.CategoriesDao
 import com.imecatro.products.data.datasource.ProductsDao
 import dagger.Binds
 import dagger.Module
@@ -28,8 +29,8 @@ class RepositoryModule {
 
 
     @Provides
-    fun provideRoomRepositoryImplementation(dao: ProductsDao): ProductsRepository =
-        ProductsRepositoryImpl(dao)
+    fun provideRoomRepositoryImplementation(dao: ProductsDao, categories : CategoriesDao): ProductsRepository =
+        ProductsRepositoryImpl(dao, categories)
 
     @Provides
     fun providesSalesListRepository(

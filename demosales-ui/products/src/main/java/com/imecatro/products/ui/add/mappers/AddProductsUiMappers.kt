@@ -1,11 +1,12 @@
 package com.imecatro.products.ui.add.mappers
 
+import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.products.ui.add.model.AddProductUiModel
 
 //Design patter : Adapter
-internal fun AddProductUiModel.toDomain(): ProductDomainModel? {
+internal fun AddProductUiModel.toDomain(): ProductDomainModel {
 
     return ProductDomainModel(
         id = null,
@@ -15,7 +16,8 @@ internal fun AddProductUiModel.toDomain(): ProductDomainModel? {
         unit = this.unit,
         details = this.details,
         imageUri = this.imageUri?.toString(),
-        stock = ProductStockDomainModel(quantity = this.stock.filter { it.isDigit() || it == '.' }.toDouble(), cost = 0.0, history = emptyList())
+        stock = ProductStockDomainModel(quantity = this.stock.filter { it.isDigit() || it == '.' }.toDouble(), cost = 0.0, history = emptyList()),
+        category = ProductCategoryDomainModel(name = this.category)
 
     )
 }

@@ -15,6 +15,7 @@ data class ProductDetailsUiModel(
     val stockQty: String,
     val stockPrice: String,
     val stockHistory: List<History>,
+    val categoryName: String,
     val productDeleted : Boolean = false,
 ) : UiState {
 
@@ -47,7 +48,8 @@ data class ProductDetailsUiModel(
                 "",
                 stockQty = "0.0",
                 stockPrice = "0",
-                emptyList()
+                emptyList(),
+                ""
             )
     }
 }

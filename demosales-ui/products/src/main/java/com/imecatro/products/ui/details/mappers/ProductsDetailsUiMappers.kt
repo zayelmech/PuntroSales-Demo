@@ -16,7 +16,8 @@ fun ProductDomainModel.toUiModel(): ProductDetailsUiModel {
         details = this.details,
         stockQty = "${this.stock.quantity}",
         stockPrice = "${this.stock.cost}",
-        stockHistory = this.stock.history.toUi()
+        stockHistory = this.stock.history.toUi(),
+        categoryName = this.category?.name?:""
     )
 }
 

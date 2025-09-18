@@ -3,6 +3,7 @@ package com.imecatro.products.ui.details.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -206,10 +207,13 @@ fun DetailsComposable(
                     style = MaterialTheme.typography.headlineMedium
                 )
                 //pz
-                Text(
-                    text = productDetails?.unit ?: "",
-                    style = MaterialTheme.typography.headlineSmall
-                )
+                Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(
+                        text = productDetails?.unit ?: "",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                    Text(text = productDetails?.categoryName?:"",style = MaterialTheme.typography.labelMedium)
+                }
                 //price
                 val locale: Locale = Locale.getDefault()
                 val currency = Currency.getInstance(locale)
@@ -290,6 +294,7 @@ fun PreviewWordsListDetailsCompose() {
                     "details",
                     stockQty = "0.0",
                     stockHistory = emptyList(),
+                    categoryName = "ca",
                     stockPrice = "0"
                 ),
                 onDeleteClicked = { /*TODO*/ }) {
