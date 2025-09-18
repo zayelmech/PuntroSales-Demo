@@ -25,7 +25,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
@@ -72,6 +74,7 @@ import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.products.ui.R
+import com.imecatro.products.ui.list.model.CategoriesFilter
 import com.imecatro.products.ui.list.model.OrderedFilterUiModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
@@ -92,6 +95,8 @@ fun ListOfProducts(
     searchList: List<ProductUiModel> = emptyList(),
     orderList: List<OrderedFilterUiModel> = OrderedFilterUiModel.filters,
     onCheckedChange: (OrderedFilterUiModel) -> Unit = {},
+    categories: List<CategoriesFilter> = emptyList(),
+    onCategoryChecked: (CategoriesFilter) -> Unit = {},
     onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {},
 ) {
@@ -103,6 +108,8 @@ fun ListOfProducts(
     var showFilters by remember { mutableStateOf(false) }
 
     var orderedFilter by remember { mutableStateOf(false) }
+
+    var categoriesFilter by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -188,15 +195,14 @@ fun ListOfProducts(
                 .fillMaxWidth()
                 .padding(innerPadding),
         ) {
-            AnimatedVisibility(visible = showFilters) {
+            AnimatedVisibility(visible = true) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(start = 15.dp)
                         .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.Start,
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
-                    Spacer(modifier = Modifier.size(15.dp))
-
                     FilterChip(
                         onClick = { orderedFilter = true },
                         label = {
@@ -208,6 +214,16 @@ fun ListOfProducts(
                         }
                     )
 
+                    FilterChip(
+                        onClick = { categoriesFilter = true },
+                        label = {
+                            Text("Categories")
+                        },
+                        selected = categories.any { it.isChecked },
+                        leadingIcon = {
+                            Icon(Icons.Default.KeyboardArrowDown, null)
+                        }
+                    )
                 }
             }
             LazyColumn(
@@ -248,6 +264,24 @@ fun ListOfProducts(
                         },
                         headlineContent = {
                             Text(text = stringResource(ordered.text))
+                        }
+                    )
+                }
+            }
+        }
+
+    if (categoriesFilter)
+        ModalBottomSheet(onDismissRequest = { categoriesFilter = false }, sheetState = sheetState) {
+            LazyColumn {
+                items(categories) { category ->
+                    ListItem(
+                        leadingContent = {
+                            Checkbox(checked = category.isChecked, onCheckedChange = {
+                                onCategoryChecked(category)
+                            })
+                        },
+                        headlineContent = {
+                            Text(text = category.text)
                         }
                     )
                 }
@@ -325,6 +359,8 @@ fun ListOfProductsStateImpl(
 
     val filters by productsViewModel.filtersState.collectAsState()
 
+    val categories by productsViewModel.categories.collectAsState()
+
 
     ListOfProducts(
         list = productsList.toMutableStateList(),
@@ -333,6 +369,8 @@ fun ListOfProductsStateImpl(
         onSearchProduct = { productsViewModel.onSearchAction(it) },
         orderList = filters,
         onCheckedChange = { productsViewModel.onFilterChange(it) },
+        categories = categories,
+        onCategoryChecked = {productsViewModel.onFilterCategory(it)},
         onCardClicked = {
             scope.launch { onNavigateAction(it) }
         },

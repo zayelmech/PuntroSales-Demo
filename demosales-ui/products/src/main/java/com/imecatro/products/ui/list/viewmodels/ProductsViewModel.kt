@@ -6,6 +6,7 @@ import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.products.ui.list.mappers.toProductUiModel
+import com.imecatro.products.ui.list.model.CategoriesFilter
 import com.imecatro.products.ui.list.model.OrderedFilterUiModel
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.model.checkElement
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.text.lowercase
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
@@ -41,6 +41,10 @@ class ProductsViewModel @Inject constructor(
 
     val filtersState: StateFlow<List<OrderedFilterUiModel>> = _filtersState.asStateFlow()
 
+    private val _categories: MutableStateFlow<List<CategoriesFilter>> =
+        MutableStateFlow(emptyList())
+    val categories: StateFlow<List<CategoriesFilter>> = _categories.asStateFlow()
+
     val productsList: StateFlow<List<ProductUiModel>> =
         productsRepository.getAllProducts()
             .onStart {
@@ -49,6 +53,9 @@ class ProductsViewModel @Inject constructor(
             .combine(filtersState) { products, filters ->
                 // Filter by order
                 applyOrderFilter(products, filters)
+            }
+            .combine(categories) { products, categories ->
+                applyCategories(products, categories)
             }
             .map { it.toProductUiModel() }
             .onEach {
@@ -82,6 +89,25 @@ class ProductsViewModel @Inject constructor(
             }
         } ?: products // Return original list if no filter is selected or if orderSelected is null
     }
+
+    private fun applyCategories(
+        products: List<ProductDomainModel>, // Assuming products from repository are Domain models
+        filters: List<CategoriesFilter>
+    ): List<ProductDomainModel> {
+        val categoriesChecked = filters.filter { it.isChecked }
+
+        return if (categoriesChecked.isNotEmpty()) {
+            products.filter { product ->
+                categoriesChecked.any { category ->
+                    product.category?.name == category.text
+                }
+            }
+        } else {
+            products
+        }
+    }
+
+
     fun onSearchAction(query: String) {
         viewModelScope.launch(iODispatcher) {
 
@@ -94,6 +120,29 @@ class ProductsViewModel @Inject constructor(
     fun onFilterChange(filter: OrderedFilterUiModel) {
         viewModelScope.launch(iODispatcher) {
             _filtersState.update { it.checkElement(filter) }
+        }
+    }
+
+    fun onFilterCategory(category : CategoriesFilter) {
+        viewModelScope.launch(iODispatcher) {
+            _categories.update { lst ->
+                val index = lst.indexOf(category)
+                lst.mapIndexed { i, categoryFilter ->
+                    if (i == index)
+                        categoryFilter.copy(isChecked = !categoryFilter.isChecked)
+                    else
+                        categoryFilter
+                }
+            }
+        }
+    }
+
+    override fun onStart() {
+        viewModelScope.launch(Dispatchers.IO) {
+            productsRepository.categories.collect { list ->
+                val filter = list.map { CategoriesFilter(it.name, false) }
+                _categories.update { filter }
+            }
         }
     }
 
