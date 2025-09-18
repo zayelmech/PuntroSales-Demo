@@ -1,6 +1,11 @@
 package com.imecatro.products.ui.add.views
 
+import android.Manifest
+import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.net.Uri
+import android.os.Environment
+import androidx.core.content.FileProvider
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -25,10 +30,12 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -38,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -237,10 +245,34 @@ fun AddProductComposableStateImpl(
         mutableStateOf<Uri?>(null)
     }
     val context = LocalContext.current
+    var showSheet by remember { mutableStateOf(false) }
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                // Image capture was successful, do something with the URI
+                imageUri?.let {
+                    context.saveMediaToStorage(it) { uri ->
+                        imageUri = uri
+                    }
+                }
+
+            }
+        }
+    val requestCameraPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission granted, launch camera
+                imageUri = context.createImageFile()
+                cameraLauncher.launch(imageUri!!)
+            } else {
+                // Permission denied
+                // Handle permission denial (e.g., show a message to the user)
+            }
+        }
 
     val launcher = rememberLauncherForActivityResult(
         contract =
-            ActivityResultContracts.GetContent()
+        ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
         uriPicked?.let {
@@ -248,6 +280,20 @@ fun AddProductComposableStateImpl(
                 imageUri = uri
             }
         }
+    }
+
+    if (showSheet) {
+        BottomSheet(onDismiss = { showSheet = false },
+            onTakeImage = {
+                showSheet = false
+                // Check and request camera permission
+                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            },
+            onPickImage = {
+                showSheet = false
+                launcher.launch("image/*")
+            }
+        )
     }
 
 
@@ -284,7 +330,7 @@ fun AddProductComposableStateImpl(
 
     AddProductComposable(
         uri = imageUri,
-        onPickImage = { launcher.launch("image/*") },
+        onPickImage = { showSheet = true },
         productName = productName,
         onProductNameChange = { productName = it },
         productPrice = productPrice,
@@ -316,4 +362,59 @@ fun AddProductComposableStateImpl(
         )
         onSaveAction()
     }
+}
+
+private const val APP_TAG = "CameraDemo"
+private fun Context.createImageFile(): Uri? {
+    // Create an image file name
+    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(java.util.Date())
+    val imageFileName = "JPEG_" + timeStamp + "_"
+    val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val image = java.io.File.createTempFile(
+        imageFileName,  /* prefix */
+        ".jpg",         /* suffix */
+        storageDir      /* directory */
+    )
+    return FileProvider.getUriForFile(this, "${packageName}.fileprovider", image)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheet(
+    onDismiss: () -> Unit,
+    onTakeImage: () -> Unit,
+    onPickImage: () -> Unit
+) {
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            onDismiss()
+        },
+//        sheetState = modalBottomSheetState
+    ) {
+        // Sheet content
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            FilledTonalButton(
+                onClick = {
+                    onTakeImage()
+                }
+            ) {
+                Text("Take Picture")
+            }
+            FilledTonalButton(
+                onClick = {
+                    onPickImage()
+                }
+            ) {
+                Text("Pick Image")
+            }
+        }
+
+    }
+
 }
