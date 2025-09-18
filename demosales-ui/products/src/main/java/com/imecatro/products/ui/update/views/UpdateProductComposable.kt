@@ -1,5 +1,6 @@
 package com.imecatro.products.ui.update.views
 
+import android.Manifest
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.common.Money
+import com.imecatro.demosales.ui.theme.common.createImageFile
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
@@ -45,6 +47,30 @@ fun UpdateProductComposableStateImpl(
         }
     }
 
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                // Image capture was successful, do something with the URI
+                imageUri?.let {
+                    context.saveMediaToStorage(it) { uri ->
+                        imageUri = uri
+                    }
+                }
+
+            }
+        }
+    val requestCameraPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission granted, launch camera
+                imageUri = context.createImageFile()
+                cameraLauncher.launch(imageUri!!)
+            } else {
+                // Permission denied
+                // Handle permission denial (e.g., show a message to the user)
+            }
+        }
+
     var productName by remember {
         mutableStateOf(updateProductUiModel?.name)
     }
@@ -69,6 +95,7 @@ fun UpdateProductComposableStateImpl(
     AddProductComposable(
         uri = imageUri,
         onPickImage = { launcher.launch("image/*") },
+        onTakePhoto = { requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
         productName = productName ?: "Loading...",
         onProductNameChange = { productName = it },
         productPrice = productPrice ?: "0.00",

@@ -1,17 +1,11 @@
 package com.imecatro.products.ui.add.views
 
 import android.Manifest
-import android.content.Context
-import android.icu.text.SimpleDateFormat
 import android.net.Uri
-import android.os.Environment
-import androidx.core.content.FileProvider
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,13 +22,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -45,13 +38,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +55,7 @@ import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.demosales.ui.theme.Typography
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.Money
+import com.imecatro.demosales.ui.theme.common.createImageFile
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.products.ui.R
@@ -77,6 +71,7 @@ import java.util.Locale
 fun AddProductComposable(
     uri: Uri? = null,
     onPickImage: () -> Unit = {},
+    onTakePhoto: () -> Unit = {},
     productName: String = "",
     onProductNameChange: (String) -> Unit = {},
     productPrice: String = "",
@@ -118,16 +113,7 @@ fun AddProductComposable(
             Column(modifier = Modifier.padding(10.dp)) {
 
                 Text(text = "Image", style = Typography.labelMedium)
-                Box(
-
-                    modifier = Modifier
-                        .clickable {
-                            onPickImage()
-                        }
-                        .size(100.dp)
-                        .wrapContentSize(Alignment.Center)
-
-                ) {
+                Row(Modifier.height(100.dp)) {
                     Image(
                         painter = rememberAsyncImagePainter(
                             ImageRequest.Builder(context)
@@ -138,12 +124,24 @@ fun AddProductComposable(
                         ),
                         contentDescription = null,
                         modifier = Modifier
+                            .sizeIn(maxWidth = 150.dp)
                             .fillMaxSize()
-                            .padding(5.dp)
                             .clip(RoundedCornerShape(25)),
-                        contentScale = ContentScale.FillWidth
+                        contentScale = ContentScale.Fit
                     )
+                    Column {
+                        FilledTonalButton(onClick = { onPickImage() }) {
+                            Icon(painterResource(R.drawable.gallery_images), null)
+                            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                            Text("Pick Image")
+                        }
 
+                        FilledTonalButton(onClick = { onTakePhoto() }) {
+                            Icon(painterResource(R.drawable.camera), null)
+                            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                            Text("Take Picture")
+                        }
+                    }
                 }
 
                 Text(text = "Product name", style = Typography.labelMedium)
@@ -245,7 +243,7 @@ fun AddProductComposableStateImpl(
         mutableStateOf<Uri?>(null)
     }
     val context = LocalContext.current
-    var showSheet by remember { mutableStateOf(false) }
+
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success) {
@@ -272,7 +270,7 @@ fun AddProductComposableStateImpl(
 
     val launcher = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.GetContent()
+            ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
         uriPicked?.let {
@@ -282,19 +280,6 @@ fun AddProductComposableStateImpl(
         }
     }
 
-    if (showSheet) {
-        BottomSheet(onDismiss = { showSheet = false },
-            onTakeImage = {
-                showSheet = false
-                // Check and request camera permission
-                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-            },
-            onPickImage = {
-                showSheet = false
-                launcher.launch("image/*")
-            }
-        )
-    }
 
 
     var productName by remember {
@@ -330,7 +315,8 @@ fun AddProductComposableStateImpl(
 
     AddProductComposable(
         uri = imageUri,
-        onPickImage = { showSheet = true },
+        onPickImage = { launcher.launch("image/*") },
+        onTakePhoto = { requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
         productName = productName,
         onProductNameChange = { productName = it },
         productPrice = productPrice,
@@ -362,59 +348,4 @@ fun AddProductComposableStateImpl(
         )
         onSaveAction()
     }
-}
-
-private const val APP_TAG = "CameraDemo"
-private fun Context.createImageFile(): Uri? {
-    // Create an image file name
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(java.util.Date())
-    val imageFileName = "JPEG_" + timeStamp + "_"
-    val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-    val image = java.io.File.createTempFile(
-        imageFileName,  /* prefix */
-        ".jpg",         /* suffix */
-        storageDir      /* directory */
-    )
-    return FileProvider.getUriForFile(this, "${packageName}.fileprovider", image)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheet(
-    onDismiss: () -> Unit,
-    onTakeImage: () -> Unit,
-    onPickImage: () -> Unit
-) {
-
-    ModalBottomSheet(
-        onDismissRequest = {
-            onDismiss()
-        },
-//        sheetState = modalBottomSheetState
-    ) {
-        // Sheet content
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            FilledTonalButton(
-                onClick = {
-                    onTakeImage()
-                }
-            ) {
-                Text("Take Picture")
-            }
-            FilledTonalButton(
-                onClick = {
-                    onPickImage()
-                }
-            ) {
-                Text("Pick Image")
-            }
-        }
-
-    }
-
 }
