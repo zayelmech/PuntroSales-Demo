@@ -332,7 +332,6 @@ fun AddProductComposableStateImpl(
         onProductNameChange = { productName = it },
         productPrice = productPrice,
         onProductPriceChange = { productPrice = it },
-        currencyList = addViewModel.getCurrencies(),
         currencyPicked = currencySelected,
         onCurrencyChange = { currencySelected = it },
         unitList = addViewModel.getUnities(),

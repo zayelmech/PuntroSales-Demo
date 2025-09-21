@@ -3,7 +3,6 @@ package com.imecatro.products.ui.details.mappers
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
-import com.imecatro.products.ui.update.mappers.toUpdateUiModel
 
 fun ProductDomainModel.toUiModel(): ProductDetailsUiModel {
     return ProductDetailsUiModel(
@@ -16,7 +15,7 @@ fun ProductDomainModel.toUiModel(): ProductDetailsUiModel {
         details = this.details,
         stockQty = "${this.stock.quantity}",
         stockPrice = "${this.stock.cost}",
-        stockHistory = this.stock.history.toUi(),
+        stockHistory = this.stock.history.toUi().reversed(),
         categoryName = this.category?.name?:""
     )
 }

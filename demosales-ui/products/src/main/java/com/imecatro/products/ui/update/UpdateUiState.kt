@@ -10,7 +10,8 @@ data class UpdateUiState(
     val errorFetchingDetails: String?,
     val productDetails: UpdateProductUiModel?,
     val isSavingProduct: Boolean,
-    val productUpdated: Boolean
+    val productUpdated: Boolean,
+    val categories: List<String> = emptyList(),
 ) : UiState {
     override fun isFetchingOrProcessingData(): Boolean {
         return isFetchingDetails || isSavingProduct

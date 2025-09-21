@@ -1,12 +1,10 @@
 package com.imecatro.products.ui.update.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
-import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
-import com.imecatro.products.ui.details.model.ProductDetailsUiModel
-import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.update.UpdateUiState
 import com.imecatro.products.ui.update.mappers.toDomain
 import com.imecatro.products.ui.update.mappers.toUpdateUiModel
@@ -16,29 +14,18 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = UpdateProductViewModel.Factory::class)
 class UpdateProductViewModel @AssistedInject constructor(
     @Assisted("productId") private val productId: Long,
-    private val productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl(),
-    private val getListOfCurrenciesUseCase: GetListOfCurrenciesUseCase = GetListOfCurrenciesUseCase(),
+    private val productsRepository: ProductsRepository,
     private val getListOfUnitsUseCase: GetListOfUnitsUseCase = GetListOfUnitsUseCase()
 ) : BaseViewModel<UpdateUiState>(UpdateUiState.idle) {
 
-    private val _productSelected: MutableStateFlow<UpdateProductUiModel?> = MutableStateFlow(null)
-    val productSelected: StateFlow<UpdateProductUiModel?> = _productSelected.onStart {
-        getProductById()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
 
-    fun getProductById() {
+    override fun onStart() {
         viewModelScope.launch(Dispatchers.IO) {
             updateState { copy(isFetchingDetails = true) }
             try {
@@ -56,12 +43,13 @@ class UpdateProductViewModel @AssistedInject constructor(
             }
         }
 
-    }
+        viewModelScope.launch {
+            productsRepository.categories.collect { list ->
+                updateState { copy(categories = list.map { d -> d.name }) }
+            }
+        }
 
-    fun getCurrencies(): List<String> {
-        return getListOfCurrenciesUseCase()
     }
-
     fun getUnities(): List<String> {
         return getListOfUnitsUseCase()
     }
@@ -73,6 +61,20 @@ class UpdateProductViewModel @AssistedInject constructor(
 
             updateState { copy(isSavingProduct = false) }
             updateState { copy(productUpdated = true) }
+        }
+    }
+
+
+    fun onAddCategory(category: String) {
+        viewModelScope.launch {
+            productsRepository.addCategory(ProductCategoryDomainModel(name = category))
+            updateState {  copy(productDetails = productDetails?.copy(category = category)) }
+        }
+    }
+
+    fun onCategoryPicked(category: String) {
+        viewModelScope.launch {
+            updateState {  copy(productDetails = productDetails?.copy(category = category)) }
         }
     }
 

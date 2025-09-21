@@ -12,10 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.createImageFile
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
+import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
+import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
@@ -27,11 +30,10 @@ fun UpdateProductComposableStateImpl(
     onSaveAction: () -> Unit
 ) {
 
-    val updateProductUiModel by updateProductViewModel.productSelected.collectAsState()
     val uiState by updateProductViewModel.uiState.collectAsState()
 
     var imageUri by remember {
-        mutableStateOf<Uri?>(updateProductUiModel?.imageUri)
+        mutableStateOf<Uri?>(null)
     }
     val context = LocalContext.current
 
@@ -72,20 +74,25 @@ fun UpdateProductComposableStateImpl(
         }
 
     var productName by remember {
-        mutableStateOf(updateProductUiModel?.name)
+        mutableStateOf(uiState.productDetails?.name)
     }
     var productPrice by remember {
-        mutableStateOf(updateProductUiModel?.price)
+        mutableStateOf(uiState.productDetails?.price)
     }
 
     var currencySelected by remember {
-        mutableStateOf(updateProductUiModel?.currency)
+        mutableStateOf(uiState.productDetails?.currency)
     }
     var unitSelected by remember {
-        mutableStateOf(updateProductUiModel?.unit)
+        mutableStateOf(uiState.productDetails?.unit)
     }
+
+    var showAddNewCategory by remember {
+        mutableStateOf(false)
+    }
+
     var details by remember {
-        mutableStateOf(updateProductUiModel?.details)
+        mutableStateOf(uiState.productDetails?.details)
     }
 
     val buttonEnableState by remember {
@@ -100,16 +107,19 @@ fun UpdateProductComposableStateImpl(
         onProductNameChange = { productName = it },
         productPrice = productPrice ?: "0.00",
         onProductPriceChange = { productPrice = it },
-        currencyList = updateProductViewModel.getCurrencies(),
         currencyPicked = currencySelected ?: "USD",
         onCurrencyChange = { currencySelected = it },
         unitList = updateProductViewModel.getUnities(),
         unitPicked = unitSelected ?: "pz",
         onUnitPicked = { unitSelected = it },
+        categories = uiState.categories,
+        categoryPicked = uiState.productDetails?.category?:"",
+        onCategoryPicked = { updateProductViewModel.onCategoryPicked(it) },
+        onAddNewCategory = { showAddNewCategory = true },
         detailsText = details ?: "",
         onDetailsChange = { details = it },
         buttonSaveState = buttonEnableState,
-        stock = "${updateProductUiModel?.stock ?: 0f}",
+        stock = "${uiState.productDetails?.stock ?: 0f}",
         onStockChange = {},
         onBackToList = onBackToList,
         isEditMode = true
@@ -123,9 +133,20 @@ fun UpdateProductComposableStateImpl(
                 unit = unitSelected,
                 imageUri = imageUri,
                 stock = 0f,
-                details = details ?: ""
+                details = details ?: "",
+                category = uiState.productDetails?.category
             )
         )
+    }
+
+    if (showAddNewCategory) {
+        InputTextDialogComposable(
+            supportingMessage = stringResource(R.string.add_new_category)
+        ) {
+            updateProductViewModel.onAddCategory(it)
+            showAddNewCategory = false
+        }
+
     }
 
     UiStateHandler(uiState) {

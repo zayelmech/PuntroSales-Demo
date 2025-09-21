@@ -59,13 +59,19 @@ class ProductsRepositoryImpl(
 
 
     @WorkerThread
-    override suspend fun updateProduct(product: ProductDomainModel?) {
-        product?.let {
-            val currentStock: Double =
-                productsDao?.getProductStockHistory(product.id!!)?.sumOf { c -> c.amount } ?: 0.0
-            productsDao?.updateProduct(it.toData().copy(stock = currentStock))
-        }
-        //TODO implement error null
+    override suspend fun updateProduct(product: ProductDomainModel) {
+        val categoryId: Long? = product.category?.let { findCategoryIdByName(it.name)}
+
+        productsDao?.updateProduct(product.toData().copy(categoryId = categoryId))
+
+        productsDao?.rebuildProductStock(product.id!!)
+
+    }
+
+    suspend fun findCategoryIdByName(name: String): Long? {
+        if (name.isBlank()) return null
+
+        return categoriesDao?.getCategoryByName(name)?.id
     }
 
     override suspend fun getProductDetailsById(id: Long): ProductDomainModel? {
