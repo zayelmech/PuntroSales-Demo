@@ -16,7 +16,7 @@ internal fun AddProductUiModel.toDomain(): ProductDomainModel {
         unit = this.unit,
         details = this.details,
         imageUri = this.imageUri?.toString(),
-        stock = ProductStockDomainModel(quantity = this.stock.filter { it.isDigit() || it == '.' }.toDouble(), cost = 0.0, history = emptyList()),
+        stock = ProductStockDomainModel(quantity = this.stock.toDouble(), cost = 0.0, history = emptyList()),
         category = ProductCategoryDomainModel(name = this.category)
 
     )

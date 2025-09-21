@@ -18,6 +18,7 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
             categoryId = this.category?.id
         )
     } ?: run {
+        // For new products
         ProductRoomEntity(
             name = this.name ?: "",
             price = this.price ?: 0.0,
@@ -26,7 +27,7 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
             details = this.details,
             imageUri = this.imageUri ?: "",
             stock = this.stock.quantity,
-            categoryId = this.category?.id
+            categoryId = null
         )
     }
 

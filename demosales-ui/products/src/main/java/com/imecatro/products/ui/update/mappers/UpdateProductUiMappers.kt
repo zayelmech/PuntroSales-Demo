@@ -15,7 +15,7 @@ fun UpdateProductUiModel.toDomain(): ProductDomainModel {
         currency = this.currency,
         unit = this.unit,
         details = this.details,
-        stock = ProductStockDomainModel(quantity = this.stock.toDouble(), cost = 0.0, emptyList()),
+        stock = ProductStockDomainModel(quantity = this.stock, cost = 0.0, emptyList()),
         imageUri = this.imageUri?.toString(),
         category = this.category?.let { ProductCategoryDomainModel(name = it) }
     )
