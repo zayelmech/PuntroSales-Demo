@@ -195,7 +195,7 @@ fun ListOfProducts(
                 .fillMaxWidth()
                 .padding(innerPadding),
         ) {
-            AnimatedVisibility(visible = true) {
+            AnimatedVisibility(visible = showFilters) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
