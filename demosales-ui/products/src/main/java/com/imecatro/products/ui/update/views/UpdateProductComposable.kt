@@ -143,7 +143,8 @@ fun UpdateProductComposableStateImpl(
 
     if (showAddNewCategory) {
         InputTextDialogComposable(
-            supportingMessage = stringResource(R.string.add_new_category)
+            supportingMessage = stringResource(R.string.add_new_category),
+            onDismissRequest = { showAddNewCategory = false }
         ) {
             updateProductViewModel.onAddCategory(it)
             showAddNewCategory = false

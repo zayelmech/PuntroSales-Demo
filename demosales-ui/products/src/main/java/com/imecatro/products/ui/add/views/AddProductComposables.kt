@@ -379,7 +379,8 @@ fun AddProductComposableStateImpl(
 
     if (showAddNewCategory) {
         InputTextDialogComposable(
-            supportingMessage = stringResource(R.string.add_new_category)
+            supportingMessage = stringResource(R.string.add_new_category),
+            onDismissRequest = { showAddNewCategory = false }
         ) {
             addViewModel.onAddCategory(it)
             showAddNewCategory = false
