@@ -70,6 +70,7 @@ import java.util.Locale
 @Composable
 fun DetailsComposableStateImpl(
     productDetailsViewModel: ProductsDetailsViewModel,
+    pageSelected : Int = 0,
     onNavigateBack: () -> Unit,
     onProductDeleted: () -> Unit,
     onNavigateToEdit: () -> Unit,
@@ -83,7 +84,7 @@ fun DetailsComposableStateImpl(
     }
 
     val titles = listOf("Details", "Stock")
-    val pagerState = rememberPagerState(initialPage = 0) { titles.size }
+    val pagerState = rememberPagerState(initialPage = pageSelected) { titles.size }
     val scope = rememberCoroutineScope()
 
     var showDeleteDialog by remember { mutableStateOf(false) }

@@ -26,6 +26,7 @@ import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 @Composable
 fun UpdateProductComposableStateImpl(
     updateProductViewModel: UpdateProductViewModel,
+    onEditStock : () -> Unit = {},
     onBackToList: () -> Unit,
     onSaveAction: () -> Unit
 ) {
@@ -121,6 +122,7 @@ fun UpdateProductComposableStateImpl(
         buttonSaveState = buttonEnableState,
         stock = "${uiState.productDetails?.stock ?: 0f}",
         onStockChange = {},
+        onEditStock = onEditStock,
         onBackToList = onBackToList,
         isEditMode = true
     ) {
@@ -132,7 +134,7 @@ fun UpdateProductComposableStateImpl(
                 currency = currencySelected,
                 unit = unitSelected,
                 imageUri = imageUri,
-                stock = 0f,
+                stock = 0.0,
                 details = details ?: "",
                 category = uiState.productDetails?.category
             )

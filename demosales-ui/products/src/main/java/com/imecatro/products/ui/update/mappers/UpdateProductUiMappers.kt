@@ -28,7 +28,7 @@ fun ProductDomainModel.toUpdateUiModel(): UpdateProductUiModel {
         price = this.price.toString(),
         currency = this.currency,
         unit = this.unit,
-        stock= 0f,
+        stock= this.stock.quantity,
         details = this.details,
         imageUri = this.imageUri.toString().toUri(),
         category = this.category?.name

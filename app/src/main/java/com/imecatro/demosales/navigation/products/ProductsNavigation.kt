@@ -49,6 +49,7 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
 
             DetailsComposableStateImpl(
                 viewModel,
+                pageSelected = if (navArgs.mode == ProductsDestinations.DetailsOf.Stock) 1 else 0,
                 onNavigateBack = {
                     navController.navigate(ProductsDestinations.ListAndDetails) {
                         popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
@@ -87,11 +88,18 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
                 })
 
 
-            UpdateProductComposableStateImpl(viewModel, onBackToList = {
-                navController.navigate(ProductsDestinations.ListAndDetails) {
-                    popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
-                }
-            }) {
+            UpdateProductComposableStateImpl(updateProductViewModel = viewModel,
+                onEditStock = {
+                    val destinationRoute =ProductsDestinations.Details(navArgs.id, ProductsDestinations.DetailsOf.Stock)
+                        navController.navigate(destinationRoute) {
+                        popUpTo(destinationRoute) { inclusive = true }
+                    }
+                },
+                onBackToList = {
+                    navController.navigate(ProductsDestinations.ListAndDetails) {
+                        popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
+                    }
+                }) {
                 navController.navigate(ProductsDestinations.ListAndDetails) {
                     popUpTo(ProductsDestinations.ListAndDetails)
                 }

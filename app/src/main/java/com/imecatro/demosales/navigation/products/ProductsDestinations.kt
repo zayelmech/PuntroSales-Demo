@@ -13,9 +13,13 @@ sealed class ProductsDestinations {
     data class Edit(val id: Long)
 
     @Serializable
-    data class Details(val id: Long)
+    data class Details(val id: Long, val mode : DetailsOf = DetailsOf.Details )
 
     @Serializable
     data object ListAndDetails
+
+    enum class DetailsOf{
+        Stock, Details
+    }
 }
 

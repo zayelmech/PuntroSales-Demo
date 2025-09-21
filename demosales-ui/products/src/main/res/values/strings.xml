@@ -22,4 +22,5 @@
     <string name="filter_created_date_old_to_new">Creation date old to new</string>
     <string name="delete_product_message">Do you want to delete this product?</string>
     <string name="add_new_category">Write the new category</string>
+    <string name="btn_edit_stock">Edit Stock</string>
 </resources>
