@@ -27,16 +27,20 @@ class ProductsRepositoryImpl(
     private val categoriesDao: CategoriesDao?
 ) : ProductsRepository {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @WorkerThread
     override suspend fun addProduct(product: ProductDomainModel) {
 
         val productId = productsDao?.addProduct(product = product.toData())
 
+        val now = Instant.now()
+        val dateIso = DateTimeFormatter.ISO_INSTANT.format(now) // e.g. "2025-08-24T01:23:45Z"
+
         val stock = StockRoomEntity(
             productId = productId ?: 0L,
             description = "Initial Stock",
             amount = product.stock.quantity,
-            date = "",
+            date = dateIso,
             timeStamp = System.currentTimeMillis().toString()
         )
         productsDao?.addStock(stock = stock)

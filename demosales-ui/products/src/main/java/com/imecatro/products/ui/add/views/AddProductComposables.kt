@@ -94,7 +94,7 @@ fun AddProductComposable(
     onStockChange: (String) -> Unit = {},
     onEditStock: () -> Unit = {},
     isEditMode: Boolean = false,
-    detailsText: String = "s",
+    detailsText: String = "",
     onDetailsChange: (String) -> Unit = {},
     buttonSaveState: Boolean = false,
     onBackToList: () -> Unit = {},
