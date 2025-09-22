@@ -251,7 +251,7 @@ fun TicketDetailsComposableImpl(
             }
         )
         HorizontalDivider()
-        Column(Modifier.weight(1f)) {
+        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             ResumeTicketScreen(ticketDetails = saleSelected)
         }
         HorizontalDivider()
