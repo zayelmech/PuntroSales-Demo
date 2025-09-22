@@ -12,15 +12,16 @@ data class UpdateUiState(
     val isSavingProduct: Boolean,
     val productUpdated: Boolean,
     val categories: List<String> = emptyList(),
+    val errorMsj: String? = null
 ) : UiState {
     override fun isFetchingOrProcessingData(): Boolean {
         return isFetchingDetails || isSavingProduct
     }
 
     override fun getError(): ErrorUiModel? {
-        return errorFetchingDetails?.let {
-            ErrorUiModel("", errorFetchingDetails)
-        }
+        if (errorMsj != null) return ErrorUiModel("", errorMsj)
+        if (errorFetchingDetails != null) return ErrorUiModel("", errorFetchingDetails)
+        return null
     }
 
     companion object : Idle<UpdateUiState> {

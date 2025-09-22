@@ -153,7 +153,7 @@ fun UpdateProductComposableStateImpl(
     }
 
     UiStateHandler(uiState) {
-        // TODO back
+        updateProductViewModel.clearError()
     }
 
     LaunchedEffect(uiState) {

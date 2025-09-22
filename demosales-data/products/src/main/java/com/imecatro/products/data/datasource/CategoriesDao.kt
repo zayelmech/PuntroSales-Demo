@@ -1,6 +1,7 @@
 package com.imecatro.products.data.datasource
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -36,4 +37,7 @@ interface CategoriesDao {
 
     @Query("SELECT * FROM categories_table WHERE name = :name")
     suspend fun getCategoryByName(name: String) : CategoryRoomEntity?
+
+    @Query("DELETE FROM categories_table WHERE id = :categoryId")
+    suspend fun deleteCategory(categoryId: Long)
 }

@@ -43,6 +43,7 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.material
     implementation project(path: ':demosales-domain:products')
+    implementation project(path: ':demosales-domain:core')
     implementation project(path: ':demosales-ui:theme')
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit

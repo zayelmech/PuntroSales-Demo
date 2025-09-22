@@ -9,45 +9,12 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.imecatro.products.ui.categories.screens.CategoriesScreenImpl
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
 import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-
-//
-//@Composable
-//fun NavigationXSuiteScaffold() {
-//    var currentDestination: ParentFeature by rememberSaveable { mutableStateOf(NavigationDirections.ProductsFeature) }
-//
-//    NavigationSuiteScaffold(
-//        navigationSuiteItems = {
-//            appFeatures.forEach { screen ->
-//                item(
-//                    icon = {
-//                        Icon(
-//                            painter = painterResource(id = screen.icon),
-//                            contentDescription = stringResource(screen.tittle)
-//                        )
-//                    },
-//                    label = { Text(stringResource(screen.icon)) },
-//                    selected = screen == currentDestination,
-//                    onClick = { currentDestination = screen }
-//                )
-//            }
-//        }
-//    ) {
-//        when (currentDestination) {
-//            NavigationDirections.ProductsFeature -> ListAndDetailsPane()
-//            NavigationDirections.SalesFeature -> {
-//                ListAndDetailsPane()
-//            }
-//
-//            NavigationDirections.ClientsFeature -> {}
-//        }
-//    }
-//}
-
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -65,7 +32,12 @@ fun ListAndDetailsPane(
     NavigableListDetailPaneScaffold(
         navigator = navigator,
         listPane = {
-            ListOfProductsStateImpl(productsViewModel = hiltViewModel()) { id ->
+            ListOfProductsStateImpl(productsViewModel = hiltViewModel(), onCategoriesNav = {
+                scope.launch {
+                    navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra, MyItem(0))
+
+                }
+            }) { id ->
                 if (id != null) {
                     scope.launch {
                         viewModel.loadDetailsForProduct(id)
@@ -88,6 +60,13 @@ fun ListAndDetailsPane(
                         onNavigateToEdit = { onEditProduct(navArgs.id) }
                     )
                 }
+            }
+        },
+        extraPane = {
+            AnimatedPane {
+                CategoriesScreenImpl(categoriesViewModel = hiltViewModel(), onNavigateBack = {
+                    scope.launch { navigator.navigateBack() }
+                })
             }
         }
     )

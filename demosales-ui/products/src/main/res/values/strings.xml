@@ -23,5 +23,5 @@
     <string name="delete_product_message">Do you want to delete this product?</string>
     <string name="add_new_category">Write the new category</string>
     <string name="btn_edit_stock">Edit Stock</string>
-    <string name="edit_category">Type the new value for %1s</string>
+    <string name="edit_category">Type the new value for:</string>
 </resources>

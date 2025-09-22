@@ -1,8 +1,9 @@
 package com.imecatro.products.ui.update.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.usecases.AddCategoryUseCase
+import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.products.ui.update.UpdateUiState
@@ -20,9 +21,10 @@ import kotlinx.coroutines.launch
 class UpdateProductViewModel @AssistedInject constructor(
     @Assisted("productId") private val productId: Long,
     private val productsRepository: ProductsRepository,
+    private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    private val addCategoryUseCase: AddCategoryUseCase,
     private val getListOfUnitsUseCase: GetListOfUnitsUseCase = GetListOfUnitsUseCase()
 ) : BaseViewModel<UpdateUiState>(UpdateUiState.idle) {
-
 
 
     override fun onStart() {
@@ -44,12 +46,13 @@ class UpdateProductViewModel @AssistedInject constructor(
         }
 
         viewModelScope.launch {
-            productsRepository.categories.collect { list ->
+            getAllCategoriesUseCase().collect { list ->
                 updateState { copy(categories = list.map { d -> d.name }) }
             }
         }
 
     }
+
     fun getUnities(): List<String> {
         return getListOfUnitsUseCase()
     }
@@ -67,14 +70,26 @@ class UpdateProductViewModel @AssistedInject constructor(
 
     fun onAddCategory(category: String) {
         viewModelScope.launch {
-            productsRepository.addCategory(ProductCategoryDomainModel(name = category))
-            updateState {  copy(productDetails = productDetails?.copy(category = category)) }
+            addCategoryUseCase
+                .execute {
+                    name = category
+                }.onSuccess {
+                    updateState { copy(productDetails = productDetails?.copy(category = category)) }
+                }.onFailure {
+                    updateState { copy(errorMsj = it.message) }
+                }
         }
     }
 
     fun onCategoryPicked(category: String) {
         viewModelScope.launch {
-            updateState {  copy(productDetails = productDetails?.copy(category = category)) }
+            updateState { copy(productDetails = productDetails?.copy(category = category)) }
+        }
+    }
+
+    fun clearError() {
+        viewModelScope.launch {
+            updateState { copy(errorMsj = null) }
         }
     }
 

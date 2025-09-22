@@ -3,17 +3,14 @@ package com.imecatro.products.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
-import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.products.data.datasource.CategoriesDao
 import com.imecatro.products.data.datasource.ProductsDao
-import com.imecatro.products.data.mappers.toCategoryListDomain
 import com.imecatro.products.data.mappers.toData
 import com.imecatro.products.data.mappers.toDomain
 import com.imecatro.products.data.mappers.toProductListDomain
 import com.imecatro.products.data.mappers.toProductsListDomain
-import com.imecatro.products.data.model.CategoryRoomEntity
 import com.imecatro.products.data.model.StockRoomEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -126,19 +123,5 @@ class ProductsRepositoryImpl(
 
         if (reference.contains("Stock")) // This will change in future
             productsDao?.rebuildProductStock(productId)
-    }
-
-    override val categories: Flow<List<ProductCategoryDomainModel>>
-        get() = categoriesDao?.getAll()?.map { it.toCategoryListDomain() } ?: emptyFlow()
-
-    override suspend fun addCategory(category: ProductCategoryDomainModel): Long {
-        if (category.name.isBlank()) return 0L
-        val id = categoriesDao?.insertCategory(CategoryRoomEntity(name = category.name))
-        return id ?: 0L
-    }
-
-    override suspend fun updateCategory(category: ProductCategoryDomainModel) {
-        if (category.id == null) return
-        categoriesDao?.updateCategory(CategoryRoomEntity(id = category.id!!, name = category.name))
     }
 }

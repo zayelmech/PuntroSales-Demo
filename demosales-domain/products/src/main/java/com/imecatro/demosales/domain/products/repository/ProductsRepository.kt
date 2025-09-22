@@ -16,10 +16,4 @@ interface ProductsRepository {
     suspend fun addStock(reference: String, productId: Long, amount: Double)
 
     suspend fun removeStock(reference: String,productId: Long, amount: Double)
-
-    val categories: Flow<List<ProductCategoryDomainModel>>
-
-    suspend fun addCategory(category: ProductCategoryDomainModel) : Long
-
-    suspend fun updateCategory(category: ProductCategoryDomainModel)
 }

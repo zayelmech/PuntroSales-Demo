@@ -8,6 +8,7 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.imecatro.demosales.navigation.ListAndDetailsPane
 import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
+import com.imecatro.products.ui.categories.screens.CategoriesScreenImpl
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
 import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
@@ -26,8 +27,13 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
                 navController.navigate(ProductsDestinations.Edit(id))
             })
         }
+        composable<ProductsDestinations.Categories> {
+            CategoriesScreenImpl(hiltViewModel())
+        }
         composable<ProductsDestinations.List> {
-            ListOfProductsStateImpl(productsViewModel = hiltViewModel()) {
+            ListOfProductsStateImpl(productsViewModel = hiltViewModel(), onCategoriesNav = {
+                navController.navigate(ProductsDestinations.Categories)
+            }) {
                 it?.let {
                     navController.navigate(ProductsDestinations.Details(it)) {
                         popUpTo(ProductsDestinations.List)
@@ -88,10 +94,14 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
                 })
 
 
-            UpdateProductComposableStateImpl(updateProductViewModel = viewModel,
+            UpdateProductComposableStateImpl(
+                updateProductViewModel = viewModel,
                 onEditStock = {
-                    val destinationRoute =ProductsDestinations.Details(navArgs.id, ProductsDestinations.DetailsOf.Stock)
-                        navController.navigate(destinationRoute) {
+                    val destinationRoute = ProductsDestinations.Details(
+                        navArgs.id,
+                        ProductsDestinations.DetailsOf.Stock
+                    )
+                    navController.navigate(destinationRoute) {
                         popUpTo(destinationRoute) { inclusive = true }
                     }
                 },

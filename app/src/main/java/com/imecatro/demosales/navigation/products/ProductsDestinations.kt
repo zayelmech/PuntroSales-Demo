@@ -18,6 +18,9 @@ sealed class ProductsDestinations {
     @Serializable
     data object ListAndDetails
 
+    @Serializable
+    data object Categories
+
     enum class DetailsOf{
         Stock, Details
     }

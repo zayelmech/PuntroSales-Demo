@@ -52,7 +52,7 @@ fun UiStateHandler(state: UiState, onDismiss: () -> Unit) {
             onDismissRequest = onDismiss,
         ) {
             Surface(
-                color = Color.White,
+                //color = Color.White,
                 modifier = Modifier.wrapContentWidth().wrapContentHeight(),
                 shape = RoundedCornerShape(30.dp),
                 tonalElevation = AlertDialogDefaults.TonalElevation
@@ -62,10 +62,6 @@ fun UiStateHandler(state: UiState, onDismiss: () -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Spacer(
-                        modifier = Modifier.fillMaxWidth().height(1.dp)
-                            .background(Brush.linearGradient(listOf(Color.White, Color.LightGray,Color.White)))
-                    )
                     Spacer(modifier = Modifier.height(20.dp))
                     if (state.error!!.tittle.isNotBlank()) {
                         Text(
@@ -84,9 +80,8 @@ fun UiStateHandler(state: UiState, onDismiss: () -> Unit) {
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier.sizeIn(minWidth = 200.dp, minHeight = 45.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xff515B92))
                     ) {
-                        val textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        val textStyle = TextStyle(fontSize = 16.sp)
                         Text("Aceptar", style = textStyle)
                     }
                 }

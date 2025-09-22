@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
@@ -94,6 +95,7 @@ fun ListOfProducts(
     onCheckedChange: (OrderedFilterUiModel) -> Unit = {},
     categories: List<CategoriesFilter> = emptyList(),
     onCategoryChecked: (CategoriesFilter) -> Unit = {},
+    onEditCategoriesClicked: () -> Unit = {},
     onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {},
 ) {
@@ -270,6 +272,21 @@ fun ListOfProducts(
     if (categoriesFilter)
         ModalBottomSheet(onDismissRequest = { categoriesFilter = false }, sheetState = sheetState) {
             LazyColumn {
+                item {
+                    ListItem(
+                        headlineContent = {
+                            Text(text = "Categories")
+                        },
+                        trailingContent = {
+                            IconButton(onClick = {
+                                categoriesFilter = false
+                                onEditCategoriesClicked()
+                            }) {
+                                Icon(Icons.Default.Edit, null)
+                            }
+                        }
+                    )
+                }
                 items(categories) { category ->
                     ListItem(
                         leadingContent = {
@@ -347,6 +364,7 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
 @Composable
 fun ListOfProductsStateImpl(
     productsViewModel: ProductsViewModel,
+    onCategoriesNav: () -> Unit,
     onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -367,7 +385,8 @@ fun ListOfProductsStateImpl(
         orderList = filters,
         onCheckedChange = { productsViewModel.onFilterChange(it) },
         categories = categories,
-        onCategoryChecked = {productsViewModel.onFilterCategory(it)},
+        onCategoryChecked = { productsViewModel.onFilterCategory(it) },
+        onEditCategoriesClicked = onCategoriesNav,
         onCardClicked = {
             scope.launch { onNavigateAction(it) }
         },

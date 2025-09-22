@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.DropListPicker
+import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.createImageFile
@@ -350,7 +351,7 @@ fun AddProductComposableStateImpl(
         unitList = addViewModel.getUnities(),
         unitPicked = unitSelected,
         onUnitPicked = { unitSelected = it },
-        categories = uiState.categories,
+        categories = uiState.categoriesNames,
         categoryPicked = uiState.category,
         onCategoryPicked = { addViewModel.onCategoryPicked(it) },
         onAddNewCategory = { showAddNewCategory = true },
@@ -386,5 +387,9 @@ fun AddProductComposableStateImpl(
             showAddNewCategory = false
         }
 
+    }
+
+    UiStateHandler(uiState) {
+        addViewModel.clearError()
     }
 }
