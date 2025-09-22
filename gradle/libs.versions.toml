@@ -1,5 +1,6 @@
 [versions]
 activityCompose = "1.9.0"
+adaptive = "1.1.0"
 appcompat = "1.7.0"
 coilCompose = "2.2.2"
 constraintlayoutCompose = "1.0.1"
@@ -57,7 +58,10 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
-
+# Adaptive Layouts
+androidx-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
+androidx-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
+androidx-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptive" }
 
 # ROOM
 androidx-room-common = { module = "androidx.room:room-common", version.ref = "roomKtx" }

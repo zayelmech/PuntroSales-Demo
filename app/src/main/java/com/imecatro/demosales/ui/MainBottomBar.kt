@@ -66,21 +66,7 @@ fun MainBottomBar(
 
                     }
 
-                },
-//                modifier = Modifier.pointerInput(null){
-//                    detectTapGestures (
-//                        onDoubleTap = {
-//                            navController.navigate(screen) {
-//                                popUpTo(navController.graph.findStartDestination().id) {
-//                                    saveState = true
-//                                }
-//                                launchSingleTop = true
-//                                restoreState = true
-//
-//                            }
-//                        }
-//                    )
-//                }
+                }
             )
         }
     }
