@@ -17,7 +17,6 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +34,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTooltipState
@@ -89,6 +87,7 @@ fun CreateTicketComposable(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
         ) {
             itemsIndexed(productsOnCart) { index, item ->
                 val dismissState = rememberSwipeToDismissBoxState()
@@ -186,8 +185,6 @@ fun CreateTicketComposable(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-
             Button(
                 onClick = onContinueTicketClicked,
                 modifier = Modifier
@@ -355,7 +352,7 @@ private fun createFakeListOfProductsOnCart(num: Int): List<ProductOnCartUiModel>
     return list
 }
 
-@Preview(showBackground = true, device = "spec:width=1080px,height=2340px,dpi=440")
+@Preview(showBackground = true, device = "spec:width=1280dp,height=800dp,dpi=240")
 @Composable
 fun PreviewCreateTicketComposable() {
     PuntroSalesDemoTheme(darkTheme = false) {
@@ -365,7 +362,7 @@ fun PreviewCreateTicketComposable() {
         ) {
             CreateTicketComposable(
                 createFakeListOfProductsOnCart(5),
-                "$0.00",
+                "0.00",
                 {},
                 {},
                 {},
