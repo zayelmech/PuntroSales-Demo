@@ -36,7 +36,6 @@ fun CardOfSaleComposable(
             .clickable { onCardClicked() },
     ) {
         ListItem(
-            modifier = Modifier.sizeIn(maxWidth = 411.dp),
             headlineContent = {
                 Text(text = sale.total.formatAsCurrency())
             },
