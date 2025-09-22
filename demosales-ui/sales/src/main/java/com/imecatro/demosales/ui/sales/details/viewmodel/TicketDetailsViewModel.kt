@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = TicketDetailsViewModel.Factory::class)
 class TicketDetailsViewModel @AssistedInject constructor(
-    @Assisted("saleId") private val saleId: Long,
+    @Assisted("saleId") private var saleId: Long,
     private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
     private val updateSaleStatus: UpdateSaleStatusUseCase,
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
@@ -69,6 +69,13 @@ class TicketDetailsViewModel @AssistedInject constructor(
                 }
             }
             _sale.update { it.copy(allProductsWereRefunded = true) }
+        }
+    }
+
+    fun loadSaleDetailsBy(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleId = id
+            onGetDetailsAction()
         }
     }
 

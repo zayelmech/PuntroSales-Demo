@@ -1,9 +1,9 @@
-package com.imecatro.demosales.navigation
+package com.imecatro.demosales.navigation.products
 
 import android.os.Parcelable
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.NavigableSupportingPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
@@ -23,7 +23,7 @@ fun ListAndDetailsPane(
     onEditProduct: (Long) -> Unit = {}
 ) {
 
-    val navigator = rememberSupportingPaneScaffoldNavigator<MyItem>()
+    val navigator = rememberSupportingPaneScaffoldNavigator<MyProduct>()
     val scope = rememberCoroutineScope()
     val viewModel: ProductsDetailsViewModel =
         hiltViewModel(creationCallback = { f: ProductsDetailsViewModel.Factory -> f.create(0L) })
@@ -35,7 +35,7 @@ fun ListAndDetailsPane(
             AnimatedPane {
                 ListOfProductsStateImpl(productsViewModel = hiltViewModel(), onCategoriesNav = {
                     scope.launch {
-                        navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra, MyItem(0))
+                        navigator.navigateTo(pane = SupportingPaneScaffoldRole.Extra, MyProduct(0))
 
                     }
                 }) { id ->
@@ -43,8 +43,8 @@ fun ListAndDetailsPane(
                         scope.launch {
                             viewModel.loadDetailsForProduct(id)
                             navigator.navigateTo(
-                                pane = ListDetailPaneScaffoldRole.Detail,
-                                MyItem(id)
+                                pane = SupportingPaneScaffoldRole.Supporting,
+                                MyProduct(id)
                             )
                         }
                     } else onAddProduct()
@@ -78,4 +78,4 @@ fun ListAndDetailsPane(
 }
 
 @Parcelize
-class MyItem(val id: Long) : Parcelable
+class MyProduct(val id: Long) : Parcelable

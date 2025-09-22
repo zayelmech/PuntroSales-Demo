@@ -6,7 +6,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.imecatro.demosales.navigation.ListAndDetailsPane
 import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
 import com.imecatro.products.ui.categories.screens.CategoriesScreenImpl
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
