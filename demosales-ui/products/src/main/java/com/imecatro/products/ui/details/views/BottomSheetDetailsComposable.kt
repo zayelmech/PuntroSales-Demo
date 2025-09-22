@@ -11,13 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
@@ -26,12 +27,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -170,7 +171,7 @@ fun DetailsComposable(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -192,7 +193,7 @@ fun DetailsComposable(
                     ),
                 contentDescription = null,
                 modifier = Modifier
-                    .requiredSizeIn(maxHeight = 280.dp)
+                    .requiredSizeIn(maxHeight = 320.dp)
                     .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
@@ -240,36 +241,33 @@ fun DetailsComposable(
             }
 
         }
-        Spacer(modifier = Modifier.height(40.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Row(
+            modifier = Modifier.sizeIn(maxWidth = 320.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
 
-
-            //button edit
-            Button(
-                onClick = onEditClicked,
-                modifier = Modifier
-                    .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
-                    .fillMaxWidth(),
-                shape = MaterialTheme.shapes.large
-            ) {
-                Text(text = stringResource(R.string.btn_edit))
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            //button delete
-            TextButton(
                 onClick = onDeleteClicked,
-                modifier = Modifier.sizeIn(minWidth = 120.dp),
-                colors = ButtonDefaults.textButtonColors(
+                colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.error
                 )
             ) {
+                Icon( Icons.Filled.Delete, null)
                 Text(text = stringResource(R.string.btn_delete))
             }
+
+            Button(
+                modifier = Modifier.weight(1f),
+
+                onClick = onEditClicked) {
+                Icon(Icons.Filled.Edit, null)
+                Text(text = stringResource(R.string.btn_edit))
+            }
         }
+        Spacer(modifier = Modifier.height(30.dp))
     }
 }
 

@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -30,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,69 +62,70 @@ fun StockComposable(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.size(30.dp))
-        Column(
-            Modifier
-                .sizeIn(maxWidth = 360.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    text = stringResource(R.string.title_stock),
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Text(
-                    text = stock,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    text = stringResource(R.string.title_cost),
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Text(
-                    text = cost.formatAsCurrency(),
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            }
-            Spacer(modifier = Modifier.size(30.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-
-                    onClick = { showDialogStockOut = true },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Icon(Icons.Default.Delete, null)
-                    Text(stringResource(R.string.btn_stock_out))
-                }
-
-                Button(
-                    modifier = Modifier.weight(1f),
-
-                    onClick = { showDialogStockIn = true }) {
-                    Icon(Icons.Filled.Add, null)
-                    Text(stringResource(R.string.btn_stock_in))
-                }
-
-            }
-
-            Spacer(modifier = Modifier.size(20.dp))
-
-            HorizontalDivider()
-        }
-
-        Spacer(modifier = Modifier.size(30.dp))
+        Spacer(modifier = Modifier.size(10.dp))
         Column {
             LazyColumn(modifier = Modifier.padding(horizontal = 20.dp)) {
+                item {
+                    Column(
+                        Modifier
+                            .sizeIn(maxWidth = 360.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(
+                                text = stringResource(R.string.title_stock),
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                            Text(
+                                text = stock,
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                        }
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(
+                                text = stringResource(R.string.title_cost),
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                            Text(
+                                text = cost.formatAsCurrency(),
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                        }
+                        Spacer(modifier = Modifier.size(30.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OutlinedButton(
+                                modifier = Modifier.weight(1f),
+
+                                onClick = { showDialogStockOut = true },
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Icon( painter = painterResource(R.drawable.baseline_remove_24), null)
+                                Text(stringResource(R.string.btn_stock_out))
+                            }
+
+                            Button(
+                                modifier = Modifier.weight(1f),
+
+                                onClick = { showDialogStockIn = true }) {
+                                Icon(Icons.Filled.Add, null)
+                                Text(stringResource(R.string.btn_stock_in))
+                            }
+
+                        }
+
+                        Spacer(modifier = Modifier.size(20.dp))
+
+                        HorizontalDivider()
+                    }
+
+                }
                 item {
                     if (list.isEmpty())
                         Text(
