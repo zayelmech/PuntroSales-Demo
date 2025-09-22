@@ -251,7 +251,12 @@ fun TicketDetailsComposableImpl(
             }
         )
         HorizontalDivider()
-        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             ResumeTicketScreen(ticketDetails = saleSelected)
         }
         HorizontalDivider()
