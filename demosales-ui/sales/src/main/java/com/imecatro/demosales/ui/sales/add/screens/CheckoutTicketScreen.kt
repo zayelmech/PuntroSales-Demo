@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
@@ -74,6 +76,7 @@ fun CheckoutTicketComposable(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
         TopAppBar(title = { Text(text = "Sale #$saleId") })
@@ -123,7 +126,7 @@ fun CheckoutTicketComposable(
                         .sizeIn(maxWidth = 150.dp),
                     value = extra,
                     onValueChange = onExtraChange,
-                    prefix = {Text(text = "+")},
+                    prefix = { Text(text = "+") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
                     visualTransformation = CurrencyVisualTransformation(),
@@ -141,7 +144,7 @@ fun CheckoutTicketComposable(
                         .sizeIn(maxWidth = 150.dp),
                     value = discount,
                     onValueChange = onDiscountChange,
-                    prefix = {Text(text = "-")},
+                    prefix = { Text(text = "-") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
                     visualTransformation = CurrencyVisualTransformation(),
