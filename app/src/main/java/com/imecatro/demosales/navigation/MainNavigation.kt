@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
-import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.material3.adaptive.navigation.NavigableSupportingPaneScaffold
+import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,29 +23,34 @@ fun ListAndDetailsPane(
     onEditProduct: (Long) -> Unit = {}
 ) {
 
-    val navigator = rememberListDetailPaneScaffoldNavigator<MyItem>()
+    val navigator = rememberSupportingPaneScaffoldNavigator<MyItem>()
     val scope = rememberCoroutineScope()
     val viewModel: ProductsDetailsViewModel =
         hiltViewModel(creationCallback = { f: ProductsDetailsViewModel.Factory -> f.create(0L) })
 
 
-    NavigableListDetailPaneScaffold(
+    NavigableSupportingPaneScaffold(
         navigator = navigator,
-        listPane = {
-            ListOfProductsStateImpl(productsViewModel = hiltViewModel(), onCategoriesNav = {
-                scope.launch {
-                    navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra, MyItem(0))
-
-                }
-            }) { id ->
-                if (id != null) {
+        mainPane = {
+            AnimatedPane {
+                ListOfProductsStateImpl(productsViewModel = hiltViewModel(), onCategoriesNav = {
                     scope.launch {
-                        viewModel.loadDetailsForProduct(id)
-                        navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Detail, MyItem(id))
+                        navigator.navigateTo(pane = ListDetailPaneScaffoldRole.Extra, MyItem(0))
+
                     }
-                } else onAddProduct()
+                }) { id ->
+                    if (id != null) {
+                        scope.launch {
+                            viewModel.loadDetailsForProduct(id)
+                            navigator.navigateTo(
+                                pane = ListDetailPaneScaffoldRole.Detail,
+                                MyItem(id)
+                            )
+                        }
+                    } else onAddProduct()
+                }
             }
-        }, detailPane = {
+        }, supportingPane = {
 
             AnimatedPane {
                 navigator.currentDestination?.contentKey?.let { navArgs ->
