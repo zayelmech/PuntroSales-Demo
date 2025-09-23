@@ -191,7 +191,7 @@ fun AddProductComposable(
                     )
                     Spacer(modifier = Modifier.size(20.dp))
                     if (isEditMode) {
-                        FilledTonalIconButton (onClick = { onEditStock() }) {
+                        FilledTonalIconButton(onClick = { onEditStock() }) {
                             Icon(Icons.Default.Edit, "Edit Stock")
                         }
                     }
@@ -389,7 +389,5 @@ fun AddProductComposableStateImpl(
 
     }
 
-    UiStateHandler(uiState) {
-        addViewModel.clearError()
-    }
+    UiStateHandler(uiState, onDismiss = { addViewModel::onErrorMessageDismissed })
 }

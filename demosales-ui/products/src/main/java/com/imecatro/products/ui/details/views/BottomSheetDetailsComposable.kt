@@ -16,6 +16,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -92,7 +93,7 @@ fun DetailsComposableStateImpl(
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(title = { Text(text = "Product Details") }, navigationIcon = {
-            IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, null) }
+            IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
         })
         PrimaryTabRow(
             selectedTabIndex = pagerState.currentPage,
@@ -244,8 +245,11 @@ fun DetailsComposable(
         Spacer(modifier = Modifier.height(30.dp))
 
         Row(
-            modifier = Modifier.sizeIn(maxWidth = 320.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .sizeIn(maxWidth = 400.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             OutlinedButton(
                 modifier = Modifier.weight(1f),

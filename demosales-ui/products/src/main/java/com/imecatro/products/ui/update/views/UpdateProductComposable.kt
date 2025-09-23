@@ -14,8 +14,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
+import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.createImageFile
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
@@ -26,7 +28,7 @@ import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 @Composable
 fun UpdateProductComposableStateImpl(
     updateProductViewModel: UpdateProductViewModel,
-    onEditStock : () -> Unit = {},
+    onEditStock: () -> Unit = {},
     onBackToList: () -> Unit,
     onSaveAction: () -> Unit
 ) {
@@ -40,7 +42,7 @@ fun UpdateProductComposableStateImpl(
 
     val launcher = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.GetContent()
+            ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
         uriPicked?.let {
@@ -74,26 +76,16 @@ fun UpdateProductComposableStateImpl(
             }
         }
 
-    var productName by remember {
-        mutableStateOf(uiState.productDetails?.name)
-    }
-    var productPrice by remember {
-        mutableStateOf(uiState.productDetails?.price)
-    }
+    UiStateHandler(uiState, onDismiss = { updateProductViewModel::onErrorMessageDismissed })
 
-    var currencySelected by remember {
-        mutableStateOf(uiState.productDetails?.currency)
-    }
-    var unitSelected by remember {
-        mutableStateOf(uiState.productDetails?.unit)
-    }
+    if (uiState.isLoading) return // Loading effect
 
     var showAddNewCategory by remember {
         mutableStateOf(false)
     }
 
-    var details by remember {
-        mutableStateOf(uiState.productDetails?.details)
+    var editedProduct by remember {
+        mutableStateOf(UpdateProductUiModel())
     }
 
     val buttonEnableState by remember {
@@ -104,38 +96,36 @@ fun UpdateProductComposableStateImpl(
         uri = imageUri,
         onPickImage = { launcher.launch("image/*") },
         onTakePhoto = { requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
-        productName = productName ?: "Loading...",
-        onProductNameChange = { productName = it },
-        productPrice = productPrice ?: "0.00",
-        onProductPriceChange = { productPrice = it },
-        currencyPicked = currencySelected ?: "USD",
-        onCurrencyChange = { currencySelected = it },
+        productName = editedProduct.name,
+        onProductNameChange = { editedProduct = editedProduct.copy(name = it) },
+        productPrice = editedProduct.price,
+        onProductPriceChange = { editedProduct = editedProduct.copy(price = it) },
+        currencyPicked = editedProduct.currency,
+        onCurrencyChange = { editedProduct = editedProduct.copy(currency = it) },
         unitList = updateProductViewModel.getUnities(),
-        unitPicked = unitSelected ?: "pz",
-        onUnitPicked = { unitSelected = it },
+        unitPicked = editedProduct.unit,
+        onUnitPicked = { editedProduct = editedProduct.copy(unit = it) },
         categories = uiState.categories,
         categoryPicked = uiState.productDetails?.category?:"",
         onCategoryPicked = { updateProductViewModel.onCategoryPicked(it) },
         onAddNewCategory = { showAddNewCategory = true },
-        detailsText = details ?: "",
-        onDetailsChange = { details = it },
+        detailsText = editedProduct.details,
+        onDetailsChange = { editedProduct = editedProduct.copy(details = it) },
         buttonSaveState = buttonEnableState,
-        stock = "${uiState.productDetails?.stock ?: 0f}",
-        onStockChange = {},
+        stock = "${editedProduct.stock}",
         onEditStock = onEditStock,
         onBackToList = onBackToList,
         isEditMode = true
     ) {
         updateProductViewModel.onSaveAction(
             UpdateProductUiModel(
-                id = 0,
-                name = productName,
-                price = Money.toDouble(productPrice?:"0.0").toString(),
-                currency = currencySelected,
-                unit = unitSelected,
+                name = editedProduct.name,
+                price = Money.toDouble(editedProduct.price).toString(),
+                currency = editedProduct.currency,
+                unit = editedProduct.unit,
                 imageUri = imageUri,
-                stock = 0.0,
-                details = details ?: "",
+                stock = editedProduct.stock,
+                details = editedProduct.details,
                 category = uiState.productDetails?.category
             )
         )
@@ -152,23 +142,25 @@ fun UpdateProductComposableStateImpl(
 
     }
 
-    UiStateHandler(uiState) {
-        updateProductViewModel.clearError()
-    }
+    val product = uiState.productDetails ?: return
+
+    val priceFormatted = product.price.formatAsCurrency() // Formatting for correction error
 
     LaunchedEffect(uiState) {
-        if (uiState.productUpdated){
+        if (uiState.productUpdated) {
             onSaveAction.invoke()
         }
 
-        if(uiState.productDetails != null){
-            productName = uiState.productDetails!!.name
-            productPrice = uiState.productDetails!!.price
-            currencySelected = uiState.productDetails!!.currency
-            unitSelected = uiState.productDetails!!.unit
-            imageUri = uiState.productDetails!!.imageUri
-            details = uiState.productDetails!!.details
+        if (uiState.productDetails?.id != null) {
+            editedProduct = editedProduct.copy(
+                name = product.name,
+                price = priceFormatted,
+                currency = product.currency,
+                unit = product.unit,
+                stock = product.stock,
+                details = product.details
+            )
+            imageUri = product.imageUri
         }
-
     }
 }

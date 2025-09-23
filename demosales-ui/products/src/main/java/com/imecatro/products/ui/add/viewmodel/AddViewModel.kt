@@ -62,7 +62,7 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    fun clearError() {
+    fun onErrorMessageDismissed() {
         viewModelScope.launch {
             updateState { copy(errorMsj = null) }
         }

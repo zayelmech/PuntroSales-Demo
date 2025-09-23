@@ -87,7 +87,7 @@ class UpdateProductViewModel @AssistedInject constructor(
         }
     }
 
-    fun clearError() {
+    fun onErrorMessageDismissed() {
         viewModelScope.launch {
             updateState { copy(errorMsj = null) }
         }

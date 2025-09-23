@@ -1,17 +1,17 @@
 package com.imecatro.products.ui.update.mappers
 
+import androidx.core.net.toUri
+import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
-import androidx.core.net.toUri
-import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 
 
 fun UpdateProductUiModel.toDomain(): ProductDomainModel {
     return ProductDomainModel(
         id = this.id,
         name = this.name,
-        price = this.price?.toDouble() ?: 0.0,
+        price = this.price.toDouble(),
         currency = this.currency,
         unit = this.unit,
         details = this.details,
@@ -24,10 +24,10 @@ fun UpdateProductUiModel.toDomain(): ProductDomainModel {
 fun ProductDomainModel.toUpdateUiModel(): UpdateProductUiModel {
     return UpdateProductUiModel(
         id = this.id,
-        name = this.name,
+        name = this.name?:"",
         price = this.price.toString(),
-        currency = this.currency,
-        unit = this.unit,
+        currency = this.currency?:"",
+        unit = this.unit?:"",
         stock= this.stock.quantity,
         details = this.details,
         imageUri = this.imageUri.toString().toUri(),

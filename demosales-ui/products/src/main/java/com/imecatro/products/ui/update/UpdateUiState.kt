@@ -15,7 +15,7 @@ data class UpdateUiState(
     val errorMsj: String? = null
 ) : UiState {
     override fun isFetchingOrProcessingData(): Boolean {
-        return isFetchingDetails || isSavingProduct
+        return isFetchingDetails || isSavingProduct || productDetails == null
     }
 
     override fun getError(): ErrorUiModel? {
