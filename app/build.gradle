@@ -16,8 +16,8 @@ android {
         applicationId "com.imecatro.demosales"
         minSdk 26
         targetSdk libs.versions.targetSdk.get().toInteger()
-        versionCode 10
-        versionName "1.0.5"
+        versionCode 12
+        versionName "1.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -31,7 +31,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

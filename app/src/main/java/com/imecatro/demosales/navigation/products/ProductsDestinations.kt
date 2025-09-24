@@ -1,5 +1,6 @@
 package com.imecatro.demosales.navigation.products
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 sealed class ProductsDestinations {
@@ -21,6 +22,7 @@ sealed class ProductsDestinations {
     @Serializable
     data object Categories
 
+    @Keep
     enum class DetailsOf{
         Stock, Details
     }
