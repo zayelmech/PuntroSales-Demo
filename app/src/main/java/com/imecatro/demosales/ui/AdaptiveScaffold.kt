@@ -1,5 +1,6 @@
 package com.imecatro.demosales.ui
 
+import androidx.annotation.Keep
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -23,7 +24,7 @@ import com.imecatro.demosales.navigation.clients.clientsNavigation
 import com.imecatro.demosales.navigation.products.productsNavigation
 import com.imecatro.demosales.navigation.sales.salesFeature
 
-
+@Keep
 enum class AppDestinations {
     PRODUCTS, SALES, CLIENTS
 }
@@ -42,7 +43,7 @@ fun NavigationSuiteScope.adaptiveNavigationBar(
                 )
             },
             label = { Text(stringResource(screen.tittle)) },
-            selected = currentDestination?.hierarchy?.any { it.route?.contains("${screen::class.simpleName}") ?: false } == true,
+            selected = currentDestination?.hierarchy?.any { it.route?.equals(screen::class.qualifiedName) ?: false } == true,
             onClick = { onCurrentDestinationChanged(destination) }
         )
     }

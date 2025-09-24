@@ -1,8 +1,10 @@
 package com.imecatro.demosales.ui
 
+import androidx.annotation.Keep
 import com.imecatro.demosales.R
 import kotlinx.serialization.Serializable
 
+@Keep
 sealed class NavigationDirections {
 
     @Serializable
