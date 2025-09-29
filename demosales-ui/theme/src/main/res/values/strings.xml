@@ -3,4 +3,6 @@
     <string name="btn_add_item">Add</string>
     <string name="btn_dialog_cancel">Cancel</string>
     <string name="btn_dialog_confirm">Confirm</string>
+    <string name="title_are_u_sure">Are you sure?</string>
+    <string name="dialog_message">Write the new value</string>
 </resources>

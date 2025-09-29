@@ -40,7 +40,7 @@ enum class DialogType {
 fun ActionDialog(
     dialogType: DialogType = DialogType.Delete,
     icon: @Composable (() -> Unit)? = null,
-    title: String = "Are you sure?",
+    title: String = stringResource(R.string.title_are_u_sure),
     message: String = "Would you like to delete this item?",
     onDismissRequest: () -> Unit = {},
     onConfirmClicked: () -> Unit = {}

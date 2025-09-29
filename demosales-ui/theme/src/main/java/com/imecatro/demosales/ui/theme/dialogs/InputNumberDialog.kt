@@ -48,7 +48,7 @@ enum class Type {
 @Composable
 fun InputNumberDialogComposable(
     initialValue: String = "",
-    supportingMessage: String = "Write the new value",
+    supportingMessage: String = stringResource(R.string.dialog_message),
     type: Type = Type.Decimal,
     extendedContent: @Composable ColumnScope.() -> Unit = {},
     onDismissRequest: () -> Unit = {},

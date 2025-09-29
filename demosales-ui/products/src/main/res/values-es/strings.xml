@@ -5,7 +5,7 @@
     <string name="title_stock">En existencia</string>
     <string name="btn_stock_out">Retirar stock</string>
     <string name="btn_stock_in">Agregar stock</string>
-    <string name="title_cost">Costo</string>
+    <string name="title_cost">Valor</string>
     <string name="desc_no_items">Aún no hay historial</string>
     <string name="title_history">Historial</string>
     <string name="supporting_stock_txt">Existencia inicial es requerido</string>
