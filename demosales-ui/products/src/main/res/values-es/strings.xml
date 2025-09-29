@@ -2,7 +2,7 @@
 <resources>
     <string name="btn_edit">Editar</string>
     <string name="btn_delete">Eliminar</string>
-    <string name="title_stock">Existencias actuales</string>
+    <string name="title_stock">En existencia</string>
     <string name="btn_stock_out">Retirar stock</string>
     <string name="btn_stock_in">Agregar stock</string>
     <string name="title_cost">Costo</string>
