@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'com.imecatro.demosales.ui.theme'
-    compileSdk 34
+    compileSdk libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
         minSdk 26
-        targetSdk 33
+        targetSdk libs.versions.targetSdk.get().toInteger()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

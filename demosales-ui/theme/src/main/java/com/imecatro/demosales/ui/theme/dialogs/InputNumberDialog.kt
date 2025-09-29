@@ -29,10 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.theme.R
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 
@@ -140,10 +142,10 @@ fun InputTextDialogComposable(
                 Row {
                     Spacer(modifier = Modifier.weight(1f))
                     TextButton(onClick = onDismissRequest) {
-                        Text(text = "Cancel")
+                        Text(text = stringResource(R.string.btn_dialog_cancel))
                     }
                     TextButton(onClick = { onConfirmClicked(qty) }) {
-                        Text(text = "Confirm")
+                        Text(text =stringResource(R.string.btn_dialog_confirm))
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))

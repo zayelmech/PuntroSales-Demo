@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="btn_add_item">Nuevo</string>
+    <string name="btn_add_item">Agregar</string>
+    <string name="btn_dialog_cancel">Cancelar</string>
+    <string name="btn_dialog_confirm">Confirmar</string>
 </resources>
