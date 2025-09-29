@@ -50,7 +50,7 @@ fun CategoriesScreen(
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
         TopAppBar(
-            title = { Text("Categories") }, actions = {
+            title = { Text(stringResource(R.string.top_bar_title_categories)) }, actions = {
             IconButton(onClick = { onAddCategory() }) {
                 Icon(Icons.Default.Add, "Add category")
             }

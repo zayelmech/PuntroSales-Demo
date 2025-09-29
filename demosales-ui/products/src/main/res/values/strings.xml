@@ -24,4 +24,24 @@
     <string name="add_new_category">Write the new category</string>
     <string name="btn_edit_stock">Edit Stock</string>
     <string name="edit_category">Type the new value for:</string>
+    <string name="top_bar_title_add">New Product</string>
+    <string name="top_bar_title_edit">Edit Product</string>
+    <string name="txt_image">Image</string>
+    <string name="btn_image_picker">Pick Image</string>
+    <string name="btn_take_photo">Take Picture</string>
+    <string name="label_product_name">Product name</string>
+    <string name="label_product_price">Price</string>
+    <string name="label_stock">Stock</string>
+    <string name="label_unit">Unit</string>
+    <string name="label_category">Category</string>
+    <string name="label_details">Details</string>
+    <string name="top_bar_title_categories">Categories</string>
+    <string name="top_bar_product_details">Product Details</string>
+    <string name="tab_stock">Stock</string>
+    <string name="tab_details">Details</string>
+    <string name="message_register_add_stock">Register Stock add quantity</string>
+    <string name="message_register_stock_out">Register Stock out quantity</string>
+    <string name="tittle_categories">Categories</string>
+    <string name="chip_order_by">Order by</string>
+    <string name="search_placeholder">Search a product</string>
 </resources>

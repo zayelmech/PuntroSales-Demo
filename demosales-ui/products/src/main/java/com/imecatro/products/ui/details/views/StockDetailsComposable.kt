@@ -161,7 +161,7 @@ fun StockComposable(
     if (showDialogStockIn)
         InputNumberDialogComposable(
             initialValue = "",
-            supportingMessage = "Register Stock add quantity",
+            supportingMessage = stringResource(R.string.message_register_add_stock),
             onDismissRequest = { showDialogStockIn = false },
             onConfirmClicked = {
                 onStockAdded(it)
@@ -172,7 +172,7 @@ fun StockComposable(
     if (showDialogStockOut)
         InputNumberDialogComposable(
             initialValue = "",
-            supportingMessage = "Register Stock out quantity",
+            supportingMessage = stringResource(R.string.message_register_stock_out),
             onDismissRequest = { showDialogStockOut = false },
             onConfirmClicked = {
                 onStockOut(it)

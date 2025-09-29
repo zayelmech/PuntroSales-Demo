@@ -113,7 +113,7 @@ fun AddProductComposable(
     LazyColumn {
         item {
             TopAppBar(
-                title = { Text(text = if (!isEditMode) "New Product" else "Edit Product") },
+                title = { Text(text = if (!isEditMode) stringResource(R.string.top_bar_title_add) else stringResource(R.string.top_bar_title_edit)) },
                 navigationIcon = {
                     IconButton(onClick = { onBackToList() }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
@@ -122,7 +122,7 @@ fun AddProductComposable(
             )
             Column(modifier = Modifier.padding(10.dp)) {
 
-                Text(text = "Image", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(R.string.txt_image), style = MaterialTheme.typography.labelLarge)
                 Row(Modifier.height(100.dp)) {
                     Image(
                         painter = rememberAsyncImagePainter(
@@ -145,18 +145,18 @@ fun AddProductComposable(
                         FilledTonalButton(onClick = { onPickImage() }) {
                             Icon(painterResource(R.drawable.gallery_images), null)
                             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                            Text("Pick Image")
+                            Text(stringResource(R.string.btn_image_picker))
                         }
 
                         FilledTonalButton(onClick = { onTakePhoto() }) {
                             Icon(painterResource(R.drawable.camera), null)
                             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                            Text("Take Picture")
+                            Text(stringResource(R.string.btn_take_photo))
                         }
                     }
                 }
 
-                Text(text = "Product name", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(R.string.label_product_name), style = MaterialTheme.typography.labelLarge)
                 OutlinedTextField(
                     value = productName,
                     supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_name_txt)) },
@@ -164,7 +164,7 @@ fun AddProductComposable(
                     onValueChange = onProductNameChange
                 )
 
-                Text(text = "Price", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(R.string.label_product_price), style = MaterialTheme.typography.labelLarge)
                 OutlinedTextField(
                     value = productPrice,
                     onValueChange = onProductPriceChange,
@@ -177,7 +177,7 @@ fun AddProductComposable(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
-                Text(text = "Stock", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(R.string.label_stock), style = MaterialTheme.typography.labelLarge)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         enabled = !isEditMode,
@@ -199,7 +199,7 @@ fun AddProductComposable(
 
                 Row {
                     Column {
-                        Text(text = "Unit", style = MaterialTheme.typography.labelLarge)
+                        Text(text = stringResource(R.string.label_unit), style = MaterialTheme.typography.labelLarge)
                         DropListPicker(
                             unitList, unitPicked
                         ) { unitPicked ->
@@ -208,7 +208,7 @@ fun AddProductComposable(
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Column {
-                        Text(text = "Category", style = MaterialTheme.typography.labelLarge)
+                        Text(text = stringResource(R.string.label_category), style = MaterialTheme.typography.labelLarge)
                         DropListPicker(
                             categories, categoryPicked, onAddItem = onAddNewCategory
                         ) { category ->
@@ -219,7 +219,7 @@ fun AddProductComposable(
                 }
 
                 //Details
-                Text(text = "Details", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(R.string.label_details), style = MaterialTheme.typography.labelLarge)
                 HorizontalDivider(modifier = Modifier.padding(0.dp, 5.dp), thickness = 2.dp)
 
                 OutlinedTextField(

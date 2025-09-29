@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="btn_edit">Editar</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="title_stock">Existencias actuales</string>
+    <string name="btn_stock_out">Retirar stock</string>
+    <string name="btn_stock_in">Agregar stock</string>
+    <string name="title_cost">Costo</string>
+    <string name="desc_no_items">Aún no hay historial</string>
+    <string name="title_history">Historial</string>
+    <string name="supporting_stock_txt">Existencia inicial es requerido</string>
+    <string name="supporting_name_txt">El nombre es requerido</string>
+    <string name="supporting_price_txt">El precio es requerido</string>
+    <string name="btn_save">Guardar</string>
+    <string name="filter_order_a_to_z">Nombre A-Z</string>
+    <string name="filter_order_z_to_a">Nombre Z-A</string>
+    <string name="filter_price_high_to_low">Precio Menos a Más</string>
+    <string name="filter_price_low_to_high">Precio Más a Menos</string>
+    <string name="filter_stock_low_to_high">Existencias Menos a Más</string>
+    <string name="filter_stock_high_to_low">Existencias Más a Menos</string>
+    <string name="filter_created_date_new_to_old">Fecha de creación nuevos primeros</string>
+    <string name="filter_created_date_old_to_new">Fecha de creación viejos primeros</string>
+    <string name="delete_product_message">¿Quieres eliminar este producto?</string>
+    <string name="add_new_category">Escribe la nueva categoría</string>
+    <string name="btn_edit_stock">Editar existencias</string>
+    <string name="edit_category">Escribe el nuevo valor para:</string>
+    <string name="top_bar_title_add">Nuevo Producto</string>
+    <string name="top_bar_title_edit">Editar Producto</string>
+    <string name="txt_image">Imagen</string>
+    <string name="btn_image_picker">Desde Galería</string>
+    <string name="btn_take_photo">Tomar foto</string>
+
+    <string name="label_product_name">Nombre del producto</string>
+    <string name="label_product_price">Precio</string>
+    <string name="label_stock">En existencia</string>
+    <string name="label_unit">Unidad</string>
+    <string name="label_category">Categoría</string>
+    <string name="label_details">Detalles</string>
+    <string name="top_bar_title_categories">Categorías</string>
+    <string name="top_bar_product_details">Detalles del producto</string>
+    <string name="tab_stock">Existencias</string>
+    <string name="tab_details">Detalles</string>
+
+    <string name="message_register_add_stock">Registrar abastecimiento de existencias</string>
+    <string name="message_register_stock_out">Registrar retiro de existencias</string>
+    <string name="tittle_categories">Categorías</string>
+    <string name="chip_order_by">Ordenar por</string>
+    <string name="search_placeholder">Buscar un producto</string>
+</resources>

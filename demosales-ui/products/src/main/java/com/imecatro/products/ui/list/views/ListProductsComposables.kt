@@ -146,7 +146,7 @@ fun ListOfProducts(
                             onSearch = { onSearchProduct(text) },
                             expanded = expanded,
                             onExpandedChange = { expanded = it },
-                            placeholder = { Text("Search a product") },
+                            placeholder = { Text(stringResource(R.string.search_placeholder)) },
                             leadingIcon = {
                                 if (expanded) {
                                     IconButton(onClick = {
@@ -205,7 +205,7 @@ fun ListOfProducts(
                     FilterChip(
                         onClick = { orderedFilter = true },
                         label = {
-                            Text("Order by")
+                            Text( stringResource(R.string.chip_order_by))
                         },
                         selected = orderList.any { it.isChecked },
                         leadingIcon = {
@@ -216,7 +216,7 @@ fun ListOfProducts(
                     FilterChip(
                         onClick = { categoriesFilter = true },
                         label = {
-                            Text("Categories")
+                            Text( stringResource(R.string.tittle_categories))
                         },
                         selected = categories.any { it.isChecked },
                         leadingIcon = {
@@ -275,7 +275,7 @@ fun ListOfProducts(
                 item {
                     ListItem(
                         headlineContent = {
-                            Text(text = "Categories")
+                            Text(text = stringResource(R.string.tittle_categories))
                         },
                         trailingContent = {
                             IconButton(onClick = {

@@ -85,14 +85,14 @@ fun DetailsComposableStateImpl(
             onProductDeleted()
     }
 
-    val titles = listOf("Details", "Stock")
+    val titles = listOf(stringResource(R.string.tab_details), stringResource(R.string.tab_stock))
     val pagerState = rememberPagerState(initialPage = pageSelected) { titles.size }
     val scope = rememberCoroutineScope()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Column(Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text(text = "Product Details") }, navigationIcon = {
+        TopAppBar(title = { Text(text = stringResource(R.string.top_bar_product_details)) }, navigationIcon = {
             IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
         })
         PrimaryTabRow(
@@ -227,7 +227,7 @@ fun DetailsComposable(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 //Details
-                Text(text = "Details", style = MaterialTheme.typography.labelMedium)
+                Text(text = stringResource(R.string.label_details), style = MaterialTheme.typography.labelMedium)
 
                 Text(
                     text = productDetails?.details
