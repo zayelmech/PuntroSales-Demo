@@ -59,7 +59,7 @@ private fun ClientDetailsComposable(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            TopAppBar(title = { Text(text = "Client Details") }, navigationIcon = {
+            TopAppBar(title = { Text(text = stringResource(R.string.top_bar_client_details)) }, navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Default.ArrowBack,
@@ -105,7 +105,7 @@ private fun ClientDetailsComposable(
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 //Details
-                Text(text = "Address", style = MaterialTheme.typography.titleSmall)
+                Text(text = stringResource(R.string.txt_address), style = MaterialTheme.typography.titleSmall)
                 HorizontalDivider()
                 SelectionContainer {
                     Text(

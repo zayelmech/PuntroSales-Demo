@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="btn_edit">Editar</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="btn_save">Guardar</string>
+    <string name="client_name">Nombre del cliente</string>
+    <string name="txt_phone_number">Número de telefono</string>
+    <string name="txt_address">Dirección</string>
+    <string name="btn_pick_image">Seleccionar Imagen</string>
+    <string name="top_bar_client">Cliente</string>
+    <string name="top_bar_client_details">Detalles de Cliente</string>
+    <string name="top_bar_clients">Clientes</string>
+</resources>

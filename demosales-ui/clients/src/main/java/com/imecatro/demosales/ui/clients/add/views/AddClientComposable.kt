@@ -82,7 +82,7 @@ internal fun AddClientComposable(
 
     LazyColumn {
         item {
-            TopAppBar(title = { Text(text = "Client") }, navigationIcon = {
+            TopAppBar(title = { Text(text = stringResource(R.string.top_bar_client)) }, navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Default.ArrowBack,
@@ -118,16 +118,16 @@ internal fun AddClientComposable(
                         FilledTonalButton(onClick = { onPickImage() }) {
                             Icon(painterResource(R.drawable.gallery_images), null)
                             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                            Text("Pick Image")
+                            Text(stringResource(R.string.btn_pick_image))
                         }
                     }
                 }
                 //Client name
-                Text(text = "Client name", style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(R.string.client_name), style = MaterialTheme.typography.titleMedium)
                 OutlinedTextField(value = clientName, onValueChange = onClientNameChange)
                 Spacer(modifier = Modifier.height(10.dp))
                 //Phone number
-                Text(text = "Phone Number", style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(R.string.txt_phone_number), style = MaterialTheme.typography.titleMedium)
                 OutlinedTextField(
                     value = phoneNumber,
                     onValueChange = onPhoneNumberChange,
@@ -136,7 +136,7 @@ internal fun AddClientComposable(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 //Address
-                Text(text = "Address", style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(R.string.txt_address), style = MaterialTheme.typography.titleMedium)
                 HorizontalDivider(
                     modifier = Modifier.padding(0.dp, 5.dp),
                     thickness = 1.dp,

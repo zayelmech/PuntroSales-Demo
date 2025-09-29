@@ -3,4 +3,11 @@
     <string name="btn_edit">Edit</string>
     <string name="btn_delete">Delete</string>
     <string name="btn_save">Save</string>
+    <string name="client_name">Client name</string>
+    <string name="txt_phone_number">Phone Number</string>
+    <string name="txt_address">Address</string>
+    <string name="btn_pick_image">Pick Image</string>
+    <string name="top_bar_client">Client</string>
+    <string name="top_bar_client_details">Client Details</string>
+    <string name="top_bar_clients">Clients</string>
 </resources>
