@@ -71,7 +71,7 @@ fun SalesListComposable(
                 Row(Modifier.padding(10.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = null)
                     Spacer(modifier = Modifier.size(5.dp))
-                    Text("New Sale")
+                    Text(stringResource(R.string.btn_new_sale))
                 }
             }
         }

@@ -150,7 +150,7 @@ fun CreateTicketComposable(
                     ) {
 
                         Text(
-                            text = "Add products to this section, when is done press Continue.\n\nNote: if you need to delete a product, just swipe to left the item",
+                            text = stringResource(R.string.message_start_sale),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -164,7 +164,7 @@ fun CreateTicketComposable(
                         shape = MaterialTheme.shapes.medium
                     ) {
                         Icon(imageVector = Icons.Filled.Add, null)
-                        Text(text = "Add product", color = MaterialTheme.colorScheme.onPrimary)
+                        Text(text = stringResource(R.string.btn_add_product), color = MaterialTheme.colorScheme.onPrimary)
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }
@@ -174,7 +174,7 @@ fun CreateTicketComposable(
                 Column(Modifier.padding(20.dp)) {
                     HorizontalDivider()
                     Row {
-                        Text("Subtotal")
+                        Text(stringResource(R.string.label_subtotal))
                         Spacer(modifier = Modifier.weight(1f))
                         Text(ticketSubtotal.formatAsCurrency())
                     }
@@ -193,7 +193,7 @@ fun CreateTicketComposable(
                 enabled = productsOnCart.isNotEmpty(),
                 shape = MaterialTheme.shapes.large
             ) {
-                Text(text = "Continue")
+                Text(text = stringResource(R.string.btn_continue_sale))
             }
             Spacer(modifier = Modifier.size(10.dp))
             Row {
@@ -203,7 +203,7 @@ fun CreateTicketComposable(
                     enabled = productsOnCart.isNotEmpty(),
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
                 ) {
-                    Text(text = "Save as draft sale")
+                    Text(text = stringResource(R.string.btn_save_as_draft))
                 }
 
                 val state = rememberTooltipState()
@@ -212,7 +212,7 @@ fun CreateTicketComposable(
 
                     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
                     tooltip = {
-                        PlainTooltip { Text("This option does not deduct stock products from inventory. But you can continue with the sale later.") }
+                        PlainTooltip { Text(stringResource(R.string.tooltip_info_draft)) }
                     },
                     state = state
                 ) {
@@ -259,7 +259,7 @@ fun CreateTicketComposableStateImpl(
 
     Column {
         TopAppBar(
-            title = { Text(text = "New Sale") },
+            title = { Text(text = stringResource(R.string.top_bar_new_sale)) },
             navigationIcon = {
                 IconButton(onClick = { onBackToList() }) {
                     Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)

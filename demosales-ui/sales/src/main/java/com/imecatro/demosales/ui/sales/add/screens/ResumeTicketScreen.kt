@@ -33,8 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.BitmapComposer
+import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.ResumeTicketScreen
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
@@ -103,7 +105,7 @@ fun ResumeTicketScreenImpl(
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text(text = "Sale Details") },
+            title = { Text(text = stringResource(R.string.top_bar_sale)) },
             actions = {
                 IconButton(onClick = { onShareTicket.invoke() }) {
                     Icon(Icons.Default.Share, contentDescription = "Share ticket")
@@ -133,13 +135,13 @@ fun ResumeTicketScreenImpl(
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.secondary
                 )
-            ) { Text("Back to sales") }
+            ) { Text(stringResource(R.string.btn_back_to_sales)) }
 
             Button(
                 onClick = { onNavigateAction(saleId) },
                 modifier = Modifier
                     .sizeIn(maxWidth = 320.dp)
-            ) { Icon(Icons.Default.Add, "Add"); Text("New Sale") }
+            ) { Icon(Icons.Default.Add, "Add"); Text( stringResource(R.string.btn_new_sale)) }
         }
 
     }

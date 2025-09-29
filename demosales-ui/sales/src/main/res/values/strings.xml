@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="delete_ticket">Do you want to cancel this ticket ?</string>
-    <string name="btn_cancel">Cancel / Refund</string>
+    <string name="btn_cancel_refund">Cancel / Refund</string>
     <string name="txt_filter_state">Status</string>
     <string name="txt_filter_date">Date</string>
     <string name="delete_item_message">Do you want to remove this item from ticket: %1s ?</string>
     <string name="txt_discount">Discount</string>
     <string name="txt_extra">Extra</string>
     <string name="txt_total">Total</string>
+    <string name="top_bar_sale_with_id">Sale #%1s</string>
+    <string name="label_client">Client</string>
+    <string name="label_notes">Notes</string>
+    <string name="label_subtotal">Subtotal</string>
+    <string name="label_extra">Extra</string>
+    <string name="label_discount">Discount</string>
+    <string name="label_total">Total</string>
+    <string name="btn_checkout">Checkout</string>
+    <string name="btn_save_pending">Save as pending sale</string>
+    <string name="message_start_sale">Add products to this section, when is done press Continue.\n\nNote: if you need to delete a product, just swipe to left the item</string>
+    <string name="btn_add_product">Add product</string>
+    <string name="btn_continue_sale">Continue</string>
+    <string name="btn_save_as_draft">Save as draft sale</string>
+    <string name="tooltip_info_draft">This option does not deduct stock products from inventory. But you can continue with the sale later.</string>
+    <string name="top_bar_new_sale">New Sale</string>
+    <string name="top_bar_sale">Sale Details</string>
+    <string name="btn_back_to_sales">Back to sales</string>
+    <string name="btn_new_sale">New Sale</string>
+    <string name="label_products">Items</string>
+    <string name="top_bar_sale_details">Sale Details</string>
+    <string name="btn_cancel_draft">Cancel</string>
+    <string name="btn_go_to_pay">$ Go to Checkout</string>
+    <string name="btn_duplicate">Duplicate sale</string>
+    <string name="btn_continue_editing">Continue editing</string>
 </resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_ticket">¿Quieres cancelar este ticket ?</string>
+    <string name="btn_cancel_refund">Cancelar / Reembolso</string>
+    <string name="txt_filter_state">Estatus</string>
+    <string name="txt_filter_date">Fecha</string>
+    <string name="delete_item_message">¿Quieres eliminar este producto del ticket: %1s ?</string>
+    <string name="txt_discount">Descuento</string>
+    <string name="txt_extra">Extra</string>
+    <string name="txt_total">Total</string>
+    <string name="top_bar_sale_with_id">Venta #%1s</string>
+
+    <string name="label_client">Cliente</string>
+    <string name="label_notes">Notas</string>
+    <string name="label_subtotal">Subtotal</string>
+    <string name="label_extra">Extra</string>
+    <string name="label_discount">Descuento</string>
+    <string name="label_total">Total</string>
+    <string name="btn_checkout">Cobrar</string>
+    <string name="btn_save_pending">Guardar como venta <b>pendiente</b></string>
+
+    <string name="message_start_sale">Agrega productos a esta sección, cuando termines presiona Continuar.\n\nNota: si necesitas eliminar un producto, simplemente desliza el artículo hacia la izquierda</string>
+    <string name="btn_add_product">Agregar producto</string>
+    <string name="btn_continue_sale">Continuar</string>
+    <string name="btn_save_as_draft">Guardar ticket como borrador</string>
+    <string name="tooltip_info_draft">Esta opción no descuenta los productos del inventario. Pero puedes continuar con la venta más tarde.</string>
+    <string name="top_bar_new_sale">Nueva venta</string>
+
+    <string name="top_bar_sale">Detalles de la venta</string>
+    <string name="btn_back_to_sales">Volver a ventas</string>
+    <string name="btn_new_sale">Nueva Venta</string>
+
+    <string name="label_products">Artículos</string>
+    <string name="top_bar_sale_details">Detalles de la venta</string>
+    <string name="btn_cancel_draft">Cancelar</string>
+    <string name="btn_go_to_pay">Ir a cobrar</string>
+    <string name="btn_duplicate">Duplicar venta</string>
+    <string name="btn_continue_editing">Continuar editando</string>
+</resources>

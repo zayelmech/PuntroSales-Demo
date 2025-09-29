@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -115,14 +116,20 @@ fun ResumeTicketScreen(
 
             // Client
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Client:", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    stringResource(R.string.label_client),
+                    style = MaterialTheme.typography.labelMedium
+                )
                 Spacer(Modifier.weight(1f))
                 Text(ticketDetails.client.name)
             }
 
             // Notes
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Notes:", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    stringResource(R.string.label_notes),
+                    style = MaterialTheme.typography.labelMedium
+                )
                 Spacer(Modifier.weight(1f))
             }
             if (ticketDetails.note.isNotBlank())
@@ -130,9 +137,16 @@ fun ResumeTicketScreen(
                     Text(ticketDetails.note, style = MaterialTheme.typography.bodySmall)
                 }
 
-
-            // Products
-            Text("Items:", style = MaterialTheme.typography.labelMedium)
+            HorizontalDivider()
+            Spacer(Modifier.size(5.dp))
+            // Extra
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.label_products),
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Text(": " + ticketDetails.list.size)
+            }
         }
 
         items(ticketDetails.list) { product ->
@@ -241,7 +255,7 @@ fun TicketDetailsComposableImpl(
     Column(Modifier.fillMaxSize()) {
 
         TopAppBar(
-            title = { Text(text = "Sale Details") },
+            title = { Text(text = stringResource(R.string.top_bar_sale_details)) },
             navigationIcon = {
                 IconButton(onClick = { onBackToList() }) { Icon(Icons.Default.ArrowBack, null) }
             }, actions = {
@@ -277,9 +291,9 @@ fun TicketDetailsComposableImpl(
                 ) {
                     Icon(Icons.Outlined.Delete, "Delete")
                     if (saleSelected.isDraft)
-                        Text("Cancel")
+                        Text(stringResource(R.string.btn_cancel_draft))
                     else
-                        Text("Cancel & refund ")
+                        Text(stringResource(R.string.btn_cancel_refund))
                 }
 
             if (saleSelected.isReadyToPay) {
@@ -287,14 +301,19 @@ fun TicketDetailsComposableImpl(
                     onClick = { onEditTicket(saleId) },
                     modifier = Modifier
                         .sizeIn(maxWidth = 320.dp)
-                ) { Text("$ Go to Checkout") }
+                ) {
+                    Icon(Icons.Outlined.Done, "Duplicate")
+                    Text(stringResource(R.string.btn_go_to_pay)) }
             }
             if (saleSelected.isAlreadyPaid || !saleSelected.isCancelable)
                 Button(
                     onClick = { onDuplicateTicket(saleId) },
                     modifier = Modifier
                         .sizeIn(maxWidth = 320.dp)
-                ) { Icon(Icons.Outlined.ShoppingCart, "Duplicate"); Text("Duplicate sale") }
+                ) {
+                    Icon(Icons.Outlined.ShoppingCart, "Duplicate")
+                    Text(stringResource(R.string.btn_duplicate))
+                }
 
 
             if (saleSelected.isDraft) {
@@ -302,7 +321,10 @@ fun TicketDetailsComposableImpl(
                     onClick = { onDuplicateTicket(saleId) },
                     modifier = Modifier
                         .sizeIn(maxWidth = 320.dp)
-                ) { Icon(Icons.Outlined.ShoppingCart, "Duplicate"); Text("Continue editing") }
+                ) {
+                    Icon(Icons.Outlined.ShoppingCart, "Duplicate")
+                    Text(stringResource(R.string.btn_continue_editing))
+                }
             }
         }
 

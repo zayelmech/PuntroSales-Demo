@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,12 +40,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.components.SearchClientBottomSheet
 import com.imecatro.demosales.ui.sales.add.components.SearchClientEngineModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
@@ -79,13 +83,13 @@ fun CheckoutTicketComposable(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
-        TopAppBar(title = { Text(text = "Sale #$saleId") })
+        TopAppBar(title = { Text(text = stringResource(R.string.top_bar_sale_with_id, saleId.toString())) })
         //Cliente // search //guest
         Row(verticalAlignment = Alignment.CenterVertically) {
 
-            Text(text = "Client", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.label_client), style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { onChangeClientClick() }) {
+            FilledTonalIconButton(onClick = { onChangeClientClick() }) {
                 Icon(Icons.Default.AccountCircle, null)
             }
             Text(text = client)
@@ -93,7 +97,7 @@ fun CheckoutTicketComposable(
         }
         //Notes
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Notes", style = MaterialTheme.typography.titleSmall)
+            Text(text = stringResource(R.string.label_notes), style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.weight(1f))
         }
         OutlinedTextField(
@@ -113,12 +117,12 @@ fun CheckoutTicketComposable(
                 modifier = Modifier.sizeIn(minHeight = 55.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Subtotal")
+                Text(stringResource(R.string.label_subtotal))
                 Spacer(modifier = Modifier.weight(1f))
                 Text(subtotal.formatAsCurrency())
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Extra")
+                Text(text = stringResource(R.string.label_extra))
                 Spacer(modifier = Modifier.weight(1f))
 
                 OutlinedTextField(
@@ -136,7 +140,7 @@ fun CheckoutTicketComposable(
             Spacer(modifier = Modifier.size(5.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Discount")
+                Text(text = stringResource(R.string.label_discount))
                 Spacer(modifier = Modifier.weight(1f))
 
                 OutlinedTextField(
@@ -158,7 +162,7 @@ fun CheckoutTicketComposable(
             Spacer(modifier = Modifier.size(10.dp))
             //Total
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Total")
+                Text(text = stringResource(R.string.label_total))
                 Spacer(modifier = Modifier.weight(1f))
                 Text(text = total.formatAsCurrency())
 
@@ -176,13 +180,13 @@ fun CheckoutTicketComposable(
                     .fillMaxWidth(),
                 shape = MaterialTheme.shapes.large
             ) {
-                Text(text = "Checkout")
+                Text(text = stringResource(R.string.btn_checkout))
             }
             TextButton(
                 onClick = onSavePending,
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
             ) {
-                Text(text = "Save as pending sale")
+                Text(text = stringResource(R.string.btn_save_pending))
             }
         }
     }
