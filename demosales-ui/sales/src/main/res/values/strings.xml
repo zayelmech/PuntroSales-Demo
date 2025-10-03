@@ -32,4 +32,5 @@
     <string name="btn_go_to_pay">$ Go to Checkout</string>
     <string name="btn_duplicate">Duplicate sale</string>
     <string name="btn_continue_editing">Continue editing</string>
+    <string name="tittle_download_csv">Download CSV</string>
 </resources>

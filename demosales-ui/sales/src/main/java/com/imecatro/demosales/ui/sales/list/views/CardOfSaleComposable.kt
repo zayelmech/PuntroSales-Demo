@@ -1,12 +1,18 @@
 package com.imecatro.demosales.ui.sales.list.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,20 +28,45 @@ import com.imecatro.demosales.ui.theme.common.localDate
 @Composable
 fun CardOfSaleComposable(
     sale: SaleOnListUiModel = SaleOnListUiModel(
-        0,
-        "Ab",
+        id = 0,
+        clientName = "Ab",
         date = "01/02/2022",
-        200.0,
-        "Completed",
-        Color.Blue
+        total = 200.0,
+        status = "Completed",
+        statusColor = Color.Blue,
+        isSelected = true
     ),
+    onLongClicked: () -> Unit = {},
     onCardClicked: () -> Unit = {}
 ) {
+    val backgroundColor = if (sale.isSelected) {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+    } else {
+        Color.Transparent
+    }
+
     Box(
         modifier = Modifier
-            .clickable { onCardClicked() },
+            .background(backgroundColor)
+            .combinedClickable(
+                onClick = onCardClicked,
+                onLongClick = onLongClicked
+            )
     ) {
         ListItem(
+            leadingContent = {
+                if (sale.isSelected) {
+                    Column(
+                        modifier = Modifier.sizeIn(minHeight = 60.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Default.CheckCircle, "Selected",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
+            },
             headlineContent = {
                 Text(text = sale.total.formatAsCurrency())
             },
@@ -48,16 +79,19 @@ fun CardOfSaleComposable(
             trailingContent = {
                 Box(
                     modifier = Modifier
+                        .padding(vertical = 15.dp, horizontal = 0.dp)
                         .background(color = sale.statusColor, shape = RoundedCornerShape(5.dp))
-                        .padding(10.dp)
-                        .sizeIn(minWidth = 50.dp),
+                        .sizeIn(minWidth = 70.dp, minHeight = 30.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = sale.status)
                 }
 
 
-            }
+            },
+            // Make ListItem background transparent to see the Box color
+            colors = androidx.compose.material3.ListItemDefaults.colors(containerColor = Color.Transparent)
+
         )
     }
 }

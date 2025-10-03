@@ -1,5 +1,6 @@
 package com.imecatro.demosales.ui.sales.list.views
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,24 +8,29 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +56,10 @@ fun SalesListComposable(
     list: List<SaleOnListUiModel> = fakelist,
     statusList: List<StatusFilterUiModel> = emptyList(),
     onCheckedChange: (StatusFilterUiModel) -> Unit = {},
+    showDownloadOptions: Boolean = false,
+    onHideOptions: () -> Unit = {},
+    onDownloadClicked: () -> Unit = {},
+    onCardSelected: (id: Long) -> Unit = {},
     onCardClicked: (id: Long?) -> Unit = {},
     onAddNewSale: () -> Unit = {}
 ) {
@@ -76,30 +87,65 @@ fun SalesListComposable(
             }
         }
 
-    }) { innerPadding ->
+    }, topBar = {
+        val windowInsets = TopAppBarDefaults.windowInsets
+
+            Column {
+                AnimatedVisibility(visible = showDownloadOptions) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .windowInsetsPadding(windowInsets),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onHideOptions) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                        }
+                        Text(stringResource(R.string.tittle_download_csv))
+                        Spacer(Modifier.weight(1f))
+
+                        FilledTonalIconButton(onClick = onDownloadClicked) {
+                            Icon(painterResource(R.drawable.download), "Download")
+                        }
+                        Spacer(modifier = Modifier.size(10.dp))
+                    }
+                }
+                AnimatedVisibility(!showDownloadOptions) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp)
+                            .windowInsetsPadding(windowInsets),
+                        horizontalArrangement = Arrangement.Start,
+                    ) {
+                        FilterChip(
+                            onClick = { statusFilter = true },
+                            label = {
+                                Text(stringResource(R.string.txt_filter_state))
+                            },
+                            selected = statusList.any { it.isChecked },
+                            leadingIcon = {
+                                if (statusList.any { it.isChecked }) {
+                                    Icon(Icons.Filled.Done, null)
+                                } else {
+                                    Icon(Icons.Filled.ArrowDropDown, null)
+                                }
+                            }
+                        )
+                    }
+                }
+
+        }
+
+    }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                Spacer(modifier = Modifier.size(20.dp))
-
-                FilterChip(
-                    onClick = { statusFilter = true },
-                    label = {
-                        Text(stringResource(R.string.txt_filter_state))
-                    },
-                    selected = statusList.any { it.isChecked },
-                    leadingIcon = {
-                        if (statusList.any { it.isChecked }) {
-                            Icon(Icons.Filled.Done, null)
-                        } else {
-                            Icon(Icons.Filled.ArrowDropDown, null)
-                        }
-                    }
-                )
-            }
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -107,7 +153,11 @@ fun SalesListComposable(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 items(list) { sale ->
-                    CardOfSaleComposable(sale = sale) { onCardClicked(sale.id) }
+                    CardOfSaleComposable(
+                        sale = sale,
+                        onLongClicked = { onCardSelected(sale.id) },
+                        onCardClicked = { onCardClicked(sale.id) }
+                    )
                 }
             }
 
@@ -160,12 +210,20 @@ fun SalesListComposableStateImpl(
 ) {
 
     val listUiState by salesListViewModel.salesListUiState.collectAsState()
-
     val statusFilterUiState by salesListViewModel.statusFilterState.collectAsState()
+    val showOptions = listUiState.any { it.isSelected }
 
     SalesListComposable(
         list = listUiState,
-        onCardClicked = onNavigate,
+        onCardClicked = { id ->
+            if (showOptions)
+                salesListViewModel.onCardSelected(id ?: 0L)
+            else
+                onNavigate(id)
+        },
+        onHideOptions = { salesListViewModel.onClearSelections() },
+        showDownloadOptions = showOptions,
+        onCardSelected = { salesListViewModel.onCardSelected(it) },
         onCheckedChange = { salesListViewModel.onStatusFilterChange(it) },
         statusList = statusFilterUiState,
         onAddNewSale = { onNavigate(null) })

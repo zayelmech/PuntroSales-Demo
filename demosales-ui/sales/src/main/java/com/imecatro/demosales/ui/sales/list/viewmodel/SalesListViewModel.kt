@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -29,7 +30,9 @@ class SalesListViewModel @Inject constructor(
     getAllSalesUseCase: GetAllSalesUseCase
 ) : ViewModel() {
 
+    private val _idsSelected = MutableStateFlow<List<Long>>(mutableListOf())
 
+    private val idsSelected : StateFlow<List<Long>> = _idsSelected.asStateFlow()
     private val _statusFilterState: MutableStateFlow<List<StatusFilterUiModel>> =
         MutableStateFlow(emptyList())
 
@@ -51,6 +54,9 @@ class SalesListViewModel @Inject constructor(
                 else
                     sales.filter { sale -> sale.status in statusSelected }
             }
+            .combine(idsSelected){ sales, ids ->
+                sales.map { sale -> sale.copy(isSelected = ids.contains(sale.id)) }
+            }
             .catch { Log.e(TAG, ": ", it) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
@@ -71,6 +77,22 @@ class SalesListViewModel @Inject constructor(
                 else
                     statusFilterUiModel
             }
+        }
+    }
+
+    fun onCardSelected(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (_idsSelected.value.contains(id)){
+                _idsSelected.update { list -> list.minus(id)}
+            }else{
+                _idsSelected.update { list -> list.plus(id)}
+            }
+        }
+    }
+
+    fun onClearSelections() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _idsSelected.update { emptyList() }
         }
     }
 

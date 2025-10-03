@@ -8,7 +8,8 @@ data class SaleOnListUiModel(
     var date: String,
     var total: Double,
     var status: String,
-    val statusColor : Color
+    val statusColor : Color,
+    val isSelected : Boolean = false
 )
 
 internal typealias SalesList = List<SaleOnListUiModel>
