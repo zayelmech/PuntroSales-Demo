@@ -1,6 +1,5 @@
 package com.imecatro.demosales.domain.sales.add.usecases
 
-import com.imecatro.demosales.domain.sales.add.repository.AddSaleDummyRepoImpl
 import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.domain.sales.model.SaleDomainModel

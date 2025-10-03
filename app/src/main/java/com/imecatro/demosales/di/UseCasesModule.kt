@@ -9,13 +9,6 @@ import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCas
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
-import com.imecatro.demosales.domain.products.repository.ProductsRepository
-import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
-import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
-import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
-import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
-import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
-import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
@@ -43,26 +36,6 @@ import kotlinx.coroutines.Dispatchers
 @InstallIn(ViewModelComponent::class)
 class UseCasesModule {
 
-    @Provides
-    fun providesAddStockUseCase(productsRepository: ProductsRepository) =
-        AddStockUseCase(productsRepository)
-
-    @Provides
-    fun providesRemoveFromStockUseCase(productsRepository: ProductsRepository) =
-        RemoveFromStockUseCase(productsRepository)
-
-    @Provides
-    fun provideGetListOfCurrenciesUseCase(): GetListOfCurrenciesUseCase =
-        GetListOfCurrenciesUseCase()
-
-    @Provides
-    fun provideGetListOfUnitsUseCase(): GetListOfUnitsUseCase = GetListOfUnitsUseCase()
-
-
-    @Provides
-    fun providesGetProductsLikeUseCase(productsRepository: ProductsRepository): GetProductsLikeUseCase {
-        return GetProductsLikeUseCase(productsRepository)
-    }
 
     @Provides
     fun providesGetMostPopularProductsUseCase(addSaleRepository: AddSaleRepository): GetMostPopularProductsUseCase {
@@ -77,14 +50,6 @@ class UseCasesModule {
     fun providesUpdateTicketStatusUseCase(addSaleRepository: AddSaleRepository): UpdateTicketStatusUseCase {
         return UpdateTicketStatusUseCase(addSaleRepository)
     }
-
-
-    @Provides
-    fun providesGetProductDetailsByIdUseCase(
-        productsRepository: ProductsRepository,
-        ioDispatcher: CoroutineDispatcher
-    ): GetProductDetailsByIdUseCase =
-        GetProductDetailsByIdUseCase(productsRepository, ioDispatcher)
 
     @Provides
     fun provideAddProductToCartUseCase(addSaleRepository: AddSaleRepository): AddProductToCartUseCase =

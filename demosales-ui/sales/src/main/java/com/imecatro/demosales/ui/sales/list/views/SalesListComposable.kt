@@ -223,6 +223,7 @@ fun SalesListComposableStateImpl(
         },
         onHideOptions = { salesListViewModel.onClearSelections() },
         showDownloadOptions = showOptions,
+        onDownloadClicked = { salesListViewModel.onDownloadCsv() },
         onCardSelected = { salesListViewModel.onCardSelected(it) },
         onCheckedChange = { salesListViewModel.onStatusFilterChange(it) },
         statusList = statusFilterUiState,

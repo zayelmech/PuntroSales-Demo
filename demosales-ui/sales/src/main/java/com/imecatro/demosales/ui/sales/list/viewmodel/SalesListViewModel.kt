@@ -3,6 +3,7 @@ package com.imecatro.demosales.ui.sales.list.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.domain.sales.list.usecases.ExportSalesReportUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.list.mappers.toUiModel
@@ -27,12 +28,13 @@ private const val TAG = "SalesListViewModel"
 
 @HiltViewModel
 class SalesListViewModel @Inject constructor(
-    getAllSalesUseCase: GetAllSalesUseCase
+    getAllSalesUseCase: GetAllSalesUseCase,
+    private val exportSalesReportUseCase: ExportSalesReportUseCase
 ) : ViewModel() {
 
     private val _idsSelected = MutableStateFlow<List<Long>>(mutableListOf())
 
-    private val idsSelected : StateFlow<List<Long>> = _idsSelected.asStateFlow()
+    private val idsSelected: StateFlow<List<Long>> = _idsSelected.asStateFlow()
     private val _statusFilterState: MutableStateFlow<List<StatusFilterUiModel>> =
         MutableStateFlow(emptyList())
 
@@ -54,7 +56,7 @@ class SalesListViewModel @Inject constructor(
                 else
                     sales.filter { sale -> sale.status in statusSelected }
             }
-            .combine(idsSelected){ sales, ids ->
+            .combine(idsSelected) { sales, ids ->
                 sales.map { sale -> sale.copy(isSelected = ids.contains(sale.id)) }
             }
             .catch { Log.e(TAG, ": ", it) }
@@ -82,10 +84,10 @@ class SalesListViewModel @Inject constructor(
 
     fun onCardSelected(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (_idsSelected.value.contains(id)){
-                _idsSelected.update { list -> list.minus(id)}
-            }else{
-                _idsSelected.update { list -> list.plus(id)}
+            if (_idsSelected.value.contains(id)) {
+                _idsSelected.update { list -> list.minus(id) }
+            } else {
+                _idsSelected.update { list -> list.plus(id) }
             }
         }
     }
@@ -93,6 +95,18 @@ class SalesListViewModel @Inject constructor(
     fun onClearSelections() {
         viewModelScope.launch(Dispatchers.IO) {
             _idsSelected.update { emptyList() }
+        }
+    }
+
+    fun onDownloadCsv() {
+        viewModelScope.launch(Dispatchers.IO) {
+            exportSalesReportUseCase.execute {
+                ids = idsSelected.value
+            }.onSuccess { file ->
+                Log.d(TAG, "onDownloadCsv: ${file.absolutePath}")
+            }.onFailure { err ->
+                Log.e(TAG, "onDownloadCsv: ", err)
+            }
         }
     }
 
