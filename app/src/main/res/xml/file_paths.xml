@@ -5,6 +5,10 @@
         name="images"
         path="Pictures/" />
 
+    <external-files-path
+        name="tickets"
+        path="Tickets/" />
+
     <!-- Shared tickets    -->
     <cache-path name="shared_images" path="." />
 </paths>
