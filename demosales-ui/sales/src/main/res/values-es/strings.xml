@@ -37,4 +37,8 @@
     <string name="btn_duplicate">Duplicar venta</string>
     <string name="btn_continue_editing">Continuar editando</string>
     <string name="tittle_download_csv">Descargar como CSV</string>
+
+    <string name="txt_select_all">Seleccionar todos</string>
+    <string name="txt_sales_report">Resumen de ventas</string>
+    <string name="txt_products_report">Concentrado de products</string>
 </resources>

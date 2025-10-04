@@ -6,5 +6,7 @@ import java.io.File
 data class ExportSalesReportInput(
     val ids: List<Long> = emptyList(),
     val isFetchingData: Boolean = false,
-    val file: File? = null
+    val salesFile: File? = null,
+    val groupedProductsFile: File? = null,
+    val allSelected: Boolean = false
 )

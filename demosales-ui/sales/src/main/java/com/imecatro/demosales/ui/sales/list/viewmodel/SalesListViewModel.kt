@@ -89,6 +89,11 @@ class SalesListViewModel @Inject constructor(
             _reportState.update { it.copy(ids = it.ids.minus(id)) }
         else
             _reportState.update { it.copy(ids = it.ids.plus(id)) }
+
+        // Uncheck selection
+        if (salesListUiState.value.size != _reportState.value.ids.size) {
+            _reportState.update { it.copy(allSelected = false) }
+        }
     }
 
     fun onClearSelections() = viewModelScope.launch(coroutineProvider.io) {
@@ -99,12 +104,23 @@ class SalesListViewModel @Inject constructor(
         exportSalesReportUseCase.execute {
             ids = reportState.value.ids
         }.onSuccess { file ->
-            _reportState.update { it.copy(file = file) }
+            _reportState.update { it.copy(salesFile = file) }
         }.onFailure { err ->
             Log.e(TAG, "onDownloadCsv: ", err)
         }
     }
 
-    fun onReportSent() = _reportState.update { it.copy(file = null) }
+    fun onReportSent() = _reportState.update { it.copy(salesFile = null) }
+
+
+    fun onSelectAllSales(checked: Boolean) = viewModelScope.launch(coroutineProvider.io) {
+        _reportState.update { it.copy(allSelected = checked) }
+        val currentIds = salesListUiState.value.map { it.id }
+        if (checked)
+            _reportState.update { it.copy(ids = currentIds) }
+        else
+            _reportState.update { it.copy(ids = emptyList()) }
+
+    }
 
 }

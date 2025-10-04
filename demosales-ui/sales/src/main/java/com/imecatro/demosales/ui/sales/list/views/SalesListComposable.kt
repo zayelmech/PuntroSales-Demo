@@ -1,7 +1,5 @@
 package com.imecatro.demosales.ui.sales.list.views
 
-import android.content.ClipData
-import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,22 +9,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -49,11 +50,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
 import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
+import com.imecatro.demosales.ui.theme.common.download
+import com.imecatro.demosales.ui.theme.common.open
+import com.imecatro.demosales.ui.theme.common.share
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,10 +65,13 @@ import kotlinx.coroutines.launch
 fun SalesListComposable(
     list: List<SaleOnListUiModel> = fakelist,
     statusList: List<StatusFilterUiModel> = emptyList(),
-    onCheckedChange: (StatusFilterUiModel) -> Unit = {},
+    onStatusFilterChecked: (StatusFilterUiModel) -> Unit = {},
+    itemsSelectedQty: Int = 0, // The amount of items selected in the list
     showDownloadOptions: Boolean = false,
-    onHideOptions: () -> Unit = {},
+    onHideDownloadOptions: () -> Unit = {},
     onDownloadClicked: () -> Unit = {},
+    onSelectAllChecked: (Boolean) -> Unit = {}, // for selection all items
+    allSelected: Boolean = false,
     onCardSelected: (id: Long) -> Unit = {},
     onCardClicked: (id: Long?) -> Unit = {},
     onAddNewSale: () -> Unit = {}
@@ -97,25 +103,33 @@ fun SalesListComposable(
     }, topBar = {
         val windowInsets = TopAppBarDefaults.windowInsets
 
-        Column {
+        Column(modifier = Modifier.windowInsetsPadding(windowInsets)) {
             AnimatedVisibility(visible = showDownloadOptions) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .windowInsetsPadding(windowInsets),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onHideOptions) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
-                    }
-                    Text(stringResource(R.string.tittle_download_csv))
-                    Spacer(Modifier.weight(1f))
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onHideDownloadOptions) {
+                            Icon(Icons.Default.Close, null)
+                        }
+                        Text("$itemsSelectedQty")
+                        Spacer(Modifier.weight(1f))
 
-                    FilledTonalIconButton(onClick = onDownloadClicked) {
-                        Icon(painterResource(R.drawable.download), "Download")
+                        FilledIconButton(onClick = onDownloadClicked) {
+                            Icon(painterResource(R.drawable.filetype_csv), "Download")
+                        }
+                        Spacer(modifier = Modifier.size(10.dp))
                     }
-                    Spacer(modifier = Modifier.size(10.dp))
+
+                    Row(
+                        Modifier.wrapContentSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(allSelected, onCheckedChange = { onSelectAllChecked(it) })
+                        Text(stringResource(R.string.txt_select_all))
+                    }
                 }
             }
             AnimatedVisibility(!showDownloadOptions) {
@@ -123,8 +137,7 @@ fun SalesListComposable(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp)
-                        .windowInsetsPadding(windowInsets),
+                        .padding(start = 10.dp),
                     horizontalArrangement = Arrangement.Start,
                 ) {
                     FilterChip(
@@ -191,11 +204,12 @@ fun SalesListComposable(
                                 leadingContent = {
                                     Checkbox(
                                         checked = status.isChecked,
-                                        onCheckedChange = { onCheckedChange(status) })
+                                        onCheckedChange = { onStatusFilterChecked(status) })
                                 },
                                 headlineContent = {
                                     Text(text = status.text)
-                                }
+                                },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                             )
                         }
                     }
@@ -210,18 +224,25 @@ private val fakelist = listOf(
     SaleOnListUiModel(1, "Someone", "30/01/2023", 20.0, "pending", Color.Gray)
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SalesListComposableStateImpl(
     salesListViewModel: SalesListViewModel,
     onNavigate: (Long?) -> Unit
 ) {
 
+    //List
     val listUiState by salesListViewModel.salesListUiState.collectAsState()
+    // Filters
     val statusFilterUiState by salesListViewModel.statusFilterState.collectAsState()
-
+    // Reports
     val reportState by salesListViewModel.reportState.collectAsState()
 
     val showOptions = listUiState.any { it.isSelected }
+
+    var showReports by remember { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope()
 
     SalesListComposable(
         list = listUiState,
@@ -231,45 +252,64 @@ fun SalesListComposableStateImpl(
             else
                 onNavigate(id)
         },
-        onHideOptions = { salesListViewModel.onClearSelections() },
+        itemsSelectedQty = reportState.ids.size,
+        onHideDownloadOptions = { salesListViewModel.onClearSelections() },
         showDownloadOptions = showOptions,
         onDownloadClicked = { salesListViewModel.onDownloadCsv() },
+        onSelectAllChecked = { salesListViewModel.onSelectAllSales(it) },
+        allSelected = reportState.allSelected,
         onCardSelected = { salesListViewModel.onCardSelected(it) },
-        onCheckedChange = { salesListViewModel.onStatusFilterChange(it) },
+        onStatusFilterChecked = { salesListViewModel.onStatusFilterChange(it) },
         statusList = statusFilterUiState,
         onAddNewSale = { onNavigate(null) })
 
-
-    val context = LocalContext.current
-
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(reportState) {
-        if (reportState.file != null) {
-
-            scope.launch {
-                // Open file
-                val uri = FileProvider.getUriForFile(
-                    context, "${context.packageName}.fileprovider", reportState.file!!
-                )
-
-                val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/csv"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    clipData = ClipData.newUri(
-                        context.contentResolver,
-                        "File CSV",
-                        uri
-                    )
-                }
-
-                val chooser = Intent.createChooser(intent, "Share File")
-                context.startActivity(chooser)
-                salesListViewModel.onReportSent()
-            }
-
+        if (reportState.salesFile != null) {
+            scope.launch { showReports = true }
         }
     }
 
+    val context = LocalContext.current
+
+    if (showReports)
+        ModalBottomSheet(onDismissRequest = {
+            salesListViewModel.onReportSent()
+            showReports = false
+        }) {
+            Column(Modifier.padding(horizontal = 20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = {
+                        reportState.salesFile?.open(context)
+                    }) {
+                        Text(stringResource(R.string.txt_sales_report))
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = {
+                        reportState.salesFile?.share(context)
+                    }) { Icon(Icons.Default.Share, null) }
+
+                    IconButton(onClick = {
+                        reportState.salesFile?.download(context)
+                    }) { Icon(painterResource(R.drawable.download), null) }
+
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = {
+                        reportState.groupedProductsFile?.open(context)
+                    }) {
+                        Text(stringResource(R.string.txt_products_report))
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    IconButton(onClick = {
+                        reportState.groupedProductsFile?.share(context)
+                    }) { Icon(Icons.Default.Share, null) }
+                    IconButton(onClick = {
+                        reportState.groupedProductsFile?.download(context)
+                    }) { Icon(painterResource(R.drawable.download), null) }
+
+                }
+            }
+        }
 }

@@ -33,4 +33,7 @@
     <string name="btn_duplicate">Duplicate sale</string>
     <string name="btn_continue_editing">Continue editing</string>
     <string name="tittle_download_csv">Download CSV</string>
+    <string name="txt_select_all">Select all</string>
+    <string name="txt_sales_report">Sales Report</string>
+    <string name="txt_products_report">Grouped Products</string>
 </resources>
