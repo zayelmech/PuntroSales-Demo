@@ -2,17 +2,12 @@ package com.imecatro.demosales.domain.sales.list.usecases;
 
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.domain.core.architecture.usecase.BackgroundUseCase
-import com.imecatro.demosales.domain.core.date.convertMillisToDate
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
-import com.imecatro.demosales.domain.sales.details.SaleDetailsDomainModel
 import com.imecatro.demosales.domain.sales.list.model.Ids
 import com.imecatro.demosales.domain.sales.list.model.Input
-import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
 import com.imecatro.demosales.domain.sales.list.repository.FileInteractor
 import com.imecatro.demosales.domain.sales.model.Order
 import java.io.File
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 
 class ExportProductsFromSaleUseCase(
     private val detailsSaleRepository: DetailsSaleRepository,

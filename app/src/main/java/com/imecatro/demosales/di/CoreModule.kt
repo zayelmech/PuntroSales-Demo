@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import java.io.File
+import java.io.FileOutputStream
 import kotlin.coroutines.CoroutineContext
 
 @Module
@@ -40,9 +41,7 @@ class FileInteractorImpl(private val ctx: Context) : FileInteractor {
 
     private fun ticketsDir(): File {
         val root = ctx.getExternalFilesDir(null) ?: ctx.filesDir
-        val dir = File(root, "Tickets")
-        if (!dir.exists()) dir.mkdirs()
-        return dir
+        return File(root, "Tickets").also { it.mkdirs() }
     }
 
     override fun writeCsvToTickets(
@@ -50,7 +49,15 @@ class FileInteractorImpl(private val ctx: Context) : FileInteractor {
         rows: List<List<String>>
     ): File {
         val f = File(ticketsDir(), filename)
-        f.writeText(CsvUtil.toCsv(rows), Charsets.UTF_8)
+        val csvContent = CsvUtil.toCsv(rows)
+        // 2. Usar FileOutputStream para tener control total sobre la escritura
+        FileOutputStream(f).use { fos ->
+            // 3. Escribir el BOM para UTF-8 al inicio del archivo
+            fos.write(byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte()))
+            // 4. Escribir el contenido del CSV usando la codificación UTF-8
+            fos.write(csvContent.toByteArray(Charsets.UTF_8))
+        }
+
         return f
     }
 
