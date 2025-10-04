@@ -18,6 +18,7 @@ import com.imecatro.demosales.domain.sales.add.usecases.UpdateTicketStatusUseCas
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.details.UpdateSaleStatusUseCase
+import com.imecatro.demosales.domain.sales.list.usecases.ExportProductsFromSaleUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
 import dagger.Module
 import dagger.Provides
@@ -36,7 +37,13 @@ object SalesUseCases {
     ): ExportSalesReportUseCase =
         ExportSalesReportUseCase(allSalesRepository, fileInteractor, coroutineDispatcher)
 
-
+    @Provides
+    fun providesExportProductsFromSaleUseCase(
+        detailsSaleRepository: DetailsSaleRepository,
+        fileInteractor: FileInteractor,
+        coroutineDispatcher: CoroutineProvider
+    ): ExportProductsFromSaleUseCase =
+        ExportProductsFromSaleUseCase(detailsSaleRepository, fileInteractor, coroutineDispatcher)
 
     @Provides
     fun providesGetMostPopularProductsUseCase(addSaleRepository: AddSaleRepository): GetMostPopularProductsUseCase {

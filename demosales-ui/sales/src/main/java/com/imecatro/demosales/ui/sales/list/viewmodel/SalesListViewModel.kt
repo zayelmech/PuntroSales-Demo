@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+import com.imecatro.demosales.domain.sales.list.usecases.ExportProductsFromSaleUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.ExportSalesReportUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
@@ -31,7 +32,8 @@ private const val TAG = "SalesListViewModel"
 class SalesListViewModel @Inject constructor(
     getAllSalesUseCase: GetAllSalesUseCase,
     private val coroutineProvider: CoroutineProvider,
-    private val exportSalesReportUseCase: ExportSalesReportUseCase
+    private val exportSalesReportUseCase: ExportSalesReportUseCase,
+    private val exportProductsFromSaleUseCase: ExportProductsFromSaleUseCase,
 ) : ViewModel() {
 
     private val _reportState = MutableStateFlow(ExportSalesReportInput())
@@ -108,9 +110,19 @@ class SalesListViewModel @Inject constructor(
         }.onFailure { err ->
             Log.e(TAG, "onDownloadCsv: ", err)
         }
+
+        exportProductsFromSaleUseCase.execute {
+            ids = reportState.value.ids
+        }.onSuccess { file ->
+            _reportState.update { it.copy(groupedProductsFile = file) }
+        }.onFailure { err ->
+            Log.e(TAG, "onDownloadCsv: ", err)
+        }
     }
 
-    fun onReportSent() = _reportState.update { it.copy(salesFile = null) }
+    fun onReportSent() {
+        _reportState.update { it.copy(salesFile = null, groupedProductsFile = null) }
+    }
 
 
     fun onSelectAllSales(checked: Boolean) = viewModelScope.launch(coroutineProvider.io) {
