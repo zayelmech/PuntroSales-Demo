@@ -1,4 +1,4 @@
-package com.imecatro.demosales.ui.sales
+package com.imecatro.demosales.ui.theme.common
 
 import android.app.Activity
 import android.graphics.Bitmap

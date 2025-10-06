@@ -36,4 +36,8 @@
     <string name="txt_select_all">Select all</string>
     <string name="txt_sales_report">Sales Report</string>
     <string name="txt_products_report">Grouped Products</string>
+    <string name="txt_filter_draft">Draft</string>
+    <string name="txt_filter_pending">Pending</string>
+    <string name="txt_filter_completed">Completed</string>
+    <string name="txt_filter_cancelled">Cancelled</string>
 </resources>

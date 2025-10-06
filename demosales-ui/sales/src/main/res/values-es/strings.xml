@@ -41,4 +41,8 @@
     <string name="txt_select_all">Seleccionar todos</string>
     <string name="txt_sales_report">Resumen de ventas</string>
     <string name="txt_products_report">Concentrado de products</string>
+    <string name="txt_filter_draft">Borrador</string>
+    <string name="txt_filter_pending">Pendiente</string>
+    <string name="txt_filter_completed">Completada</string>
+    <string name="txt_filter_cancelled">Cancelada</string>
 </resources>

@@ -52,7 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.imecatro.demosales.ui.sales.BitmapComposer
+import com.imecatro.demosales.ui.theme.common.BitmapComposer
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.details.model.ProductOnTicketUiModel
 import com.imecatro.demosales.ui.sales.details.model.TicketDetailsUiModel

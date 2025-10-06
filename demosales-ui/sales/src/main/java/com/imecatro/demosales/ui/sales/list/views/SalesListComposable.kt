@@ -207,7 +207,7 @@ fun SalesListComposable(
                                         onCheckedChange = { onStatusFilterChecked(status) })
                                 },
                                 headlineContent = {
-                                    Text(text = status.text)
+                                    Text(text = stringResource(status.text))
                                 },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                             )
