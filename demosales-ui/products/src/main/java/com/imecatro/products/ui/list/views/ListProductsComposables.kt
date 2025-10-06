@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
@@ -205,7 +206,7 @@ fun ListOfProducts(
                     FilterChip(
                         onClick = { orderedFilter = true },
                         label = {
-                            Text( stringResource(R.string.chip_order_by))
+                            Text(stringResource(R.string.chip_order_by))
                         },
                         selected = orderList.any { it.isChecked },
                         leadingIcon = {
@@ -216,7 +217,7 @@ fun ListOfProducts(
                     FilterChip(
                         onClick = { categoriesFilter = true },
                         label = {
-                            Text( stringResource(R.string.tittle_categories))
+                            Text(stringResource(R.string.tittle_categories))
                         },
                         selected = categories.any { it.isChecked },
                         leadingIcon = {
@@ -273,19 +274,18 @@ fun ListOfProducts(
         ModalBottomSheet(onDismissRequest = { categoriesFilter = false }, sheetState = sheetState) {
             LazyColumn {
                 item {
-                    ListItem(
-                        headlineContent = {
-                            Text(text = stringResource(R.string.tittle_categories))
-                        },
-                        trailingContent = {
-                            IconButton(onClick = {
-                                categoriesFilter = false
-                                onEditCategoriesClicked()
-                            }) {
-                                Icon(Icons.Default.Edit, null)
-                            }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
+                    ) {
+                        Text(text = stringResource(R.string.tittle_categories))
+                        IconButton(onClick = {
+                            categoriesFilter = false
+                            onEditCategoriesClicked()
+                        }) {
+                            Icon(Icons.Default.Edit, null)
                         }
-                    )
+                    }
                 }
                 items(categories) { category ->
                     ListItem(
@@ -295,8 +295,12 @@ fun ListOfProducts(
                             })
                         },
                         headlineContent = {
-                            Text(text = category.text)
-                        }
+                            if (category.text.isEmpty())
+                                Text(text = stringResource(R.string.txt_uncategorized))
+                            else
+                                Text(text = category.text)
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
                 }
             }

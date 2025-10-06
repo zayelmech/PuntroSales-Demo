@@ -101,7 +101,9 @@ class ProductsViewModel @Inject constructor(
         return if (categoriesChecked.isNotEmpty()) {
             products.filter { product ->
                 categoriesChecked.any { category ->
-                    product.category?.name == category.text
+                    product.category?.name == category.text ||
+                            category.text.isEmpty() && product.category == null // for products with no category
+
                 }
             }
         } else {
@@ -143,7 +145,10 @@ class ProductsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getAllCategoriesUseCase().collect { list ->
                 val filter = list.map { CategoriesFilter(it.name, false) }
-                _categories.update { filter }
+
+                val uncategorized = CategoriesFilter("", false) // for elements with no category
+                _categories.update { filter.plus(uncategorized) }
+
             }
         }
     }
