@@ -331,7 +331,7 @@ fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(80.dp)
                     .padding(5.dp)
                     .clip(RoundedCornerShape(25)),
                 contentScale = ContentScale.FillWidth
