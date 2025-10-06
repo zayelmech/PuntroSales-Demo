@@ -28,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -41,6 +44,8 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
 import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
+import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
+import com.imecatro.demosales.ui.theme.dialogs.DialogType
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -157,11 +162,12 @@ fun ClientDetailsComposableImpl(
 
     val uiState by clientDetailsViewModel.uiState.collectAsState()
 
+    var showDeleteDialog by remember { mutableStateOf(true) }
 
     ClientDetailsComposable(
         clientDetails = uiState,
         onNavigateBack = onBackToList,
-        onDeleteClicked = { clientDetailsViewModel.onDeleteClientAction(uiState.clientId) },
+        onDeleteClicked = { showDeleteDialog = true },
         onEditClicked = onEditClicked
     )
 
@@ -170,5 +176,18 @@ fun ClientDetailsComposableImpl(
             onBackToList()
         }
     }
+
+    if (showDeleteDialog)
+        ActionDialog(
+            dialogType = DialogType.Delete,
+            message =
+                stringResource(R.string.delete_client_message),
+            onDismissRequest = {
+                showDeleteDialog = false
+            },
+            onConfirmClicked = {
+                showDeleteDialog = false
+                clientDetailsViewModel.onDeleteClientAction(uiState.clientId)
+            })
 }
 

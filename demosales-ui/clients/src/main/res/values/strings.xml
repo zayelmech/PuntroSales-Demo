@@ -10,4 +10,5 @@
     <string name="top_bar_client">Client</string>
     <string name="top_bar_client_details">Client Details</string>
     <string name="top_bar_clients">Clients</string>
+    <string name="delete_client_message">Do you want to delete this client?</string>
 </resources>
