@@ -264,7 +264,8 @@ fun ListOfProducts(
                         },
                         headlineContent = {
                             Text(text = stringResource(ordered.text))
-                        }
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
                 }
             }
