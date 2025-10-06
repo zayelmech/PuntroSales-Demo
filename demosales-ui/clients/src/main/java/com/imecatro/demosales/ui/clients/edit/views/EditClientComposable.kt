@@ -18,6 +18,7 @@ import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 @Composable
 fun EditClientComposableImpl(
     viewModel: EditClientViewModel,
+    onBackClicked: () -> Unit = {},
     onClientSaved: () -> Unit = {},
 ) {
 
@@ -27,7 +28,7 @@ fun EditClientComposableImpl(
 
     val launcher = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.GetContent()
+            ActivityResultContracts.GetContent()
     ) { uriPicked: Uri? ->
 
         uriPicked?.let {
@@ -48,6 +49,7 @@ fun EditClientComposableImpl(
         clientAddress = uiState.clientAddress,
         onClientAddressChange = (viewModel::onClientAddressChange),
         buttonSaveState = uiState.isFormValid && !uiState.isLoading,
+        onNavigateBack = onBackClicked,
         onSaveButtonClicked = { viewModel.onSaveClientAction(uiState) }
     )
 

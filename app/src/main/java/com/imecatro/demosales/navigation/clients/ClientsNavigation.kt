@@ -62,7 +62,11 @@ inline fun <reified T : Any> NavGraphBuilder.clientsNavigation(navController: Na
                     factory.create(navArgs.id)
                 })
 
-            EditClientComposableImpl(viewModel) {
+            EditClientComposableImpl(viewModel, onBackClicked = {
+                navController.navigate(ClientsList) {
+                    popUpTo(ClientsList) { inclusive = true }
+                }
+            }) {
                 navController.navigate(ClientsList) {
                     popUpTo(ClientsList) { inclusive = true }
                 }
