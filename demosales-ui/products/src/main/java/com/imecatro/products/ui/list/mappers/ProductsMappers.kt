@@ -13,7 +13,8 @@ fun List<ProductDomainModel>.toProductUiModel(): List<ProductUiModel> {
             price = it.price?.toString() ?: "0.00",
             unit = it.unit,
             stock = BigDecimal.valueOf(it.stock.quantity).toString(),
-            imageUrl = it.imageUri?.toUri()
+            imageUrl = it.imageUri?.toUri(),
+            category = it.category?.name
         )
     }
 }

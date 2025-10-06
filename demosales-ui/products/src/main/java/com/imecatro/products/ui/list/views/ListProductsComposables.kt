@@ -1,30 +1,25 @@
 package com.imecatro.products.ui.list.views
 
+import android.app.Activity
+import android.content.ClipData
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -32,15 +27,12 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -57,25 +49,23 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.architect.isLoading
-import com.imecatro.demosales.ui.theme.common.formatAsCurrency
+import com.imecatro.demosales.ui.theme.common.BitmapComposer
 import com.imecatro.products.ui.R
+import com.imecatro.products.ui.list.components.ProductCardCompose
+import com.imecatro.products.ui.list.components.SearchProductTopBar
 import com.imecatro.products.ui.list.model.CategoriesFilter
-import com.imecatro.products.ui.list.model.OrderedFilterUiModel
 import com.imecatro.products.ui.list.model.ProductUiModel
+import com.imecatro.products.ui.list.uistate.OrderedFilterState
 import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -92,11 +82,12 @@ fun ListOfProducts(
     isLoading: Boolean = false,
     onSearchProduct: (String) -> Unit = {},
     searchList: List<ProductUiModel> = emptyList(),
-    orderList: List<OrderedFilterUiModel> = OrderedFilterUiModel.filters,
-    onCheckedChange: (OrderedFilterUiModel) -> Unit = {},
+    orderList: List<OrderedFilterState> = OrderedFilterState.filters,
+    onCheckedChange: (OrderedFilterState) -> Unit = {},
     categories: List<CategoriesFilter> = emptyList(),
     onCategoryChecked: (CategoriesFilter) -> Unit = {},
     onEditCategoriesClicked: () -> Unit = {},
+    onProductSelected: (Long?) -> Unit = {},
     onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {},
 ) {
@@ -135,118 +126,67 @@ fun ListOfProducts(
                 }
         },
         topBar = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                SearchBar(
-                    inputField = {
-                        SearchBarDefaults.InputField(
-                            query = text,
-                            onQueryChange = { text = it },
-                            onSearch = { onSearchProduct(text) },
-                            expanded = expanded,
-                            onExpandedChange = { expanded = it },
-                            placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                            leadingIcon = {
-                                if (expanded) {
-                                    IconButton(onClick = {
-                                        expanded = false
-                                    }) {
-                                        Icon(
-                                            Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = null
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.Search, contentDescription = null)
-                                }
-                            },
-                            trailingIcon = {
-                                if (!expanded)
-                                    IconButton(
-                                        onClick = {
-                                            showFilters = !showFilters
-                                        },
-                                        colors = IconButtonDefaults.iconButtonColors(containerColor = if (showFilters) MaterialTheme.colorScheme.primaryContainer else Color.Unspecified)
-                                    ) {
-                                        Icon(painterResource(R.drawable.sliders), null)
-                                    }
-                            }
+            Column {
 
-                        )
-                    }, expanded = expanded, onExpandedChange = { expanded = it },
-                    content = {
-                        LazyColumn(
-                            modifier = Modifier.sizeIn(maxWidth = 411.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            items(searchList) { product ->
-                                ProductCardCompose(product = product) { onCardClicked(product.id) }
-                                HorizontalDivider()
+                SearchProductTopBar(
+                    query = text,
+                    onQueryChange = { text = it },
+                    onSearchAction = { onSearchProduct(text) },
+                    onClearSearchBar = { text = "" },
+                    showFilters = showFilters,
+                    onShowFiltersClicked = { showFilters = !showFilters }
+                )
+                AnimatedVisibility(visible = showFilters) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp)
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    ) {
+                        FilterChip(
+                            onClick = { orderedFilter = true },
+                            label = {
+                                Text(stringResource(R.string.chip_order_by))
+                            },
+                            selected = orderList.any { it.isChecked },
+                            leadingIcon = {
+                                Icon(painterResource(R.drawable.filter_sorting), null)
                             }
-                        }
-                    })
+                        )
+
+                        FilterChip(
+                            onClick = { categoriesFilter = true },
+                            label = {
+                                Text(stringResource(R.string.tittle_categories))
+                            },
+                            selected = categories.any { it.isChecked },
+                            leadingIcon = {
+                                Icon(Icons.Default.KeyboardArrowDown, null)
+                            }
+                        )
+                    }
+                }
             }
 
         }) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding),
+            state = scrollState,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AnimatedVisibility(visible = showFilters) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 15.dp)
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                ) {
-                    FilterChip(
-                        onClick = { orderedFilter = true },
-                        label = {
-                            Text(stringResource(R.string.chip_order_by))
-                        },
-                        selected = orderList.any { it.isChecked },
-                        leadingIcon = {
-                            Icon(painterResource(R.drawable.filter_sorting), null)
-                        }
-                    )
+            if (isLoading)
+                items(10) { ShimmerListItem(Modifier.fillMaxWidth()) }
+            else {
+                items(if (text.isEmpty()) list else searchList) { product ->
 
-                    FilterChip(
-                        onClick = { categoriesFilter = true },
-                        label = {
-                            Text(stringResource(R.string.tittle_categories))
-                        },
-                        selected = categories.any { it.isChecked },
-                        leadingIcon = {
-                            Icon(Icons.Default.KeyboardArrowDown, null)
-                        }
-                    )
-                }
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                state = scrollState,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                if (isLoading) {
-
-                    items(10) {
-                        ShimmerListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                    }
-
-                } else {
-                    items(list) { product ->
-
-                        ProductCardCompose(product = product) { onCardClicked(product.id) }
-                        HorizontalDivider()
-                    }
+                    ProductCardCompose(
+                        product = product,
+                        onLongClicked = { onProductSelected(product.id) },
+                        onCardClicked = { onCardClicked(product.id) })
+                    HorizontalDivider()
                 }
             }
         }
@@ -277,7 +217,9 @@ fun ListOfProducts(
                 item {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
                     ) {
                         Text(text = stringResource(R.string.tittle_categories))
                         IconButton(onClick = {
@@ -308,51 +250,11 @@ fun ListOfProducts(
         }
 }
 
-@Composable
-fun ProductCardCompose(product: ProductUiModel, onCardClicked: () -> Unit) {
-
-    val cardTag = "${ListProductsTestTags.CARD.tag}-${product.id}"
-
-
-    Box(
-        modifier = Modifier
-            .clickable { onCardClicked() }
-            .testTag(cardTag),
-    ) {
-        ListItem(leadingContent = {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(product.imageUrl)
-                        .error(R.drawable.baseline_insert_photo_24)
-                        .crossfade(true)
-                        .build()
-
-                ),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(80.dp)
-                    .padding(5.dp)
-                    .clip(RoundedCornerShape(25)),
-                contentScale = ContentScale.FillWidth
-            )
-        }, headlineContent = {
-            Text(text = product.name ?: "Product name")
-        }, supportingContent = {
-            Text(text = "${product.price?.formatAsCurrency()}")
-        }, trailingContent = {
-            val color =
-                if (product.stock.contains("-")) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-            Text(text = "${product.stock}  ${product.unit}", color = color)
-        })
-    }
-
-}
 
 fun fakeProductsList(qty: Int): List<ProductUiModel> {
     val fakeList = mutableListOf<ProductUiModel>()
     for (i in 1L..qty) {
-        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", stock = "1", null))
+        fakeList.add(ProductUiModel(i, "Product Name $i", "3.00", "pz", stock = "1", null, null))
     }
     return fakeList
 }
@@ -381,7 +283,52 @@ fun ListOfProductsStateImpl(
 
     val categories by productsViewModel.categories.collectAsState()
 
+    val context = LocalContext.current
+    val density = LocalDensity.current
+    val bitmapComposer = remember { BitmapComposer() }
 
+    val onShareTicket = remember {
+        {
+            scope.launch {
+
+                val bmp = bitmapComposer
+                    .composableToBitmap(
+                        activity = context as Activity,
+                        width = 420.dp, // any width you want
+                        screenDensity = density,
+                        content = {
+                            PuntroSalesDemoTheme {
+                                Surface(color = MaterialTheme.colorScheme.background) {
+
+                                    ProductsCatalog()
+                                }
+                            }
+                        }
+                    )
+
+                val file =
+                    java.io.File(context.cacheDir, "ticket_${System.currentTimeMillis()}.png")
+                file.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                val uri = androidx.core.content.FileProvider.getUriForFile(
+                    context, "${context.packageName}.fileprovider", file
+                )
+                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                    type = "image/png"
+                    putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    clipData = ClipData.newUri(
+                        context.contentResolver,
+                        "Ticket image",
+                        uri
+                    ) // <-- enables preview
+
+                }
+                context.startActivity(android.content.Intent.createChooser(intent, "Share ticket"))
+            }
+        }
+    }
+
+    val showOptions = productsList.any { it.isSelected }
     ListOfProducts(
         list = productsList.toMutableStateList(),
         isLoading = uiState.isLoading,
@@ -392,8 +339,12 @@ fun ListOfProductsStateImpl(
         categories = categories,
         onCategoryChecked = { productsViewModel.onFilterCategory(it) },
         onEditCategoriesClicked = onCategoriesNav,
+        onProductSelected = { productsViewModel.onProductSelected(it) },
         onCardClicked = {
-            scope.launch { onNavigateAction(it) }
+            if (showOptions)
+                productsViewModel.onProductSelected(it)
+            else
+                scope.launch { onNavigateAction(it) }
         },
         onNavigateAction = { onNavigateAction(null) })
 

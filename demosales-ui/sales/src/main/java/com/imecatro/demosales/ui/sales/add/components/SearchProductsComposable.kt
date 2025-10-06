@@ -113,6 +113,7 @@ fun ProductResultCardComposable(
                     ImageRequest.Builder(context)
                         .data(product.imageUri)
                         .error(R.drawable.baseline_insert_photo_24)
+                        .placeholder(R.drawable.baseline_insert_photo_24)
                         .crossfade(false)
                         .build()
                 ),

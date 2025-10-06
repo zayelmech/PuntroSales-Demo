@@ -1,5 +1,6 @@
 package com.imecatro.products.ui.list.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
@@ -8,9 +9,10 @@ import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.products.ui.list.mappers.toProductUiModel
 import com.imecatro.products.ui.list.model.CategoriesFilter
-import com.imecatro.products.ui.list.model.OrderedFilterUiModel
+import com.imecatro.products.ui.list.uistate.OrderedFilterState
 import com.imecatro.products.ui.list.model.ProductUiModel
-import com.imecatro.products.ui.list.model.checkElement
+import com.imecatro.products.ui.list.uistate.ExportProductsState
+import com.imecatro.products.ui.list.uistate.checkElement
 import com.imecatro.products.ui.list.uistate.ListProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.map
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
@@ -38,14 +41,18 @@ class ProductsViewModel @Inject constructor(
     private val iODispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ListProductsUiState>(ListProductsUiState.idle) {
 
-    private val _filtersState: MutableStateFlow<List<OrderedFilterUiModel>> =
-        MutableStateFlow(OrderedFilterUiModel.filters)
+    private val _filtersState = MutableStateFlow(OrderedFilterState.filters)
 
-    val filtersState: StateFlow<List<OrderedFilterUiModel>> = _filtersState.asStateFlow()
+    val filtersState: StateFlow<List<OrderedFilterState>> = _filtersState.asStateFlow()
 
     private val _categories: MutableStateFlow<List<CategoriesFilter>> =
         MutableStateFlow(emptyList())
     val categories: StateFlow<List<CategoriesFilter>> = _categories.asStateFlow()
+
+    private val _reportState = MutableStateFlow(ExportProductsState())
+
+    private val reportState = _reportState.asStateFlow()
+
 
     val productsList: StateFlow<List<ProductUiModel>> =
         productsRepository.getAllProducts()
@@ -60,6 +67,10 @@ class ProductsViewModel @Inject constructor(
                 applyCategories(products, categories)
             }
             .map { it.toProductUiModel() }
+            .combine(reportState){ products , report ->
+                val ids = report.ids
+                products.map { product -> product.copy(isSelected = ids.contains(product.id)) }
+            }
             .onEach {
                 updateState { copy(isFetchingProducts = false) }
             }
@@ -74,20 +85,20 @@ class ProductsViewModel @Inject constructor(
 
     private fun applyOrderFilter(
         products: List<ProductDomainModel>, // Assuming products from repository are Domain models
-        filters: List<OrderedFilterUiModel>
+        filters: List<OrderedFilterState>
     ): List<ProductDomainModel> {
-        val orderSelected: OrderedFilterUiModel? = filters.firstOrNull { it.isChecked }
+        val orderSelected: OrderedFilterState? = filters.firstOrNull { it.isChecked }
 
         return orderSelected?.let { selectedFilter ->
             when (selectedFilter.type) {
-                OrderedFilterUiModel.Type.NAME -> products.sortedBy { it.name?.lowercase() }
-                OrderedFilterUiModel.Type.PRICE -> products.sortedBy { it.price }
-                OrderedFilterUiModel.Type.STOCK -> products.sortedBy { it.stock.quantity }
-                OrderedFilterUiModel.Type.DATE -> products.sortedBy { it.id } // Consider if 'id' is appropriate for date sorting
-                OrderedFilterUiModel.Type.NAME_INVERSE -> products.sortedByDescending { it.name?.lowercase() }
-                OrderedFilterUiModel.Type.PRICE_INVERSE -> products.sortedByDescending { it.price }
-                OrderedFilterUiModel.Type.STOCK_INVERSE -> products.sortedByDescending { it.stock.quantity }
-                OrderedFilterUiModel.Type.DATE_INVERSE -> products.sortedByDescending { it.id } // Same consideration for 'id'
+                OrderedFilterState.Type.NAME -> products.sortedBy { it.name?.lowercase() }
+                OrderedFilterState.Type.PRICE -> products.sortedBy { it.price }
+                OrderedFilterState.Type.STOCK -> products.sortedBy { it.stock.quantity }
+                OrderedFilterState.Type.DATE -> products.sortedBy { it.id } // Consider if 'id' is appropriate for date sorting
+                OrderedFilterState.Type.NAME_INVERSE -> products.sortedByDescending { it.name?.lowercase() }
+                OrderedFilterState.Type.PRICE_INVERSE -> products.sortedByDescending { it.price }
+                OrderedFilterState.Type.STOCK_INVERSE -> products.sortedByDescending { it.stock.quantity }
+                OrderedFilterState.Type.DATE_INVERSE -> products.sortedByDescending { it.id } // Same consideration for 'id'
             }
         } ?: products // Return original list if no filter is selected or if orderSelected is null
     }
@@ -121,7 +132,7 @@ class ProductsViewModel @Inject constructor(
 
     }
 
-    fun onFilterChange(filter: OrderedFilterUiModel) {
+    fun onFilterChange(filter: OrderedFilterState) {
         viewModelScope.launch(iODispatcher) {
             _filtersState.update { it.checkElement(filter) }
         }
@@ -151,6 +162,21 @@ class ProductsViewModel @Inject constructor(
 
             }
         }
+    }
+
+    fun onProductSelected(id: Long?) = viewModelScope.launch(Dispatchers.IO) {
+        if (id == null) return@launch
+        Log.d("onProductSelected", "onProductSelected: $id")
+        if (_reportState.value.ids.contains(id))
+            _reportState.update { it.copy(ids = it.ids.minus(id)) }
+        else
+            _reportState.update { it.copy(ids = it.ids.plus(id)) }
+
+        // Uncheck selection
+        if (productsList.value.size != _reportState.value.ids.size) {
+            _reportState.update { it.copy(allSelected = false) }
+        }
+
     }
 
 }
