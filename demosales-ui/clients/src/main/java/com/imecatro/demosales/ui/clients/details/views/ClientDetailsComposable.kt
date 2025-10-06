@@ -162,7 +162,7 @@ fun ClientDetailsComposableImpl(
 
     val uiState by clientDetailsViewModel.uiState.collectAsState()
 
-    var showDeleteDialog by remember { mutableStateOf(true) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     ClientDetailsComposable(
         clientDetails = uiState,
