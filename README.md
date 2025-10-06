@@ -24,23 +24,23 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - CRUD for products
   - Products has an inventory
 - CRUD for Sales
-  - Sales are automatically shyncronized with clients and inventory 
+  - Sales are automatically synchronized with clients and inventory 
 - CRUD for clients
   - The idea, is to control clients sales history
 
 
 - [x] Create a new product
-  - Image from device gallery
+  - Image from device gallery or camera
   - Name
   - Price
-  - Currency (MXN, USD)
+  - Category
   - Initial stock
   - Unit (pcs, mL, kg, lb)
 
 - [x] Edit product details
 - [x] Delete a product and its stock history
 - [x] List all products
-- [ ] Filter and sort products
+- [x] Filter and sort products --> Still in progress
 - [x] Default product sorting
 
 - [x] Product search bar
@@ -58,8 +58,8 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [x] Create a new ticket — stock is automatically deducted
 - [x] Cancel a ticket — stock will be re-added
 - [x] View ticket details and share a screenshot with overscroll
-- [ ] Filter sales by date range, status, etc.
-- [ ] Download sales as CSV
+- [x] Filter sales by date range, status, etc. --> Still in progress
+- [x] Download sales as CSV
 - [ ] Sales charts and income tracking — *Future*
 
 ### Clients
@@ -71,10 +71,10 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [ ] Client sales history
 
 ### Home & Settings 
-- [] Add/Update Store Logo and name, address, phone number
-- [] Change Currency
-- [] Change Language
-- [] Export data (sales, products, clients)) as .zip
+- [ ] Add/Update Store Logo and name, address, phone number
+- [ ] Change Currency
+- [ ] Change Language
+- [ ] Export data (sales, products, clients)) as .zip
 
 ## UI Layer
 
