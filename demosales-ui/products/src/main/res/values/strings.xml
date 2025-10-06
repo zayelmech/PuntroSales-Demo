@@ -44,4 +44,5 @@
     <string name="tittle_categories">Categories</string>
     <string name="chip_order_by">Order by</string>
     <string name="search_placeholder">Search a product</string>
+    <string name="delete_category_message">Do you want to delete this category?</string>
 </resources>

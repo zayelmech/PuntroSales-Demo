@@ -9,6 +9,20 @@ import com.imecatro.demosales.domain.sales.list.repository.FileInteractor
 import com.imecatro.demosales.domain.sales.model.Order
 import java.io.File
 
+/**
+ * A use case responsible for exporting a consolidated list of products from multiple sales into a CSV file.
+ *
+ * This use case takes a list of sale IDs as input, retrieves the product details for each sale,
+ * groups the products by their ID, sums their quantities, and then writes the aggregated data
+ * into a CSV file. The resulting file includes columns for product ID, name, unit, total quantity,
+ * and unit price.
+ *
+ * @param detailsSaleRepository Repository to fetch the details of each sale.
+ * @param fileInteractor Interactor to handle file operations, specifically writing the CSV data.
+ * @param coroutineProvider Provides the coroutine context for executing the background task.
+ * @property Ids The input type, a data class containing a list of sale IDs to process.
+ * @property File The output type, representing the generated CSV file.
+ */
 class ExportProductsFromSaleUseCase(
     private val detailsSaleRepository: DetailsSaleRepository,
     private val fileInteractor: FileInteractor,

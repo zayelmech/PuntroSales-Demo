@@ -28,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
+import com.imecatro.demosales.ui.theme.dialogs.DialogType
 import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.categories.model.CategoryUiModel
@@ -99,13 +101,15 @@ fun CategoriesScreenImpl(
 
     var showAddDialog: Boolean by remember { mutableStateOf(false) }
 
+    var deleteCategoryId: Long  by remember { mutableStateOf(0L) }
+
     var categoryEditable: CategoryUiModel by remember { mutableStateOf(CategoryUiModel(0, "")) }
 
     CategoriesScreen(
         categories = uiState.categories,
         backAction = { onNavigateBack() },
         onEditCategory = { categoryEditable = it },
-        onDeleteCategory = { categoriesViewModel.deleteCategory(it) },
+        onDeleteCategory = { deleteCategoryId = it },
         onAddCategory = { showAddDialog = true }
     )
 
@@ -136,4 +140,17 @@ fun CategoriesScreenImpl(
             showAddDialog = false
         }
 
+
+    if (deleteCategoryId > 0L)
+        ActionDialog(
+            dialogType = DialogType.Delete,
+            message =
+                stringResource(R.string.delete_category_message),
+            onDismissRequest = {
+                deleteCategoryId = 0L
+            },
+            onConfirmClicked = {
+                deleteCategoryId = 0L
+                categoriesViewModel.deleteCategory(deleteCategoryId)
+            })
 }

@@ -46,4 +46,5 @@
     <string name="tittle_categories">Categorías</string>
     <string name="chip_order_by">Ordenar por</string>
     <string name="search_placeholder">Buscar un producto</string>
+    <string name="delete_category_message">¿Quieres eliminar esta categoría?</string>
 </resources>
