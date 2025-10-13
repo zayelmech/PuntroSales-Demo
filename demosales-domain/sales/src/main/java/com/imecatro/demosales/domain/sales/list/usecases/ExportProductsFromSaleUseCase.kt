@@ -5,7 +5,7 @@ import com.imecatro.demosales.domain.core.architecture.usecase.BackgroundUseCase
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.list.model.Ids
 import com.imecatro.demosales.domain.sales.list.model.Input
-import com.imecatro.demosales.domain.sales.list.repository.FileInteractor
+import com.imecatro.demosales.domain.core.files.FileInteractor
 import com.imecatro.demosales.domain.sales.model.Order
 import java.io.File
 

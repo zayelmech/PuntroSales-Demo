@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.usecases.ExportProductsCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
@@ -39,6 +40,7 @@ import kotlin.collections.map
 class ProductsViewModel @Inject constructor(
     private val productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl()
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    private val exportProductsCsvUseCase: ExportProductsCsvUseCase,
     private val iODispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ListProductsUiState>(ListProductsUiState.idle) {
 
@@ -201,11 +203,21 @@ class ProductsViewModel @Inject constructor(
         }
         _reportState.update { it.copy(products = productsSelected) }
         _reportState.update { it.copy(isProcessingCatalog = false, productsReady = true) }
+
+        exportProductsCsvUseCase.execute{
+            ids = reportState.value.ids
+        }.onSuccess { file ->
+            _reportState.update { it.copy(catalogFile = file) }
+        }.onFailure {
+            Log.e(TAG, "onProcessProducts: ",it )
+        }
     }
 
     fun onCatalogShared() {
-
         _reportState.update { it.copy(productsReady = false) }
+        _reportState.update { it.copy(catalogFile = null) }
     }
 }
+
+private const val TAG = "ProductsViewModel"
 

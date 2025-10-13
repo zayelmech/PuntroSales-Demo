@@ -1,6 +1,7 @@
 package com.imecatro.demosales.di
 
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+import com.imecatro.demosales.domain.core.files.FileInteractor
 import com.imecatro.demosales.domain.products.repository.CategoriesRepository
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.AddCategoryUseCase
@@ -9,10 +10,12 @@ import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
 import com.imecatro.demosales.domain.products.usecases.UpdateCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
+import com.imecatro.demosales.domain.products.usecases.ExportProductsCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
 import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
+import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -83,4 +86,12 @@ object ProductsUseCases {
     ): GetProductDetailsByIdUseCase =
         GetProductDetailsByIdUseCase(productsRepository, ioDispatcher)
 
+
+    @Provides
+    fun providesExportProductsCsvUseCase(
+        productsRepository: ProductsRepository,
+        fileInteractor: FileInteractor,
+        coroutineDispatcher: CoroutineProvider
+    ): ExportProductsCsvUseCase =
+        ExportProductsCsvUseCase(productsRepository, fileInteractor, coroutineDispatcher)
 }

@@ -2,7 +2,7 @@ package com.imecatro.demosales.di
 
 import android.content.Context
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
-import com.imecatro.demosales.domain.sales.list.repository.FileInteractor
+import com.imecatro.demosales.domain.core.files.FileInteractor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

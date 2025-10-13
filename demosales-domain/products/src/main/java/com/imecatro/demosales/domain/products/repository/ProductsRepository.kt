@@ -16,4 +16,5 @@ interface ProductsRepository {
     suspend fun addStock(reference: String, productId: Long, amount: Double)
 
     suspend fun removeStock(reference: String,productId: Long, amount: Double)
+    fun getProductsWithIds(ids: List<Long>) : List<ProductDomainModel>
 }

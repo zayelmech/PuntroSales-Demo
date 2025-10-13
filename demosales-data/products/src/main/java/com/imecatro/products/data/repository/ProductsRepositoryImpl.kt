@@ -124,4 +124,8 @@ class ProductsRepositoryImpl(
         if (reference.contains("Stock")) // This will change in future
             productsDao?.rebuildProductStock(productId)
     }
+
+    override fun getProductsWithIds(ids: List<Long>) : List<ProductDomainModel> {
+        return ids.mapNotNull { productsDao?.getProductFullDetailsByd(it)?.toDomain() }
+    }
 }

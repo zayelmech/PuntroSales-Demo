@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -55,6 +56,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +64,9 @@ import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.architect.isLoading
+import com.imecatro.demosales.ui.theme.common.download
+import com.imecatro.demosales.ui.theme.common.open
+import com.imecatro.demosales.ui.theme.common.share
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.components.ProductCardCompose
 import com.imecatro.products.ui.list.components.SearchProductTopBar
@@ -365,13 +370,28 @@ fun ListOfProductsStateImpl(
             showShareReport = true
     }
 
+    val context = LocalContext.current
     if (showShareReport)
         ModalBottomSheet(onDismissRequest = {
             showShareReport = false
             productsViewModel.onCatalogShared()
         }
         ) {
-            Column(Modifier.padding(horizontal = 20.dp)) {
+            Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = {
+                        reportState.catalogFile?.open(context)
+                    }) {
+                        Text(stringResource(R.string.btn_download_products_csv))
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = {
+                        reportState.catalogFile?.share(context)
+                    }) { Icon(Icons.Default.Share, null) }
+                    IconButton(onClick = {
+                        reportState.catalogFile?.download(context)
+                    }) { Icon(painterResource(R.drawable.download), null) }
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
                         onCreateCatalog()
@@ -379,13 +399,6 @@ fun ListOfProductsStateImpl(
                         Text(stringResource(R.string.txt_catalog_pdf))
                     }
                     Spacer(modifier = Modifier.weight(1f))
-//                    IconButton(onClick = {
-//                        reportState.salesFile?.share(context)
-//                    }) { Icon(Icons.Default.Share, null) }
-//
-//                    IconButton(onClick = {
-//                        reportState.salesFile?.download(context)
-//                    }) { Icon(painterResource(com.imecatro.demosales.ui.sales.R.drawable.download), null) }
                 }
             }
         }

@@ -50,6 +50,7 @@
     <string name="txt_uncategorized">Sin categoría</string>
     <string name="txt_select_all">Seleccionar todos</string>
     <string name="btn_save_pdf">Guardar PDF</string>
-    <string name="txt_catalog_pdf">Crear PDF</string>
+    <string name="txt_catalog_pdf">Crear catálogo - PDF</string>
     <string name="top_bar_catalog">Catálogo</string>
+    <string name="btn_download_products_csv">Resumen de productos - CSV</string>
 </resources>

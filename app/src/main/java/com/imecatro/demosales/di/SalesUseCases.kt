@@ -2,7 +2,7 @@ package com.imecatro.demosales.di
 
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
-import com.imecatro.demosales.domain.sales.list.repository.FileInteractor
+import com.imecatro.demosales.domain.core.files.FileInteractor
 import com.imecatro.demosales.domain.sales.list.usecases.ExportSalesReportUseCase
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.add.usecases.AddNewSaleToDatabaseUseCase

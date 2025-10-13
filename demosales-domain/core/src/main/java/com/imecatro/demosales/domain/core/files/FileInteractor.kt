@@ -1,7 +1,6 @@
-package com.imecatro.demosales.domain.sales.list.repository
+package com.imecatro.demosales.domain.core.files
 
 import java.io.File
-
 
 interface FileInteractor {
 

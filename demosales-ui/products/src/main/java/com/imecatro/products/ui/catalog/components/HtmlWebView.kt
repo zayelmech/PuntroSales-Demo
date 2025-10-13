@@ -1,4 +1,4 @@
-package com.imecatro.products.ui.catalog.screens
+package com.imecatro.products.ui.catalog.components
 
 import android.content.Intent
 import android.net.Uri
@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 
 
@@ -20,7 +21,7 @@ fun HtmlWebView(
     html: String,
     modifier: Modifier = Modifier
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     var lastHtml by remember { mutableStateOf<String?>(null) }
 
     // Crea y conserva una sola instancia de WebView

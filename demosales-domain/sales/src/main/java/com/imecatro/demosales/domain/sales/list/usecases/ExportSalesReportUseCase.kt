@@ -6,7 +6,7 @@ import com.imecatro.demosales.domain.core.date.convertMillisToDate
 import com.imecatro.demosales.domain.sales.list.model.Ids
 import com.imecatro.demosales.domain.sales.list.model.Input
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
-import com.imecatro.demosales.domain.sales.list.repository.FileInteractor
+import com.imecatro.demosales.domain.core.files.FileInteractor
 import java.io.File
 
 class ExportSalesReportUseCase(
