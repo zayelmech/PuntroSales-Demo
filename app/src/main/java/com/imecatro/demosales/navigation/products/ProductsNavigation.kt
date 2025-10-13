@@ -52,7 +52,7 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
             val navArgs = backStackEntry.toRoute<ProductsDestinations.CatalogMaker>()
 
             val viewModel: CatalogViewModel =
-                hiltViewModel(creationCallback = { f: CatalogViewModel.Factory -> f.create(navArgs.ids.toList()) })
+                hiltViewModel(creationCallback = { f: CatalogViewModel.Factory -> f.create(navArgs.ids) })
 
             CatalogPreview(catalogViewModel = viewModel, onBack = {
                 navController.navigate(ProductsDestinations.ListAndDetails) {

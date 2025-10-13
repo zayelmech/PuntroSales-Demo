@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = CatalogViewModel.Factory::class)
 class CatalogViewModel @AssistedInject constructor(
-    @Assisted("ids") private val ids: List<Long>,
+    @Assisted("ids") private val ids: Collection<Long>,
     private val productsRepository: ProductsRepository
 ) : BaseViewModel<ExportProductsState>(ExportProductsState.idle) {
 
@@ -24,7 +24,7 @@ class CatalogViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             val productsSelected = withContext(Dispatchers.IO) {
-                productsRepository.getProductsWithIds(ids)
+                productsRepository.getProductsWithIds(ids.toList())
                     .toProductUiModel()
                     .groupBy { it.category }
             }
@@ -38,7 +38,7 @@ class CatalogViewModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
-            @Assisted("ids") ids: List<Long>
+            @Assisted("ids") ids: Collection<Long>
         ): CatalogViewModel
     }
 }
