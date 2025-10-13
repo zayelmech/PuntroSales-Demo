@@ -4,19 +4,23 @@ import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.demosales.ui.theme.architect.Idle
 import com.imecatro.demosales.ui.theme.architect.UiState
 import com.imecatro.products.ui.list.model.ProductUiModel
+import java.io.File
 
 
 data class ListProductsUiState(
     val isFetchingProducts: Boolean,
     val products: List<ProductUiModel>,
     val errorFetchingProducts: ErrorUiModel?,
-
+    val idsSelected: List<Long> = emptyList(),
+    val isProcessingCatalog: Boolean = false,
+    val catalogFile: File? = null,
+    val allSelected: Boolean = false,
     val productsFiltered: List<ProductUiModel>,
     val isSearching: Boolean,
 ) : UiState {
 
     override fun isFetchingOrProcessingData(): Boolean {
-        return isFetchingProducts
+        return isFetchingProducts || isProcessingCatalog
     }
 
     override fun getError(): ErrorUiModel? {

@@ -12,7 +12,6 @@ import com.imecatro.products.ui.list.mappers.toProductUiModel
 import com.imecatro.products.ui.list.model.CategoriesFilter
 import com.imecatro.products.ui.list.uistate.OrderedFilterState
 import com.imecatro.products.ui.list.model.ProductUiModel
-import com.imecatro.products.ui.list.uistate.ExportProductsState
 import com.imecatro.products.ui.list.uistate.checkElement
 import com.imecatro.products.ui.list.uistate.ListProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.collections.map
 
@@ -52,11 +50,6 @@ class ProductsViewModel @Inject constructor(
         MutableStateFlow(emptyList())
     val categories: StateFlow<List<CategoriesFilter>> = _categories.asStateFlow()
 
-    private val _reportState = MutableStateFlow(ExportProductsState())
-
-    val reportState = _reportState.asStateFlow()
-
-
     val productsList: StateFlow<List<ProductUiModel>> =
         productsRepository.getAllProducts()
             .onStart {
@@ -70,8 +63,8 @@ class ProductsViewModel @Inject constructor(
                 applyCategories(products, categories)
             }
             .map { it.toProductUiModel() }
-            .combine(reportState) { products, report ->
-                val ids = report.ids
+            .combine(uiState) { products, report ->
+                val ids = report.idsSelected
                 products.map { product -> product.copy(isSelected = ids.contains(product.id)) }
             }
             .onEach {
@@ -170,52 +163,46 @@ class ProductsViewModel @Inject constructor(
     fun onProductSelected(id: Long?) = viewModelScope.launch(Dispatchers.IO) {
         if (id == null) return@launch
         Log.d("onProductSelected", "onProductSelected: $id")
-        if (_reportState.value.ids.contains(id))
-            _reportState.update { it.copy(ids = it.ids.minus(id)) }
+        if (uiState.value.idsSelected.contains(id))
+            updateState {  copy(idsSelected = idsSelected.minus(id))  }
         else
-            _reportState.update { it.copy(ids = it.ids.plus(id)) }
+            updateState {  copy(idsSelected = idsSelected.plus(id))  }
 
         // Uncheck selection
-        if (productsList.value.size != _reportState.value.ids.size) {
-            _reportState.update { it.copy(allSelected = false) }
+        if (productsList.value.size != uiState.value.idsSelected.size) {
+            updateState { copy(allSelected = false) }
         }
 
     }
 
     fun onSelectAllProducts(checked: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        _reportState.update { it.copy(allSelected = checked) }
+        updateState { copy(allSelected = checked) }
         val currentIds: List<Long> = productsList.value.map { it.id ?: 0L }.filter { it != 0L }
         if (checked)
-            _reportState.update { it.copy(ids = currentIds) }
+            updateState { copy(idsSelected = currentIds) }
         else
-            _reportState.update { it.copy(ids = emptyList()) }
-
+            updateState { copy(idsSelected = emptyList()) }
     }
 
     fun onClearSelections() = viewModelScope.launch(Dispatchers.IO) {
-        _reportState.update { it.copy(ids = emptyList()) }
+        updateState { copy(idsSelected = emptyList()) }
     }
 
     fun onProcessProducts() = viewModelScope.launch(Dispatchers.IO) {
-        _reportState.update { it.copy(isProcessingCatalog = true) }
-        val productsSelected = withContext(Dispatchers.Default) {
-            productsList.value.filter { it.isSelected }.groupBy { it.category }
-        }
-        _reportState.update { it.copy(products = productsSelected) }
-        _reportState.update { it.copy(isProcessingCatalog = false, productsReady = true) }
+        updateState{ copy(isProcessingCatalog = true) }
 
         exportProductsCsvUseCase.execute{
-            ids = reportState.value.ids
+            ids = uiState.value.idsSelected
         }.onSuccess { file ->
-            _reportState.update { it.copy(catalogFile = file) }
+            updateState { copy(catalogFile = file, isProcessingCatalog = false) }
         }.onFailure {
-            Log.e(TAG, "onProcessProducts: ",it )
+            updateState { copy(isProcessingCatalog = false) }
+            Log.e(TAG, "onProcessProducts: ", it)
         }
     }
 
     fun onCatalogShared() {
-        _reportState.update { it.copy(productsReady = false) }
-        _reportState.update { it.copy(catalogFile = null) }
+        updateState { copy(catalogFile = null) }
     }
 }
 

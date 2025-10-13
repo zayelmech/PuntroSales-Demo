@@ -1,6 +1,8 @@
 package com.imecatro.demosales.navigation.products
 
 import androidx.annotation.Keep
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed class ProductsDestinations {
@@ -15,6 +17,9 @@ sealed class ProductsDestinations {
 
     @Serializable
     data class Details(val id: Long, val mode : DetailsOf = DetailsOf.Details )
+
+    @Serializable
+    data class CatalogMaker (val ids : Collection<Long>)
 
     @Serializable
     data object ListAndDetails

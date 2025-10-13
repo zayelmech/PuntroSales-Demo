@@ -63,7 +63,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
-import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.demosales.ui.theme.common.download
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
@@ -319,7 +318,7 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
 fun ListOfProductsStateImpl(
     productsViewModel: ProductsViewModel,
     onCategoriesNav: () -> Unit,
-    onCreateCatalog: () -> Unit = {},
+    onCreateCatalog: (List<Long>) -> Unit = {},
     onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -331,14 +330,12 @@ fun ListOfProductsStateImpl(
 
     val categories by productsViewModel.categories.collectAsState()
 
-    val reportState by productsViewModel.reportState.collectAsState()
-
     var showShareReport by remember { mutableStateOf(false) }
 
     val showOptions = productsList.any { it.isSelected }
     ListOfProducts(
         list = productsList.toMutableStateList(),
-        isLoading = uiState.isLoading,
+        isLoading = uiState.isFetchingProducts,
         searchList = uiState.productsFiltered,
         onSearchProduct = { productsViewModel.onSearchAction(it) },
         orderList = filters,
@@ -353,20 +350,20 @@ fun ListOfProductsStateImpl(
             else
                 scope.launch { onNavigateAction(it) }
         },
-        itemsSelectedQty = reportState.ids.size,
+        itemsSelectedQty = uiState.idsSelected.size,
         showDownloadOptions = showOptions,
         onHideDownloadOptions = { productsViewModel.onClearSelections() },
         onDownloadClicked = { productsViewModel.onProcessProducts() },
         onSelectAllChecked = { productsViewModel.onSelectAllProducts(it) }, // for selection all item
-        allSelected = reportState.allSelected,
+        allSelected = uiState.allSelected,
         onNavigateAction = { onNavigateAction(null) })
 
     UiStateHandler(uiState) {
 
     }
 
-    LaunchedEffect(reportState) {
-        if (reportState.productsReady)
+    LaunchedEffect(uiState) {
+        if (uiState.catalogFile != null)
             showShareReport = true
     }
 
@@ -380,21 +377,21 @@ fun ListOfProductsStateImpl(
             Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
-                        reportState.catalogFile?.open(context)
+                        uiState.catalogFile?.open(context)
                     }) {
                         Text(stringResource(R.string.btn_download_products_csv))
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
-                        reportState.catalogFile?.share(context)
+                        uiState.catalogFile?.share(context)
                     }) { Icon(Icons.Default.Share, null) }
                     IconButton(onClick = {
-                        reportState.catalogFile?.download(context)
+                        uiState.catalogFile?.download(context)
                     }) { Icon(painterResource(R.drawable.download), null) }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
-                        onCreateCatalog()
+                        onCreateCatalog(uiState.idsSelected)
                     }) {
                         Text(stringResource(R.string.txt_catalog_pdf))
                     }

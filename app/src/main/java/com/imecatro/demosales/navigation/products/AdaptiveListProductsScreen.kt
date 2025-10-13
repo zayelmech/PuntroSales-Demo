@@ -24,6 +24,7 @@ import kotlinx.parcelize.Parcelize
 @Composable
 fun ListAndDetailsPane(
     onAddProduct: () -> Unit = {},
+    onCreateCatalog : (List<Long>) -> Unit = {},
     onEditProduct: (Long) -> Unit = {}
 ) {
 
@@ -32,24 +33,13 @@ fun ListAndDetailsPane(
     val viewModel: ProductsDetailsViewModel =
         hiltViewModel(creationCallback = { f: ProductsDetailsViewModel.Factory -> f.create(0L) })
 
-
-    val productsViewModel: ProductsViewModel = hiltViewModel()
-
-
     NavigableSupportingPaneScaffold(
         navigator = navigator,
         mainPane = {
             AnimatedPane {
                 ListOfProductsStateImpl(
-                    productsViewModel = productsViewModel,
-                    onCreateCatalog = {
-                        scope.launch {
-                            navigator.navigateTo(
-                                pane = SupportingPaneScaffoldRole.Extra,
-                                MyProduct(0, MODE_CATALOG)
-                            )
-                        }
-                    },
+                    productsViewModel = hiltViewModel(),
+                    onCreateCatalog = onCreateCatalog,
                     onCategoriesNav = {
                         scope.launch {
                             navigator.navigateTo(
@@ -91,10 +81,6 @@ fun ListAndDetailsPane(
             AnimatedPane {
                 if (c == MODE_CATEGORIES)
                     CategoriesScreenImpl(categoriesViewModel = hiltViewModel(), onNavigateBack = {
-                        scope.launch { navigator.navigateBack() }
-                    })
-                else
-                    CatalogPreview(productsViewModel = productsViewModel, onBack = {
                         scope.launch { navigator.navigateBack() }
                     })
             }

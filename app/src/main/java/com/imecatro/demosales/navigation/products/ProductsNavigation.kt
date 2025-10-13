@@ -7,12 +7,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.imecatro.products.ui.add.views.AddProductComposableStateImpl
+import com.imecatro.products.ui.catalog.CatalogViewModel
+import com.imecatro.products.ui.catalog.screens.CatalogPreview
 import com.imecatro.products.ui.categories.screens.CategoriesScreenImpl
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
 import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 import com.imecatro.products.ui.update.views.UpdateProductComposableStateImpl
+import kotlinx.coroutines.launch
 
 private const val TAG = "ProductsNavigation"
 
@@ -22,9 +25,12 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
 
             ListAndDetailsPane(onAddProduct = {
                 navController.navigate(ProductsDestinations.Add)
-            }, onEditProduct = { id ->
-                navController.navigate(ProductsDestinations.Edit(id))
-            })
+            }, onCreateCatalog = { ids ->
+                navController.navigate(ProductsDestinations.CatalogMaker(ids))
+            },
+                onEditProduct = { id ->
+                    navController.navigate(ProductsDestinations.Edit(id))
+                })
         }
         composable<ProductsDestinations.Categories> {
             CategoriesScreenImpl(hiltViewModel())
@@ -41,6 +47,18 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
                     navController.navigate(ProductsDestinations.Add)
                 }
             }
+        }
+        composable<ProductsDestinations.CatalogMaker> { backStackEntry ->
+            val navArgs = backStackEntry.toRoute<ProductsDestinations.CatalogMaker>()
+
+            val viewModel: CatalogViewModel =
+                hiltViewModel(creationCallback = { f: CatalogViewModel.Factory -> f.create(navArgs.ids.toList()) })
+
+            CatalogPreview(catalogViewModel = viewModel, onBack = {
+                navController.navigate(ProductsDestinations.ListAndDetails) {
+                    popUpTo(ProductsDestinations.ListAndDetails) { inclusive = true }
+                }
+            })
         }
         composable<ProductsDestinations.Details> { backStackEntry ->
             val navArgs = backStackEntry.toRoute<ProductsDestinations.Details>()

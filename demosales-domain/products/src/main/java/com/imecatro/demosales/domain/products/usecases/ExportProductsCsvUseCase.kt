@@ -32,7 +32,7 @@ class ExportProductsCsvUseCase(
             )
         }
 
-        val file = fileInteractor.writeCsvToTickets("products_${System.currentTimeMillis()}.csv",csvLines)
+        val file = fileInteractor.writeCsvToTickets("inventory_${System.currentTimeMillis()}.csv",csvLines)
 
         return file
     }

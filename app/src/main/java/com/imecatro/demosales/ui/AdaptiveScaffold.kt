@@ -43,7 +43,7 @@ fun NavigationSuiteScope.adaptiveNavigationBar(
                 )
             },
             label = { Text(stringResource(screen.tittle)) },
-            selected = currentDestination?.hierarchy?.any { it.route?.equals(screen::class.qualifiedName) ?: false } == true,
+            selected = currentDestination?.hierarchy?.any { it.route?.contains(screen::class.qualifiedName.toString()) ?: false } == true,
             onClick = { onCurrentDestinationChanged(destination) }
         )
     }

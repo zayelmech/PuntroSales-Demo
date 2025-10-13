@@ -20,16 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.imecatro.demosales.ui.theme.architect.UiStateHandler
+import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.products.ui.R
+import com.imecatro.products.ui.catalog.CatalogViewModel
 import com.imecatro.products.ui.catalog.components.HtmlWebView
 import com.imecatro.products.ui.catalog.components.SavePdfButton
-import com.imecatro.products.ui.list.viewmodels.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogPreview(productsViewModel: ProductsViewModel, onBack: () -> Unit) {
+fun CatalogPreview(catalogViewModel: CatalogViewModel, onBack: () -> Unit) {
 
-    val productsList by productsViewModel.reportState.collectAsState()
+    val productsList by catalogViewModel.uiState.collectAsState()
 
     val context = LocalContext.current
 
@@ -50,11 +52,19 @@ fun CatalogPreview(productsViewModel: ProductsViewModel, onBack: () -> Unit) {
             }
         )
         Column(modifier = Modifier.weight(1f)) {
-            HtmlWebView(productsList.getHtml(context), modifier = Modifier.fillMaxSize())
+            if (productsList.isLoading)
+                Text(text = "Loading...")
+            else
+                HtmlWebView(productsList.getHtml(context), modifier = Modifier.fillMaxSize())
         }
 
         Row(Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.Center) {
             SavePdfButton(html = productsList.getHtml(context))
         }
+    }
+
+
+    UiStateHandler(productsList) {
+
     }
 }
