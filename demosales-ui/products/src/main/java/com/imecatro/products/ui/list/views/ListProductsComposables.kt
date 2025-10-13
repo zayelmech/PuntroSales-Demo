@@ -229,7 +229,7 @@ fun ListOfProducts(
 
                     ProductCardCompose(
                         product = product,
-                        onLongClicked = { onProductSelected(product.id) },
+                        onLongClicked = { if (text.isEmpty()) onProductSelected(product.id) },
                         onCardClicked = { onCardClicked(product.id) })
                     HorizontalDivider()
                 }
@@ -374,7 +374,10 @@ fun ListOfProductsStateImpl(
             productsViewModel.onCatalogShared()
         }
         ) {
-            Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(
+                Modifier.padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
                         uiState.catalogFile?.open(context)
