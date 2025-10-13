@@ -66,6 +66,7 @@ dependencies {
     debugImplementation libs.androidx.compose.ui.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
 
+    implementation libs.html.to.pdf.convertor
     //hilt
     implementation libs.hilt.android
     ksp libs.hilt.compiler

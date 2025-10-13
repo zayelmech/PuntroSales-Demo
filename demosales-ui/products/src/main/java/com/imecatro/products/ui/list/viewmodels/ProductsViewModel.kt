@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.collections.map
 
@@ -51,7 +52,7 @@ class ProductsViewModel @Inject constructor(
 
     private val _reportState = MutableStateFlow(ExportProductsState())
 
-    private val reportState = _reportState.asStateFlow()
+    val reportState = _reportState.asStateFlow()
 
 
     val productsList: StateFlow<List<ProductUiModel>> =
@@ -67,7 +68,7 @@ class ProductsViewModel @Inject constructor(
                 applyCategories(products, categories)
             }
             .map { it.toProductUiModel() }
-            .combine(reportState){ products , report ->
+            .combine(reportState) { products, report ->
                 val ids = report.ids
                 products.map { product -> product.copy(isSelected = ids.contains(product.id)) }
             }
@@ -138,7 +139,7 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    fun onFilterCategory(category : CategoriesFilter) {
+    fun onFilterCategory(category: CategoriesFilter) {
         viewModelScope.launch(iODispatcher) {
             _categories.update { lst ->
                 val index = lst.indexOf(category)
@@ -179,5 +180,32 @@ class ProductsViewModel @Inject constructor(
 
     }
 
+    fun onSelectAllProducts(checked: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        _reportState.update { it.copy(allSelected = checked) }
+        val currentIds: List<Long> = productsList.value.map { it.id ?: 0L }.filter { it != 0L }
+        if (checked)
+            _reportState.update { it.copy(ids = currentIds) }
+        else
+            _reportState.update { it.copy(ids = emptyList()) }
+
+    }
+
+    fun onClearSelections() = viewModelScope.launch(Dispatchers.IO) {
+        _reportState.update { it.copy(ids = emptyList()) }
+    }
+
+    fun onProcessProducts() = viewModelScope.launch(Dispatchers.IO) {
+        _reportState.update { it.copy(isProcessingCatalog = true) }
+        val productsSelected = withContext(Dispatchers.Default) {
+            productsList.value.filter { it.isSelected }.groupBy { it.category }
+        }
+        _reportState.update { it.copy(products = productsSelected) }
+        _reportState.update { it.copy(isProcessingCatalog = false, productsReady = true) }
+    }
+
+    fun onCatalogShared() {
+
+        _reportState.update { it.copy(productsReady = false) }
+    }
 }
 

@@ -1,27 +1,30 @@
 package com.imecatro.products.ui.list.views
 
-import android.app.Activity
-import android.content.ClipData
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -35,6 +38,8 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,8 +55,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +62,6 @@ import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.architect.isLoading
-import com.imecatro.demosales.ui.theme.common.BitmapComposer
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.components.ProductCardCompose
 import com.imecatro.products.ui.list.components.SearchProductTopBar
@@ -84,6 +86,12 @@ fun ListOfProducts(
     searchList: List<ProductUiModel> = emptyList(),
     orderList: List<OrderedFilterState> = OrderedFilterState.filters,
     onCheckedChange: (OrderedFilterState) -> Unit = {},
+    itemsSelectedQty: Int = 0, // The amount of items selected in the list
+    showDownloadOptions: Boolean = false,
+    onHideDownloadOptions: () -> Unit = {},
+    onDownloadClicked: () -> Unit = {},
+    onSelectAllChecked: (Boolean) -> Unit = {}, // for selection all item
+    allSelected: Boolean = false,
     categories: List<CategoriesFilter> = emptyList(),
     onCategoryChecked: (CategoriesFilter) -> Unit = {},
     onEditCategoriesClicked: () -> Unit = {},
@@ -126,45 +134,78 @@ fun ListOfProducts(
                 }
         },
         topBar = {
-            Column {
+            val windowInsets = TopAppBarDefaults.windowInsets
 
-                SearchProductTopBar(
-                    query = text,
-                    onQueryChange = { text = it },
-                    onSearchAction = { onSearchProduct(text) },
-                    onClearSearchBar = { text = "" },
-                    showFilters = showFilters,
-                    onShowFiltersClicked = { showFilters = !showFilters }
-                )
-                AnimatedVisibility(visible = showFilters) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 15.dp)
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    ) {
-                        FilterChip(
-                            onClick = { orderedFilter = true },
-                            label = {
-                                Text(stringResource(R.string.chip_order_by))
-                            },
-                            selected = orderList.any { it.isChecked },
-                            leadingIcon = {
-                                Icon(painterResource(R.drawable.filter_sorting), null)
-                            }
+            Column(modifier = Modifier.windowInsetsPadding(windowInsets)) {
+                AnimatedVisibility(visible = !showDownloadOptions) {
+                    Column {
+                        SearchProductTopBar(
+                            query = text,
+                            onQueryChange = { text = it },
+                            onSearchAction = { onSearchProduct(text) },
+                            onClearSearchBar = { text = "" },
+                            showFilters = showFilters,
+                            onShowFiltersClicked = { showFilters = !showFilters }
                         )
+                        AnimatedVisibility(visible = showFilters) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 15.dp)
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                            ) {
+                                FilterChip(
+                                    onClick = { orderedFilter = true },
+                                    label = {
+                                        Text(stringResource(R.string.chip_order_by))
+                                    },
+                                    selected = orderList.any { it.isChecked },
+                                    leadingIcon = {
+                                        Icon(painterResource(R.drawable.filter_sorting), null)
+                                    }
+                                )
 
-                        FilterChip(
-                            onClick = { categoriesFilter = true },
-                            label = {
-                                Text(stringResource(R.string.tittle_categories))
-                            },
-                            selected = categories.any { it.isChecked },
-                            leadingIcon = {
-                                Icon(Icons.Default.KeyboardArrowDown, null)
+                                FilterChip(
+                                    onClick = { categoriesFilter = true },
+                                    label = {
+                                        Text(stringResource(R.string.tittle_categories))
+                                    },
+                                    selected = categories.any { it.isChecked },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.KeyboardArrowDown, null)
+                                    }
+                                )
                             }
-                        )
+                        }
+                    }
+                }
+                AnimatedVisibility(visible = showDownloadOptions) {
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(onClick = onHideDownloadOptions) {
+                                Icon(Icons.Default.Close, null)
+                            }
+                            Text("$itemsSelectedQty")
+                            Spacer(Modifier.weight(1f))
+
+                            FilledIconButton(onClick = onDownloadClicked) {
+                                Icon(painterResource(R.drawable.file_earmark_richtext), "Download")
+                            }
+                            Spacer(modifier = Modifier.size(10.dp))
+                        }
+
+                        Row(
+                            Modifier.wrapContentSize(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(allSelected, onCheckedChange = { onSelectAllChecked(it) })
+                            Text(stringResource(R.string.txt_select_all))
+                        }
                     }
                 }
             }
@@ -268,10 +309,12 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
  * @param onNavigateAction this lambda function allows you to navigate to another UI according to the value sent.<br> Example: onNavigate(1) will launch the Details screen of the product with the id = 1
  *
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListOfProductsStateImpl(
     productsViewModel: ProductsViewModel,
     onCategoriesNav: () -> Unit,
+    onCreateCatalog: () -> Unit = {},
     onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -283,50 +326,9 @@ fun ListOfProductsStateImpl(
 
     val categories by productsViewModel.categories.collectAsState()
 
-    val context = LocalContext.current
-    val density = LocalDensity.current
-    val bitmapComposer = remember { BitmapComposer() }
+    val reportState by productsViewModel.reportState.collectAsState()
 
-    val onShareTicket = remember {
-        {
-            scope.launch {
-
-                val bmp = bitmapComposer
-                    .composableToBitmap(
-                        activity = context as Activity,
-                        width = 420.dp, // any width you want
-                        screenDensity = density,
-                        content = {
-                            PuntroSalesDemoTheme {
-                                Surface(color = MaterialTheme.colorScheme.background) {
-
-                                    ProductsCatalog()
-                                }
-                            }
-                        }
-                    )
-
-                val file =
-                    java.io.File(context.cacheDir, "ticket_${System.currentTimeMillis()}.png")
-                file.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
-                val uri = androidx.core.content.FileProvider.getUriForFile(
-                    context, "${context.packageName}.fileprovider", file
-                )
-                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-                    type = "image/png"
-                    putExtra(android.content.Intent.EXTRA_STREAM, uri)
-                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    clipData = ClipData.newUri(
-                        context.contentResolver,
-                        "Ticket image",
-                        uri
-                    ) // <-- enables preview
-
-                }
-                context.startActivity(android.content.Intent.createChooser(intent, "Share ticket"))
-            }
-        }
-    }
+    var showShareReport by remember { mutableStateOf(false) }
 
     val showOptions = productsList.any { it.isSelected }
     ListOfProducts(
@@ -346,11 +348,47 @@ fun ListOfProductsStateImpl(
             else
                 scope.launch { onNavigateAction(it) }
         },
+        itemsSelectedQty = reportState.ids.size,
+        showDownloadOptions = showOptions,
+        onHideDownloadOptions = { productsViewModel.onClearSelections() },
+        onDownloadClicked = { productsViewModel.onProcessProducts() },
+        onSelectAllChecked = { productsViewModel.onSelectAllProducts(it) }, // for selection all item
+        allSelected = reportState.allSelected,
         onNavigateAction = { onNavigateAction(null) })
 
     UiStateHandler(uiState) {
 
     }
+
+    LaunchedEffect(reportState) {
+        if (reportState.productsReady)
+            showShareReport = true
+    }
+
+    if (showShareReport)
+        ModalBottomSheet(onDismissRequest = {
+            showShareReport = false
+            productsViewModel.onCatalogShared()
+        }
+        ) {
+            Column(Modifier.padding(horizontal = 20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = {
+                        onCreateCatalog()
+                    }) {
+                        Text(stringResource(R.string.txt_catalog_pdf))
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+//                    IconButton(onClick = {
+//                        reportState.salesFile?.share(context)
+//                    }) { Icon(Icons.Default.Share, null) }
+//
+//                    IconButton(onClick = {
+//                        reportState.salesFile?.download(context)
+//                    }) { Icon(painterResource(com.imecatro.demosales.ui.sales.R.drawable.download), null) }
+                }
+            }
+        }
 }
 
 

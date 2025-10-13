@@ -2,9 +2,7 @@ package com.imecatro.products.ui.list.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -17,7 +15,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,12 +35,10 @@ fun SearchProductTopBar(
     showFilters: Boolean = false,
     onShowFiltersClicked: () -> Unit = {},
     onClearSearchBar: () -> Unit = {},
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(windowInsets),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         OutlinedTextField(

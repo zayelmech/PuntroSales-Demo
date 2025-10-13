@@ -6,8 +6,10 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.Density
@@ -17,10 +19,18 @@ import androidx.core.view.drawToBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.math.roundToInt
+import coil.ImageLoader
+import coil.EventListener
+import coil.compose.LocalImageLoader
+import kotlinx.coroutines.withContext
 
 /**
  * Draws an arbitrary composable into a bitmap
@@ -115,5 +125,123 @@ class BitmapComposer(private val mainScope: CoroutineScope = CoroutineScope(Supe
                 decorView.removeView(composeViewContainer)
             }
         }
+    }
+    /**
+     * Variante robusta para contenido con Coil: espera a que todas las requests
+     * terminen y captura *después* del siguiente pre-draw.
+     */
+    suspend fun composableToBitmapCoilSafe(
+        activity: Activity,
+        width: Dp? = null,
+        height: Dp? = null,
+        screenDensity: Density,
+        content: @Composable () -> Unit
+    ): Bitmap = suspendCancellableCoroutine { continuation ->
+        mainScope.launch {
+            val contentWidthPx = (screenDensity.density * (width ?: 3000.dp).value).roundToInt()
+            val contentHeightPx = (screenDensity.density * (height ?: 3000.dp).value).roundToInt()
+
+            // 1) Contenedor off-screen pero visible (alpha 0)
+            val container = FrameLayout(activity).apply {
+                layoutParams = ViewGroup.LayoutParams(contentWidthPx, contentHeightPx)
+                alpha = 0f
+                visibility = View.VISIBLE
+            }
+
+            // 2) Contadores Coil
+            val active = AtomicInteger(0)
+            val sawAny = AtomicBoolean(false)
+            val listener = object : EventListener {
+                override fun onStart(request: coil.request.ImageRequest) {
+                    sawAny.set(true); active.incrementAndGet()
+                }
+                override fun onCancel(request: coil.request.ImageRequest) {
+                    active.decrementAndGet()
+                }
+                override fun onError(request: coil.request.ImageRequest, result: coil.request.ErrorResult) {
+                    active.decrementAndGet()
+                }
+                override fun onSuccess(request: coil.request.ImageRequest, result: coil.request.SuccessResult) {
+                    active.decrementAndGet()
+                }
+            }
+            val loader = ImageLoader.Builder(activity)
+                .allowHardware(false)                       // <- IMPORTANTE
+                .bitmapConfig(android.graphics.Bitmap.Config.ARGB_8888)
+                .memoryCachePolicy(coil.request.CachePolicy.DISABLED) // evita recuperar HW del cache
+                .eventListener(listener)
+                .crossfade(false)
+                .build()
+
+            // 3) ComposeView con ImageLoader inyectado
+            val composeView = ComposeView(activity).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
+                setContent {
+                    CompositionLocalProvider(LocalImageLoader provides loader) {
+                        content()
+                    }
+                }
+            }
+            container.addView(composeView)
+
+            // 4) Adjuntar, medir y hacer layout en el hilo principal
+            val decor = activity.window.decorView as ViewGroup
+            decor.addView(container)
+
+            Handler(Looper.getMainLooper()).post {
+                container.measure(
+                    View.MeasureSpec.makeMeasureSpec(
+                        contentWidthPx, if (width == null) View.MeasureSpec.AT_MOST else View.MeasureSpec.EXACTLY
+                    ),
+                    View.MeasureSpec.makeMeasureSpec(
+                        contentHeightPx, if (height == null) View.MeasureSpec.AT_MOST else View.MeasureSpec.EXACTLY
+                    )
+                )
+                container.layout(0, 0, contentWidthPx, contentHeightPx)
+            }
+
+            // 5) Esperar a Coil y al siguiente pre-draw real
+            try {
+                withTimeout(12_000) {
+                    // da un frame para que arranquen las requests
+                    delay(16)
+                    // esperar hasta que no haya requests activas (si es que hubo)
+                    while (sawAny.get() && active.get() > 0) {
+                        delay(16)
+                    }
+                    // invalidar y esperar a que la vista haga el siguiente pre-draw
+                    withContext(Dispatchers.Main) { composeView.invalidate() }
+                    composeView.awaitNextPreDraw()
+                    // un frame extra por seguridad
+                    delay(16)
+                }
+            } catch (_: Exception) {
+                // timeout: seguimos con lo que haya
+            }
+
+            // 6) Capturar
+            Handler(Looper.getMainLooper()).post {
+                val bmp = composeView.drawToBitmap()
+                if (continuation.isActive) continuation.resume(bmp)
+                decor.removeView(container)
+                loader.shutdown()
+            }
+        }
+    }
+}
+
+/** Suspende hasta el próximo onPreDraw del View. */
+private suspend fun View.awaitNextPreDraw() = suspendCancellableCoroutine<Unit> { cont ->
+    val vto = viewTreeObserver
+    val listener = object : ViewTreeObserver.OnPreDrawListener {
+        override fun onPreDraw(): Boolean {
+            if (vto.isAlive) vto.removeOnPreDrawListener(this)
+            if (cont.isActive) cont.resume(Unit)
+            return true
+        }
+    }
+    vto.addOnPreDrawListener(listener)
+    cont.invokeOnCancellation {
+        if (vto.isAlive) vto.removeOnPreDrawListener(listener)
     }
 }

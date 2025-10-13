@@ -46,4 +46,8 @@
     <string name="search_placeholder">Search a product</string>
     <string name="delete_category_message">Do you want to delete this category?</string>
     <string name="txt_uncategorized">Uncategorized</string>
+    <string name="txt_select_all">Select all</string>
+    <string name="btn_save_pdf">Save PDF</string>
+    <string name="txt_catalog_pdf">Creates PDF</string>
+    <string name="top_bar_catalog">Catalog</string>
 </resources>
