@@ -93,6 +93,12 @@ class UpdateProductViewModel @AssistedInject constructor(
         }
     }
 
+    fun onBarcodeChange(barcode: String) = updateState {
+        val updated = productDetails?.copy(barcode = barcode)
+        copy(productDetails = updated)
+    }
+
+
     @AssistedFactory
     interface Factory {
         fun create(

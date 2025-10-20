@@ -109,6 +109,9 @@ fun UpdateProductComposableStateImpl(
         categoryPicked = uiState.productDetails?.category?:"",
         onCategoryPicked = { updateProductViewModel.onCategoryPicked(it) },
         onAddNewCategory = { showAddNewCategory = true },
+        barcode = uiState.productDetails?.barcode?:"",
+        onBarcodeChange = { updateProductViewModel.onBarcodeChange(it) },
+        onBarcodeClicked = { /**TODO*/},
         detailsText = editedProduct.details,
         onDetailsChange = { editedProduct = editedProduct.copy(details = it) },
         buttonSaveState = buttonEnableState,
@@ -126,7 +129,8 @@ fun UpdateProductComposableStateImpl(
                 imageUri = imageUri,
                 stock = editedProduct.stock,
                 details = editedProduct.details,
-                category = uiState.productDetails?.category
+                category = uiState.productDetails?.category,
+                barcode = uiState.productDetails?.barcode
             )
         )
     }

@@ -221,7 +221,6 @@ fun AddProductComposable(
                             Icon(painterResource(R.drawable.barcode), null)
                         }
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Row {
                     Column {
