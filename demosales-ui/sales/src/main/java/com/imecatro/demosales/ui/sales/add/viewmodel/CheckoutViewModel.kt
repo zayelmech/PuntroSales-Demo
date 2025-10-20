@@ -74,7 +74,7 @@ class CheckoutViewModel @AssistedInject constructor(
                     note = ticketD.note,
                     products = ticketD.list.toUi(),
                     status = ticketD.status.str,
-                    totals = ticket.totals.copy(subtotal = ticketD.total, extra = ticketD.extra)
+                    totals = ticket.totals.copy(subtotal = ticketD.subtotal, extra = ticketD.extra, discount = ticketD.discount)
                 )
                 copy(ticket = updatedTicket)
             }

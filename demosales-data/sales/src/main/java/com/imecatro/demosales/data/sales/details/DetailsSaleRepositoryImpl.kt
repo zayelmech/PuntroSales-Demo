@@ -26,11 +26,12 @@ class DetailsSaleRepositoryImpl(
                 },
                 status = OrderStatus.entries.find { it.str == sale.status }
                     ?: OrderStatus.INITIALIZED,
-                clientId = sale.clientId?:0,
+                clientId = sale.clientId ?: 0,
                 note = sale.note,
-                discount = sale.totals?.discount?:0.0,
-                extra = sale.totals?.extra?:0.0,
-                total = sale.totals?.total?:0.0,
+                discount = sale.totals?.discount ?: 0.0,
+                extra = sale.totals?.extra ?: 0.0,
+                subtotal = sale.totals?.subtotal ?: 0.0,
+                total = sale.totals?.total ?: 0.0,
             )
         }
 

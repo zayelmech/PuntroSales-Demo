@@ -214,28 +214,6 @@ fun CheckoutTicketComposableImpl(
         mutableStateOf("")
     }
 
-    var extra by remember {
-        mutableStateOf("0")
-    }
-
-    var discount by remember {
-        mutableStateOf("0")
-    }
-
-    LaunchedEffect(extra) {
-        snapshotFlow { extra }
-            .debounce(300)
-            .collect {
-                checkoutViewModel.onExtraChargeAdded(Money.toDouble(it))
-            }
-    }
-    LaunchedEffect(discount) {
-        snapshotFlow { discount }
-            .debounce(300)
-            .collect {
-                checkoutViewModel.onDiscountAdded(Money.toDouble(it))
-            }
-    }
     CheckoutTicketComposable(
         saleId = uiState.ticket.id,
         client = uiState.ticket.clientName,
@@ -243,10 +221,10 @@ fun CheckoutTicketComposableImpl(
         note = uiState.ticket.note,
         onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
         subtotal = "${uiState.ticket.totals.subtotal}",
-        extra = extra,
-        onExtraChange = { extra = it },
-        discount = discount,
-        onDiscountChange = { discount = it },
+        extra = "${uiState.ticket.totals.extra}",
+        onExtraChange = { checkoutViewModel.onExtraChargeAdded(Money.toDouble(it)) },
+        discount = "${uiState.ticket.totals.discount}",
+        onDiscountChange = { checkoutViewModel.onDiscountAdded(Money.toDouble(it)) },
         total = "${uiState.ticket.totals.total}",
         onCheckoutClick = {
             checkoutViewModel.onCheckoutAction()

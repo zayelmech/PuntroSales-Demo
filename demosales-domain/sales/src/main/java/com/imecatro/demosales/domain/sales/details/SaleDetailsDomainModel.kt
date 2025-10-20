@@ -9,6 +9,7 @@ data class SaleDetailsDomainModel(
     val note: String = "",
     val discount : Double = 0.0,
     val extra: Double = 0.0,
+    val subtotal : Double =0.0,
     val total: Double = 0.0,
     val status: OrderStatus = OrderStatus.INITIALIZED
 )
