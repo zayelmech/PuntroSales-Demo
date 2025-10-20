@@ -25,6 +25,7 @@ data class ProductDomainModel(
     val stock: ProductStockDomainModel,
     val details: String,
     val imageUri: String?,
-    val category: ProductCategoryDomainModel?
+    val category: ProductCategoryDomainModel?,
+    val barcode : String?
 )
 

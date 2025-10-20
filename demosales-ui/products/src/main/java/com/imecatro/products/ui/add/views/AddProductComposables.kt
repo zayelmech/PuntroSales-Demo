@@ -95,7 +95,10 @@ fun AddProductComposable(
     onStockChange: (String) -> Unit = {},
     onEditStock: () -> Unit = {},
     isEditMode: Boolean = false,
-    detailsText: String = "",
+    onBarcodeClicked: () -> Unit = {},
+    barcode: String = "",
+    onBarcodeChange: (String) -> Unit = {},
+    detailsText: String = " -- ",
     onDetailsChange: (String) -> Unit = {},
     buttonSaveState: Boolean = false,
     onBackToList: () -> Unit = {},
@@ -113,7 +116,13 @@ fun AddProductComposable(
     LazyColumn {
         item {
             TopAppBar(
-                title = { Text(text = if (!isEditMode) stringResource(R.string.top_bar_title_add) else stringResource(R.string.top_bar_title_edit)) },
+                title = {
+                    Text(
+                        text = if (!isEditMode) stringResource(R.string.top_bar_title_add) else stringResource(
+                            R.string.top_bar_title_edit
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onBackToList() }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
@@ -122,7 +131,10 @@ fun AddProductComposable(
             )
             Column(modifier = Modifier.padding(10.dp)) {
 
-                Text(text = stringResource(R.string.txt_image), style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = stringResource(R.string.txt_image),
+                    style = MaterialTheme.typography.labelLarge
+                )
                 Row(Modifier.height(100.dp)) {
                     Image(
                         painter = rememberAsyncImagePainter(
@@ -156,18 +168,18 @@ fun AddProductComposable(
                     }
                 }
 
-                Text(text = stringResource(R.string.label_product_name), style = MaterialTheme.typography.labelLarge)
                 OutlinedTextField(
                     value = productName,
+                    label = { Text(text = stringResource(R.string.label_product_name)) },
                     supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_name_txt)) },
                     singleLine = true,
                     onValueChange = onProductNameChange
                 )
 
-                Text(text = stringResource(R.string.label_product_price), style = MaterialTheme.typography.labelLarge)
                 OutlinedTextField(
                     value = productPrice,
                     onValueChange = onProductPriceChange,
+                    label = { Text(text = stringResource(R.string.label_product_price)) },
                     placeholder = { Text("0.0".formatAsCurrency()) },
                     supportingText = { if (productPrice.isBlank()) Text(stringResource(R.string.supporting_price_txt)) },
                     singleLine = true,
@@ -177,11 +189,11 @@ fun AddProductComposable(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
-                Text(text = stringResource(R.string.label_stock), style = MaterialTheme.typography.labelLarge)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         enabled = !isEditMode,
                         value = stock,
+                        label = { Text(text = stringResource(R.string.label_stock)) },
                         placeholder = { Text("0.0") },
                         supportingText = { if (stock.isBlank()) Text(stringResource(R.string.supporting_stock_txt)) },
                         singleLine = true,
@@ -197,9 +209,26 @@ fun AddProductComposable(
                     }
                 }
 
+                OutlinedTextField(
+                    value = barcode,
+                    placeholder = { Text("000000000000000") },
+                    label = { Text(text = stringResource(R.string.label_barcode)) },
+                    singleLine = true,
+                    modifier = Modifier.sizeIn(minWidth = 300.dp),
+                    onValueChange = onBarcodeChange,
+                    leadingIcon = {
+                        IconButton(onClick = onBarcodeClicked) {
+                            Icon(painterResource(R.drawable.barcode), null)
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
                 Row {
                     Column {
-                        Text(text = stringResource(R.string.label_unit), style = MaterialTheme.typography.labelLarge)
+                        Text(
+                            text = stringResource(R.string.label_unit),
+                            style = MaterialTheme.typography.labelLarge
+                        )
                         DropListPicker(
                             unitList, unitPicked
                         ) { unitPicked ->
@@ -208,7 +237,10 @@ fun AddProductComposable(
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Column {
-                        Text(text = stringResource(R.string.label_category), style = MaterialTheme.typography.labelLarge)
+                        Text(
+                            text = stringResource(R.string.label_category),
+                            style = MaterialTheme.typography.labelLarge
+                        )
                         DropListPicker(
                             categories, categoryPicked, onAddItem = onAddNewCategory
                         ) { category ->
@@ -219,7 +251,10 @@ fun AddProductComposable(
                 }
 
                 //Details
-                Text(text = stringResource(R.string.label_details), style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = stringResource(R.string.label_details),
+                    style = MaterialTheme.typography.labelLarge
+                )
                 HorizontalDivider(modifier = Modifier.padding(0.dp, 5.dp), thickness = 2.dp)
 
                 OutlinedTextField(
@@ -320,6 +355,10 @@ fun AddProductComposableStateImpl(
         mutableStateOf(false)
     }
 
+    var barcode by remember {
+        mutableStateOf("")
+    }
+
     var details by remember {
         mutableStateOf("")
     }
@@ -355,6 +394,9 @@ fun AddProductComposableStateImpl(
         categoryPicked = uiState.category,
         onCategoryPicked = { addViewModel.onCategoryPicked(it) },
         onAddNewCategory = { showAddNewCategory = true },
+        barcode = barcode,
+        onBarcodeChange = { barcode = it },
+        onBarcodeClicked = { /** TODO **/ },
         detailsText = details,
         onDetailsChange = { details = it },
         buttonSaveState = buttonEnableState,
@@ -372,7 +414,8 @@ fun AddProductComposableStateImpl(
                 imageUri = imageUri,
                 details = details,
                 stock = stock,
-                category = uiState.category
+                category = uiState.category,
+                barcode = barcode
             )
         )
         onSaveAction()

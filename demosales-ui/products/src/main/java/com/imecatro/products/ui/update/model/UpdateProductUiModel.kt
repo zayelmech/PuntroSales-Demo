@@ -11,5 +11,6 @@ data class UpdateProductUiModel(
     val stock: Double  = 0.0,
     val imageUri: Uri? = null,
     val details: String = "",
-    val category: String? = null
+    val category: String? = null,
+    val barcode: String? = null
 )

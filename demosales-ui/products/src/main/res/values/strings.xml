@@ -51,4 +51,5 @@
     <string name="txt_catalog_pdf">Creates catalog</string>
     <string name="top_bar_catalog">Catalog</string>
     <string name="btn_download_products_csv">Products CSV</string>
+    <string name="label_barcode">Barcode</string>
 </resources>

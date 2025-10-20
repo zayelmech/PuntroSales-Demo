@@ -17,7 +17,8 @@ fun UpdateProductUiModel.toDomain(): ProductDomainModel {
         details = this.details,
         stock = ProductStockDomainModel(quantity = this.stock, cost = 0.0, emptyList()),
         imageUri = this.imageUri?.toString(),
-        category = this.category?.let { ProductCategoryDomainModel(name = it) }
+        category = this.category?.let { ProductCategoryDomainModel(name = it) },
+        barcode = this.barcode
     )
 }
 
@@ -31,6 +32,7 @@ fun ProductDomainModel.toUpdateUiModel(): UpdateProductUiModel {
         stock= this.stock.quantity,
         details = this.details,
         imageUri = this.imageUri.toString().toUri(),
-        category = this.category?.name
+        category = this.category?.name,
+        barcode = this.barcode
     )
 }

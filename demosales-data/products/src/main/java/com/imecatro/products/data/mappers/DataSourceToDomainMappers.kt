@@ -27,7 +27,8 @@ fun ProductRoomEntity.toDomain(stock: List<StockRoomEntity> = emptyList()): Prod
             cost = (this.stock.toBigDecimal() * price.toBigDecimal()).toDouble(),
             history = stock.toStockListDomain()
         ),
-        category = null
+        category = null,
+        barcode = this.barcode
     )
 }
 

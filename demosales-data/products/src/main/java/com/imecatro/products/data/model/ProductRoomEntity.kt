@@ -28,6 +28,6 @@ data class ProductRoomEntity(
     val details: String,
     val imageUri: String,
     @ColumnInfo(name = "category_id")
-    val categoryId: Long? = null
-
+    val categoryId: Long? = null,
+    val barcode : String? = null
 )

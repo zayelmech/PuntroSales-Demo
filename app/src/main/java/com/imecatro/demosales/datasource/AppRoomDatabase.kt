@@ -25,7 +25,7 @@ import com.imecatro.products.data.model.StockRoomEntity
         ClientRoomEntity::class,
         StockRoomEntity::class,
         CategoryRoomEntity::class],
-    version = 10
+    version = 11
 )
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -52,7 +52,13 @@ abstract class AppRoomDatabase : RoomDatabase() {
                 AppRoomDatabase::class.java,
                 "puntrosales_demo_database"
             )
-                .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+                .addMigrations(
+                    MIGRATION_6_7,
+                    MIGRATION_7_8,
+                    MIGRATION_8_9,
+                    MIGRATION_9_10,
+                    MIGRATION_10_11
+                )
                 .build()
 
             productsDao = db.productsRoomDao()
@@ -228,5 +234,14 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
             ON products_table(category_id)
             """.trimIndent()
         )
+    }
+}
+
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Since the new 'barcode' column is nullable (String?),
+        // SQLite will automatically set existing rows to NULL.
+        // No default value is needed.
+        db.execSQL("ALTER TABLE products_table ADD COLUMN barcode TEXT")
     }
 }

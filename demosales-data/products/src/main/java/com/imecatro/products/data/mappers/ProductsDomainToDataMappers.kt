@@ -15,7 +15,8 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
             details = this.details,
             imageUri = this.imageUri ?: "",
             stock = this.stock.quantity,
-            categoryId = this.category?.id
+            categoryId = this.category?.id,
+            barcode = this.barcode
         )
     } ?: run {
         // For new products
@@ -27,7 +28,8 @@ fun ProductDomainModel.toData(): ProductRoomEntity {
             details = this.details,
             imageUri = this.imageUri ?: "",
             stock = this.stock.quantity,
-            categoryId = null
+            categoryId = null,
+            barcode = this.barcode
         )
     }
 
