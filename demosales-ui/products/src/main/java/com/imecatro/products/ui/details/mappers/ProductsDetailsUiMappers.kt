@@ -13,6 +13,7 @@ fun ProductDomainModel.toUiModel(): ProductDetailsUiModel {
         unit = this.unit,
         imageUrl = this.imageUri,
         details = this.details,
+        barcode = this.barcode?:"",
         stockQty = "${this.stock.quantity}",
         stockPrice = "${this.stock.cost}",
         stockHistory = this.stock.history.toUi().reversed(),

@@ -1,6 +1,8 @@
 package com.imecatro.products.ui.add.views
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,6 +65,7 @@ import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
+import com.imecatro.products.ui.ScanBarcodeActivity
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import java.util.Currency
@@ -336,6 +339,7 @@ fun AddProductComposableStateImpl(
     }
 
 
+
     var productName by remember {
         mutableStateOf("")
     }
@@ -374,6 +378,17 @@ fun AddProductComposableStateImpl(
         buttonEnableState = true
     }
 
+    val barcodeScannerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val scannedBarcode = result.data?.getStringExtra("barcode_result")
+            if (scannedBarcode != null) {
+                barcode = scannedBarcode
+            }
+        }
+    }
+
     val uiState by addViewModel.uiState.collectAsState()
 
     AddProductComposable(
@@ -395,7 +410,10 @@ fun AddProductComposableStateImpl(
         onAddNewCategory = { showAddNewCategory = true },
         barcode = barcode,
         onBarcodeChange = { barcode = it },
-        onBarcodeClicked = { /** TODO **/ },
+        onBarcodeClicked = {
+            val intent = Intent(context, ScanBarcodeActivity::class.java)
+            barcodeScannerLauncher.launch(intent)
+        },
         detailsText = details,
         onDetailsChange = { details = it },
         buttonSaveState = buttonEnableState,

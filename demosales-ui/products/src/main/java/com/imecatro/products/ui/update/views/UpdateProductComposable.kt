@@ -1,6 +1,8 @@
 package com.imecatro.products.ui.update.views
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +23,7 @@ import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
+import com.imecatro.products.ui.ScanBarcodeActivity
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
@@ -92,6 +95,16 @@ fun UpdateProductComposableStateImpl(
         mutableStateOf(true)
     }
 
+    val barcodeScannerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val scannedBarcode = result.data?.getStringExtra("barcode_result")
+            if (scannedBarcode != null) {
+                updateProductViewModel.onBarcodeChange(scannedBarcode)
+            }
+        }
+    }
     AddProductComposable(
         uri = imageUri,
         onPickImage = { launcher.launch("image/*") },
@@ -111,7 +124,10 @@ fun UpdateProductComposableStateImpl(
         onAddNewCategory = { showAddNewCategory = true },
         barcode = uiState.productDetails?.barcode?:"",
         onBarcodeChange = { updateProductViewModel.onBarcodeChange(it) },
-        onBarcodeClicked = { /**TODO*/},
+        onBarcodeClicked = {
+            val intent = Intent(context, ScanBarcodeActivity::class.java)
+            barcodeScannerLauncher.launch(intent)
+        },
         detailsText = editedProduct.details,
         onDetailsChange = { editedProduct = editedProduct.copy(details = it) },
         buttonSaveState = buttonEnableState,

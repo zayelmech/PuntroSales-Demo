@@ -51,6 +51,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -225,6 +226,13 @@ fun DetailsComposable(
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Spacer(modifier = Modifier.height(20.dp))
+                Row (Modifier.fillMaxWidth()){
+                    Spacer(modifier = Modifier.weight(1f))
+                        if (productDetails?.barcode?.isNotEmpty() == true){
+                            Icon(painterResource(R.drawable.upc), "barcode")
+                            Text(text = productDetails.barcode, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.End)
+                    }
+                }
 
                 //Details
                 Text(text = stringResource(R.string.label_details), style = MaterialTheme.typography.labelMedium)
@@ -298,7 +306,8 @@ fun PreviewWordsListDetailsCompose() {
                     stockQty = "0.0",
                     stockHistory = emptyList(),
                     categoryName = "ca",
-                    stockPrice = "0"
+                    stockPrice = "0",
+                    barcode = "ASD123"
                 ),
                 onDeleteClicked = { /*TODO*/ }) {
 
