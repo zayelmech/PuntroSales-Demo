@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.camera.core.Preview
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.barcode.BarcodeScanner
@@ -22,8 +25,28 @@ class ScanBarcodeActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val previewView = androidx.camera.view.PreviewView(this)
-        setContentView(previewView)
+        // 1. Crea un FrameLayout como contenedor principal
+        val root = FrameLayout(this)
+        root.layoutParams = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+
+        // 2. Crea y añade el PreviewView al FrameLayout
+        val previewView = PreviewView(this)
+        previewView.layoutParams = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        root.addView(previewView)
+
+        // 3. Crea y añade el BarcodeBoxView encima del PreviewView
+        val barcodeBoxView = BarcodeBoxView(this)
+        root.addView(barcodeBoxView)
+
+        // 4. Establece el FrameLayout como la vista de contenido
+        setContentView(root)
+
 
         cameraExecutor = Executors.newSingleThreadExecutor()
         cameraProviderFuture = androidx.camera.lifecycle.ProcessCameraProvider.getInstance(this)
