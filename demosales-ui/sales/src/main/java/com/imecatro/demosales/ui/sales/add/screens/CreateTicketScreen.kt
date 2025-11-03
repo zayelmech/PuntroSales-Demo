@@ -1,9 +1,6 @@
 package com.imecatro.demosales.ui.sales.add.screens
 
-import android.app.Activity
-import android.content.Intent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,11 +8,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -33,6 +32,7 @@ import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
@@ -43,6 +43,7 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +54,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -66,10 +69,11 @@ import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
-import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
+import com.imecatro.demosales.ui.theme.barcode.CameraView
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
 import com.imecatro.demosales.ui.theme.dialogs.DialogType
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -82,9 +86,15 @@ fun CreateTicketComposable(
     onProductMinusClicked: (ProductOnCartUiModel) -> Unit = {},
     onQtyValueChange: (ProductOnCartUiModel, String) -> Unit = { _, _ -> },
     onSaveAsDraftTicketClicked: () -> Unit = {},
+    onBarcodeScanned: (String) -> Unit = {},
+    viewScanner : Boolean = false,
     onContinueTicketClicked: () -> Unit = {},
     onAddProductClicked: () -> Unit = {}
 ) {
+
+    var enableScanner by remember { mutableStateOf(true) }
+    var scannedCode by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -191,6 +201,19 @@ fun CreateTicketComposable(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (viewScanner)
+                CameraView(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(20.dp)),
+                    enableAnalysis = enableScanner,
+                    onBarcode = { code ->
+                        enableScanner = false
+                        scannedCode = code
+                    }
+                )
+            Spacer(modifier = Modifier.height(20.dp))
+
             Button(
                 onClick = onContinueTicketClicked,
                 modifier = Modifier
@@ -236,6 +259,17 @@ fun CreateTicketComposable(
 
 
         }
+
+        LaunchedEffect(enableScanner, scannedCode) {
+            if (!enableScanner && scannedCode.isNotBlank()) {
+                onBarcodeScanned(scannedCode)
+                scope.launch {
+                    delay(500)
+                    enableScanner = true
+                    scannedCode = ""
+                }
+            }
+        }
     }
 }
 
@@ -248,7 +282,7 @@ fun CreateTicketComposableStateImpl(
 ) {
     val resultsList by addSaleViewModel.productsFound.collectAsState()
     val productsOnCart by addSaleViewModel.cartList.collectAsState()
-    val ticketSubtotal by addSaleViewModel.ticketSubtotal.collectAsState()
+    val ticketState by addSaleViewModel.uiState.collectAsState()
 
     var query by remember {
         mutableStateOf("")
@@ -263,18 +297,7 @@ fun CreateTicketComposableStateImpl(
     )
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
 
-
-    val context = LocalContext.current
-    val barcodeScannerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val scannedBarcode = result.data?.getStringExtra("barcode_result")
-            if (scannedBarcode != null) {
-                addSaleViewModel.onSearchBarcode(scannedBarcode)
-            }
-        }
-    }
+    var isModeScanner by remember {  mutableStateOf(false)}
 
     Column {
         TopAppBar(
@@ -283,11 +306,14 @@ fun CreateTicketComposableStateImpl(
                 IconButton(onClick = { onBackToList() }) {
                     Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
                 }
+            }, actions = {
+                Switch(isModeScanner, { isModeScanner = it },
+                    thumbContent = { Icon(painterResource(R.drawable.barcode), null) })
             }
         )
         CreateTicketComposable(
             productsOnCart = productsOnCart.toMutableStateList(),
-            ticketSubtotal = ticketSubtotal,
+            ticketSubtotal = ticketState.subtotal,
             onDeleteProduct = { addSaleViewModel.onDeleteProductFromTicketAction(it) },
             onProductMinusClicked = { product ->
                 addSaleViewModel.onQtyValueChangeAtPos(product, "-1")
@@ -298,6 +324,10 @@ fun CreateTicketComposableStateImpl(
             onQtyValueChange = { product, number ->
                 addSaleViewModel.onQtyValueChangeAtPos(product, number)
             },
+            onBarcodeScanned = {
+                addSaleViewModel.onSearchBarcode(it)
+            },
+            viewScanner = isModeScanner,
             onSaveAsDraftTicketClicked = {
                 scope.launch {
                     addSaleViewModel.onSaveTicketAction()
@@ -307,6 +337,17 @@ fun CreateTicketComposableStateImpl(
             onContinueTicketClicked = { onNavigateToCheckout(addSaleViewModel.ticketId) },
             onAddProductClicked = { scope.launch { openBottomSheet = true } }
         )
+    }
+
+    val context = LocalContext.current
+    LaunchedEffect(ticketState) {
+        if (ticketState.productNotFount == true){
+            scope.launch {
+                Toast.makeText(context, "Product Not found", Toast.LENGTH_SHORT).show()
+                addSaleViewModel.updateState { copy(productNotFount = false) }
+
+            }
+        }
     }
 
     if (openBottomSheet)
@@ -329,10 +370,6 @@ fun CreateTicketComposableStateImpl(
                         searchUiState,
                         onDeductProductClicked = {
                             addSaleViewModel.onDeductProductWithId(it.id)
-                        },
-                        onBarcodeClicked = {
-                            val intent = Intent(context, ScanBarcodeActivity::class.java)
-                            barcodeScannerLauncher.launch(intent)
                         },
                         onAddProductClicked = {
                             addSaleViewModel.onAddProductToCartAction(it)

@@ -14,6 +14,7 @@ import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUs
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateTicketStatusUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
+import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.add.mappers.toAddSaleUi
 import com.imecatro.demosales.ui.sales.add.mappers.toDomain
@@ -22,6 +23,11 @@ import com.imecatro.demosales.ui.sales.add.mappers.toUi
 import com.imecatro.demosales.ui.sales.add.mappers.toUpdateQtyDomain
 import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
+import com.imecatro.demosales.ui.sales.add.state.TicketUiState
+import com.imecatro.demosales.ui.theme.architect.BaseViewModel
+import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
+import com.imecatro.demosales.ui.theme.architect.Idle
+import com.imecatro.demosales.ui.theme.architect.UiState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -47,6 +53,7 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "AddSaleViewModel"
 
+
 @HiltViewModel(assistedFactory = AddSaleViewModel.Factory::class)
 class AddSaleViewModel @AssistedInject constructor(
     @Assisted("lastSaleId") private val lastSaleId: Long,
@@ -62,9 +69,8 @@ class AddSaleViewModel @AssistedInject constructor(
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val searchProductByBarcode: SearchProductByBarcode,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
-    private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
     private val dispatcher: CoroutineDispatcher
-) : ViewModel() {
+) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
 
     private val _results: MutableStateFlow<List<ProductResultUiModel>> =
         MutableStateFlow(emptyList())
@@ -97,7 +103,9 @@ class AddSaleViewModel @AssistedInject constructor(
 
         getCartFlowUseCase(id).collectLatest { ticket ->
             _ticketId = ticket.id
-            _ticketSubtotal.update { ticket.totals.subTotal.toString() }
+            updateState {
+                copy(subtotal = ticket.totals.subTotal.toString())
+            }
             send(ticket.toUi())
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
@@ -114,8 +122,6 @@ class AddSaleViewModel @AssistedInject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    private val _ticketSubtotal: MutableStateFlow<String> = MutableStateFlow("0.0")
-    val ticketSubtotal: StateFlow<String> = _ticketSubtotal.asStateFlow()
 
     fun onSearchProductAction(query: String) {
         viewModelScope.launch(dispatcher) {
@@ -204,10 +210,11 @@ class AddSaleViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             searchProductByBarcode
                 .execute(scannedBarcode)
-                .onSuccess { result ->
-                    _results.update { listOf(result.toAddSaleUi()) }
+                .onSuccess { product ->
+                    onAddProductToCartAction(product.toAddSaleUi())
+
                 }.onFailure {
-                    _results.update { emptyList() }
+                    updateState { copy(productNotFount = true) }
                 }
         }
 
