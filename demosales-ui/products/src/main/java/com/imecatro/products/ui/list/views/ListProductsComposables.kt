@@ -148,7 +148,7 @@ fun ListOfProducts(
                             onQueryChange = { text = it },
                             onSearchAction = { onSearchProduct(text) },
                             onClearSearchBar = { text = "" },
-                            showFilters = showFilters,
+                            showFilters = showFilters ||  categories.any { it.isChecked },
                             onShowFiltersClicked = { showFilters = !showFilters }
                         )
                         AnimatedVisibility(visible = showFilters) {
