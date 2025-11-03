@@ -20,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -38,9 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.toMutableStateList
-import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -56,7 +53,6 @@ import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 
@@ -131,6 +127,7 @@ fun CheckoutTicketComposable(
                     value = extra,
                     onValueChange = onExtraChange,
                     prefix = { Text(text = "+") },
+                    placeholder = { Text("0.00") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
                     visualTransformation = CurrencyVisualTransformation(),
@@ -149,6 +146,7 @@ fun CheckoutTicketComposable(
                     value = discount,
                     onValueChange = onDiscountChange,
                     prefix = { Text(text = "-") },
+                    placeholder = { Text("0.00") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
                     visualTransformation = CurrencyVisualTransformation(),
@@ -214,6 +212,12 @@ fun CheckoutTicketComposableImpl(
         mutableStateOf("")
     }
 
+    var discount by remember {
+        mutableStateOf("")
+    }
+    var extra by remember {
+        mutableStateOf("")
+    }
     CheckoutTicketComposable(
         saleId = uiState.ticket.id,
         client = uiState.ticket.clientName,
@@ -221,16 +225,21 @@ fun CheckoutTicketComposableImpl(
         note = uiState.ticket.note,
         onNoteTextChange = { checkoutViewModel.onNoteChangeAction(it) },
         subtotal = "${uiState.ticket.totals.subtotal}",
-        extra = "${uiState.ticket.totals.extra}",
-        onExtraChange = { checkoutViewModel.onExtraChargeAdded(Money.toDouble(it)) },
-        discount = "${uiState.ticket.totals.discount}",
-        onDiscountChange = { checkoutViewModel.onDiscountAdded(Money.toDouble(it)) },
+        extra = extra,
+        onExtraChange = { extra = it},
+        discount = discount,
+        onDiscountChange = { discount = it },
         total = "${uiState.ticket.totals.total}",
         onCheckoutClick = {
             checkoutViewModel.onCheckoutAction()
         },
         onSavePending = { checkoutViewModel.onSavePendingTicked() }
     )
+
+    LaunchedEffect(discount,extra) {
+        checkoutViewModel.onExtraChargeAdded(Money.toDouble(extra))
+        checkoutViewModel.onDiscountAdded(Money.toDouble(discount))
+    }
 
     if (openBottomSheet)
         ModalBottomSheet(
