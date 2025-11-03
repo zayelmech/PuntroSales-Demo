@@ -1,5 +1,9 @@
 package com.imecatro.demosales.ui.sales.add.screens
 
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -61,6 +66,7 @@ import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
+import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
 import com.imecatro.demosales.ui.theme.dialogs.DialogType
@@ -164,7 +170,7 @@ fun CreateTicketComposable(
                         shape = MaterialTheme.shapes.medium
                     ) {
                         Icon(imageVector = Icons.Filled.Add, null)
-                        Text(text = stringResource(R.string.btn_add_product), color = MaterialTheme.colorScheme.onPrimary)
+                        Text(text = stringResource(R.string.btn_add_product))
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }
@@ -257,6 +263,19 @@ fun CreateTicketComposableStateImpl(
     )
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
 
+
+    val context = LocalContext.current
+    val barcodeScannerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val scannedBarcode = result.data?.getStringExtra("barcode_result")
+            if (scannedBarcode != null) {
+                addSaleViewModel.onSearchBarcode(scannedBarcode)
+            }
+        }
+    }
+
     Column {
         TopAppBar(
             title = { Text(text = stringResource(R.string.top_bar_new_sale)) },
@@ -310,6 +329,10 @@ fun CreateTicketComposableStateImpl(
                         searchUiState,
                         onDeductProductClicked = {
                             addSaleViewModel.onDeductProductWithId(it.id)
+                        },
+                        onBarcodeClicked = {
+                            val intent = Intent(context, ScanBarcodeActivity::class.java)
+                            barcodeScannerLauncher.launch(intent)
                         },
                         onAddProductClicked = {
                             addSaleViewModel.onAddProductToCartAction(it)

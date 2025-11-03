@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
+import com.imecatro.demosales.domain.products.usecases.SearchProductByBarcode
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteTicketByIdUseCase
@@ -26,6 +27,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -58,6 +60,7 @@ class AddSaleViewModel @AssistedInject constructor(
 
     private val getMostPopularProductsUseCase: GetMostPopularProductsUseCase,
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
+    private val searchProductByBarcode: SearchProductByBarcode,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
     private val getDetailsOfSaleByIdUseCase: GetDetailsOfSaleByIdUseCase,
     private val dispatcher: CoroutineDispatcher
@@ -195,6 +198,20 @@ class AddSaleViewModel @AssistedInject constructor(
         viewModelScope.launch {
             deleteTicketByIdUseCase.invoke(_ticketId)
         }
+    }
+
+    fun onSearchBarcode(scannedBarcode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            searchProductByBarcode
+                .execute(scannedBarcode)
+                .onSuccess { result ->
+                    _results.update { listOf(result.toAddSaleUi()) }
+                }.onFailure {
+                    _results.update { emptyList() }
+                }
+        }
+
+
     }
 
 

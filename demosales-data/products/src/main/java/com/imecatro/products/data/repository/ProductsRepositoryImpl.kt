@@ -89,6 +89,11 @@ class ProductsRepositoryImpl(
         return productsDao.searchProducts(letter).map { it.toProductsListDomain() }
     }
 
+    override suspend fun searchProductByBarcode(barcode: String): ProductDomainModel? {
+        if (productsDao == null) throw IOException("DAO ENGINE NOT INITIALIZED")
+        return productsDao.searchProductByBarcode(barcode).toDomain()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun addStock(reference: String, productId: Long, amount: Double) {
         val now = Instant.now()

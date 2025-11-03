@@ -1,7 +1,6 @@
-package com.imecatro.products.ui
+package com.imecatro.demosales.ui.theme.barcode
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
@@ -89,7 +88,7 @@ class ScanBarcodeActivity : ComponentActivity() {
                         val resultIntent = Intent().apply {
                             putExtra("barcode_result", barcodeValue)
                         }
-                        setResult(Activity.RESULT_OK, resultIntent)
+                        setResult(RESULT_OK, resultIntent)
                         finish()
                     }
                 }

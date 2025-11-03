@@ -13,6 +13,8 @@ interface ProductsRepository {
 
     fun searchProducts(letter: String): Flow<List<ProductDomainModel>>
 
+    suspend fun searchProductByBarcode(barcode: String): ProductDomainModel?
+
     suspend fun addStock(reference: String, productId: Long, amount: Double)
 
     suspend fun removeStock(reference: String,productId: Long, amount: Double)

@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +49,7 @@ import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 fun SearchBottomSheetComposable(
     searchEngineUiModel: SearchEngineUiModel = SearchEngineUiModel(),
     onDeductProductClicked: (ProductResultUiModel) -> Unit = {},
+    onBarcodeClicked: () -> Unit = {},
     onAddProductClicked: (ProductResultUiModel) -> Unit = {}
 ) {
     Column(
@@ -66,6 +68,11 @@ fun SearchBottomSheetComposable(
                     imageVector = Icons.Filled.Search,
                     contentDescription = null
                 )
+            },
+            trailingIcon = {
+                IconButton(onClick = onBarcodeClicked) {
+                    Icon(painterResource(R.drawable.barcode), "barcode")
+                }
             })
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 128.dp),

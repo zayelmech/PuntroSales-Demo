@@ -1,4 +1,4 @@
-package com.imecatro.products.ui
+package com.imecatro.demosales.ui.theme.barcode
 
 import android.content.Context
 import android.graphics.Canvas

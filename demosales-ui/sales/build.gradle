@@ -59,6 +59,7 @@ dependencies {
     implementation libs.androidx.ui.tooling.preview
     implementation libs.androidx.material3
 
+    implementation libs.androidx.activity.compose
     //Coil for images in compose
     implementation(libs.coil.compose)
     implementation libs.androidx.constraintlayout.compose

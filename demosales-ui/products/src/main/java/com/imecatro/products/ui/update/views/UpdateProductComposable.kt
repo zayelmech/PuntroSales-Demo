@@ -23,7 +23,7 @@ import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
-import com.imecatro.products.ui.ScanBarcodeActivity
+import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel

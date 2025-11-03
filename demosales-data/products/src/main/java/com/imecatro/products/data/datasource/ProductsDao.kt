@@ -48,6 +48,9 @@ interface ProductsDao {
     )
     fun searchProducts(productName: String): Flow<List<ProductRoomEntity>>
 
+    @Query("""SELECT * FROM products_table WHERE (:barcode != '' AND barcode LIKE :barcode)""")
+    suspend fun searchProductByBarcode(barcode: String): ProductRoomEntity
+
     @Query("SELECT * FROM stock_table WHERE product_id = :id ORDER BY id DESC")
     fun getProductStockHistory(id: Long): List<StockRoomEntity>
 

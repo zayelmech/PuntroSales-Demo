@@ -15,6 +15,8 @@ import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCas
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
 import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
+import com.imecatro.demosales.domain.products.usecases.SearchProductByBarcode
+import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
 import dagger.Module
 import dagger.Provides
@@ -76,6 +78,12 @@ object ProductsUseCases {
     @Provides
     fun providesGetProductsLikeUseCase(productsRepository: ProductsRepository): GetProductsLikeUseCase {
         return GetProductsLikeUseCase(productsRepository)
+    }
+
+    @Provides
+    fun providesSearchProductByBarcode(productsRepository: ProductsRepository,ioDispatcher: CoroutineProvider) : SearchProductByBarcode {
+     return SearchProductByBarcode(productsRepository, ioDispatcher)
+
     }
 
 
