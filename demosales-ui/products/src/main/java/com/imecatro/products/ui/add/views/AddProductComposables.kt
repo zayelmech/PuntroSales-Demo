@@ -219,7 +219,7 @@ fun AddProductComposable(
                     singleLine = true,
                     modifier = Modifier.sizeIn(minWidth = 300.dp),
                     onValueChange = onBarcodeChange,
-                    leadingIcon = {
+                    trailingIcon = {
                         IconButton(onClick = onBarcodeClicked) {
                             Icon(painterResource(R.drawable.barcode), null)
                         }
