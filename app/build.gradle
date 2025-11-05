@@ -30,7 +30,10 @@ android {
 
         // Add your own apikey from GCP in local.properties
         Properties properties = new Properties()
-        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        def localPropertiesFile = project.rootProject.file('local.properties')
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.newDataInputStream())
+        }
         manifestPlaceholders["MAPS_API_KEY"] = properties.getProperty("MAPS_API_KEY","")
     }
 
