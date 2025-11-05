@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,14 +36,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +74,7 @@ import com.imecatro.products.ui.R
 import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
+import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
 
@@ -115,6 +122,8 @@ fun AddProductComposable(
     LaunchedEffect(currencyList) {
         onCurrencyChange(currency.currencyCode)
     }
+    val state = rememberTooltipState()
+    val scope = rememberCoroutineScope()
 
     LazyColumn {
         item {
@@ -202,7 +211,25 @@ fun AddProductComposable(
                         singleLine = true,
                         modifier = Modifier.sizeIn(minWidth = 150.dp),
                         onValueChange = onStockChange,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        leadingIcon = {
+                            TooltipBox(
+                                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                                tooltip = {
+                                    PlainTooltip { Text(stringResource(R.string.tooltip_info_stock)) }
+                                },
+                                state = state
+                            ) {
+                                IconButton(
+                                    onClick = { scope.launch { state.show() } },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Info,
+                                        contentDescription = "Info"
+                                    )
+                                }
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.size(20.dp))
                     if (isEditMode) {
@@ -225,6 +252,7 @@ fun AddProductComposable(
                         }
                     },
                 )
+
                 Row {
                     Column {
                         Text(

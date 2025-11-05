@@ -52,4 +52,5 @@
     <string name="top_bar_catalog">Catalog</string>
     <string name="btn_download_products_csv">Products CSV</string>
     <string name="label_barcode">Barcode</string>
+    <string name="tooltip_info_stock">This is the quantity of products you currently have in your warehouse</string>
 </resources>
