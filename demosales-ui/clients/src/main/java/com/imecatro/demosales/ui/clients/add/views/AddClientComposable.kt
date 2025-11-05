@@ -82,14 +82,16 @@ internal fun AddClientComposable(
 
     LazyColumn {
         item {
-            TopAppBar(title = { Text(text = stringResource(R.string.top_bar_client)) }, navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        Icons.AutoMirrored.Default.ArrowBack,
-                        null
-                    )
-                }
-            })
+            TopAppBar(
+                title = { Text(text = stringResource(R.string.top_bar_client)) },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            null
+                        )
+                    }
+                })
             if (isLoading)
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
@@ -99,13 +101,13 @@ internal fun AddClientComposable(
                 Row(Modifier.height(100.dp)) {
                     Image(
                         painter = rememberAsyncImagePainter(
-                                    ImageRequest.Builder(context)
-                                        .data(uri)
-                                        .placeholder(R.drawable.baseline_mood_24)
-                                        .error(R.drawable.baseline_mood_24)
-                                        .crossfade(true)
-                                        .build()
-                                ),
+                            ImageRequest.Builder(context)
+                                .data(uri)
+                                .placeholder(R.drawable.baseline_mood_24)
+                                .error(R.drawable.baseline_mood_24)
+                                .crossfade(true)
+                                .build()
+                        ),
                         contentDescription = null,
                         modifier = Modifier
                             .sizeIn(maxWidth = 100.dp)
@@ -123,20 +125,34 @@ internal fun AddClientComposable(
                     }
                 }
                 //Client name
-                Text(text = stringResource(R.string.client_name), style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(value = clientName, onValueChange = onClientNameChange)
+                Text(
+                    text = stringResource(R.string.client_name),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                OutlinedTextField(
+                    value = clientName,
+                    onValueChange = onClientNameChange,
+                    singleLine = true,
+                )
                 Spacer(modifier = Modifier.height(10.dp))
                 //Phone number
-                Text(text = stringResource(R.string.txt_phone_number), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(R.string.txt_phone_number),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 OutlinedTextField(
                     value = phoneNumber,
                     onValueChange = onPhoneNumberChange,
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 //Address
-                Text(text = stringResource(R.string.txt_address), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(R.string.txt_address),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 HorizontalDivider(
                     modifier = Modifier.padding(0.dp, 5.dp),
                     thickness = 1.dp,
@@ -146,6 +162,7 @@ internal fun AddClientComposable(
                     value = clientAddress,
                     onValueChange = onClientAddressChange,
                     singleLine = false,
+                    maxLines = 4,
                     modifier = Modifier
                         .height(100.dp)
                         .fillMaxWidth()
