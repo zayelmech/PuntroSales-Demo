@@ -45,4 +45,6 @@
     <string name="txt_filter_pending">Pendiente</string>
     <string name="txt_filter_completed">Completada</string>
     <string name="txt_filter_cancelled">Cancelada</string>
+    <string name="search_product_hint">Buscar por nombre del producto</string>
+    <string name="search_client_hint">Buscar por nombre del cliente</string>
 </resources>

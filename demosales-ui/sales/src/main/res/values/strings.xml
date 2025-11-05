@@ -40,4 +40,6 @@
     <string name="txt_filter_pending">Pending</string>
     <string name="txt_filter_completed">Completed</string>
     <string name="txt_filter_cancelled">Cancelled</string>
+    <string name="search_product_hint">Search by product name</string>
+    <string name="search_client_hint">Search by client name</string>
 </resources>
