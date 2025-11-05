@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.clients.R
+import com.imecatro.demosales.ui.clients.add.components.MapCard
 import com.imecatro.demosales.ui.clients.add.model.AddClientUiModel
 import com.imecatro.demosales.ui.clients.add.model.isFormValid
 import com.imecatro.demosales.ui.clients.add.model.isLoading
@@ -80,108 +83,122 @@ internal fun AddClientComposable(
 
     val context = LocalContext.current
 
-    LazyColumn {
-        item {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.top_bar_client)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            null
-                        )
-                    }
-                })
-            if (isLoading)
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    var isMovingMaps by remember { mutableStateOf(false) }
+    var location by remember { mutableStateOf("") }
 
-            Column(modifier = Modifier.padding(10.dp)) {
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState(), enabled = !isMovingMaps )) {
 
-                Text(text = "Image", style = MaterialTheme.typography.titleMedium)
-                Row(Modifier.height(100.dp)) {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            ImageRequest.Builder(context)
-                                .data(uri)
-                                .placeholder(R.drawable.baseline_mood_24)
-                                .error(R.drawable.baseline_mood_24)
-                                .crossfade(true)
-                                .build()
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .sizeIn(maxWidth = 100.dp)
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(25)),
-                        contentScale = ContentScale.FillWidth
+        TopAppBar(
+            title = { Text(text = stringResource(R.string.top_bar_client)) },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.AutoMirrored.Default.ArrowBack,
+                        null
                     )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Column {
-                        FilledTonalButton(onClick = { onPickImage() }) {
-                            Icon(painterResource(R.drawable.gallery_images), null)
-                            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(R.string.btn_pick_image))
-                        }
-                    }
                 }
-                //Client name
-                Text(
-                    text = stringResource(R.string.client_name),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                OutlinedTextField(
-                    value = clientName,
-                    onValueChange = onClientNameChange,
-                    singleLine = true,
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                //Phone number
-                Text(
-                    text = stringResource(R.string.txt_phone_number),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = onPhoneNumberChange,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                //Address
-                Text(
-                    text = stringResource(R.string.txt_address),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(0.dp, 5.dp),
-                    thickness = 1.dp,
-                    color = Color.LightGray
-                )
-                OutlinedTextField(
-                    value = clientAddress,
-                    onValueChange = onClientAddressChange,
-                    singleLine = false,
-                    maxLines = 4,
+            })
+        if (isLoading)
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+        Column(modifier = Modifier.padding(10.dp)) {
+
+            Text(text = "Image", style = MaterialTheme.typography.titleMedium)
+            Row(Modifier.height(100.dp)) {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(context)
+                            .data(uri)
+                            .placeholder(R.drawable.baseline_mood_24)
+                            .error(R.drawable.baseline_mood_24)
+                            .crossfade(true)
+                            .build()
+                    ),
+                    contentDescription = null,
                     modifier = Modifier
-                        .height(100.dp)
-                        .fillMaxWidth()
+                        .sizeIn(maxWidth = 100.dp)
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(25)),
+                    contentScale = ContentScale.FillWidth
                 )
-                Spacer(modifier = Modifier.height(60.dp))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Button(
-                        onClick = onSaveButtonClicked,
-                        enabled = buttonSaveState,
-                        modifier = Modifier
-                            .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
-                            .fillMaxWidth(),
-                        shape = MaterialTheme.shapes.large
-                    ) {
-                        Icon(Icons.Filled.Done, null)
-                        Text(text = stringResource(R.string.btn_save))
+                Spacer(modifier = Modifier.width(20.dp))
+                Column {
+                    FilledTonalButton(onClick = { onPickImage() }) {
+                        Icon(painterResource(R.drawable.gallery_images), null)
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(stringResource(R.string.btn_pick_image))
                     }
                 }
             }
+            //Client name
+            Text(
+                text = stringResource(R.string.client_name),
+                style = MaterialTheme.typography.titleMedium
+            )
+            OutlinedTextField(
+                value = clientName,
+                onValueChange = onClientNameChange,
+                singleLine = true,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            //Phone number
+            Text(
+                text = stringResource(R.string.txt_phone_number),
+                style = MaterialTheme.typography.titleMedium
+            )
+            OutlinedTextField(
+                value = phoneNumber,
+                onValueChange = onPhoneNumberChange,
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            //Address
+            Text(
+                text = stringResource(R.string.txt_address),
+                style = MaterialTheme.typography.titleMedium
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(0.dp, 5.dp),
+                thickness = 1.dp,
+                color = Color.LightGray
+            )
+            OutlinedTextField(
+                value = clientAddress,
+                onValueChange = onClientAddressChange,
+                singleLine = false,
+                maxLines = 2,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            //Map
+            Box(
+                modifier = Modifier
+                    .height(250.dp) // Dale un tamaño al contenedor del mapa
+                    .fillMaxWidth()
+            ) {
+                MapCard(address = clientAddress, { isMovingMaps = it}) { long ->
+                    location = "${long.latitude}, ${long.longitude}"
+                }
+            }
+            Text(location)
+            Spacer(modifier = Modifier.height(60.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Button(
+                    onClick = onSaveButtonClicked,
+                    enabled = buttonSaveState,
+                    modifier = Modifier
+                        .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
+                        .fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Icon(Icons.Filled.Done, null)
+                    Text(text = stringResource(R.string.btn_save))
+                }
+            }
+
         }
     }
 

@@ -27,6 +27,11 @@ android {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
+
+        // Add your own apikey from GCP in local.properties
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        manifestPlaceholders["MAPS_API_KEY"] = properties.getProperty("MAPS_API_KEY","")
     }
 
     buildTypes {
