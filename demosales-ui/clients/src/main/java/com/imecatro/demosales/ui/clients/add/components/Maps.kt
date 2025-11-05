@@ -16,6 +16,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun MapCard(
     address: String,
-    onMapInteraction: (Boolean) -> Unit, // <-- AÑADE ESTE PARÁMETRO
     onCameraMoveFinished: (LatLng) -> Unit
 ) {
     val context = LocalContext.current
@@ -38,6 +38,8 @@ fun MapCard(
         position = CameraPosition.fromLatLngZoom(LatLng(19.4326, -99.1332), 12f)
     }
 
+    val view = LocalView.current
+    if (view.isInEditMode) return
 
     // Geocodifica la dirección de texto a LatLng y mueve la cámara allí
     LaunchedEffect(address) {
@@ -71,7 +73,6 @@ fun MapCard(
     LaunchedEffect(cameraPositionState) {
         snapshotFlow { cameraPositionState.isMoving }
             .collect { isMoving ->
-                onMapInteraction(isMoving) // <-- AVISA SI EL MAPA SE ESTÁ MOVIENDO
                 if (!isMoving) {
                     val newLatLng = cameraPositionState.position.target
                     onCameraMoveFinished(newLatLng)

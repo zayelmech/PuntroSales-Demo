@@ -83,10 +83,9 @@ internal fun AddClientComposable(
 
     val context = LocalContext.current
 
-    var isMovingMaps by remember { mutableStateOf(false) }
     var location by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState(), enabled = !isMovingMaps )) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
         TopAppBar(
             title = { Text(text = stringResource(R.string.top_bar_client)) },
@@ -101,9 +100,12 @@ internal fun AddClientComposable(
         if (isLoading)
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
-        Column(modifier = Modifier.padding(10.dp)) {
-
-            Text(text = "Image", style = MaterialTheme.typography.titleMedium)
+        Column(
+            modifier = Modifier
+                .padding(10.dp)
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
             Row(Modifier.height(100.dp)) {
                 Image(
                     painter = rememberAsyncImagePainter(
@@ -131,76 +133,69 @@ internal fun AddClientComposable(
                 }
             }
             //Client name
-            Text(
-                text = stringResource(R.string.client_name),
-                style = MaterialTheme.typography.titleMedium
-            )
             OutlinedTextField(
                 value = clientName,
                 onValueChange = onClientNameChange,
                 singleLine = true,
+                label = { Text(stringResource(R.string.client_name)) }
             )
             Spacer(modifier = Modifier.height(10.dp))
             //Phone number
-            Text(
-                text = stringResource(R.string.txt_phone_number),
-                style = MaterialTheme.typography.titleMedium
-            )
+
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = onPhoneNumberChange,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                label = { Text(stringResource(R.string.txt_phone_number)) }
             )
             Spacer(modifier = Modifier.height(10.dp))
             //Address
-            Text(
-                text = stringResource(R.string.txt_address),
-                style = MaterialTheme.typography.titleMedium
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(0.dp, 5.dp),
-                thickness = 1.dp,
-                color = Color.LightGray
-            )
             OutlinedTextField(
                 value = clientAddress,
+                label = { Text(stringResource(R.string.txt_address)) },
                 onValueChange = onClientAddressChange,
                 singleLine = false,
                 maxLines = 2,
                 modifier = Modifier
                     .fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(20.dp))
-            //Map
-            Box(
-                modifier = Modifier
-                    .height(250.dp) // Dale un tamaño al contenedor del mapa
-                    .fillMaxWidth()
-            ) {
-                MapCard(address = clientAddress, { isMovingMaps = it}) { long ->
-                    location = "${long.latitude}, ${long.longitude}"
-                }
-            }
-            Text(location)
-            Spacer(modifier = Modifier.height(60.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(
-                    onClick = onSaveButtonClicked,
-                    enabled = buttonSaveState,
-                    modifier = Modifier
-                        .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
-                        .fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large
-                ) {
-                    Icon(Icons.Filled.Done, null)
-                    Text(text = stringResource(R.string.btn_save))
-                }
-            }
-
+            HorizontalDivider(
+                modifier = Modifier.padding(0.dp, 5.dp),
+                thickness = 1.dp,
+                color = Color.LightGray
+            )
         }
+        Spacer(modifier = Modifier.height(20.dp))
+        //Map
+        Box(
+            modifier = Modifier
+                .height(200.dp) // Dale un tamaño al contenedor del mapa
+                .fillMaxWidth()
+        ) {
+            MapCard(address = clientAddress) { long ->
+                location = "${long.latitude}, ${long.longitude}"
+            }
+        }
+        Text(location, style = MaterialTheme.typography.bodySmall)
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Button(
+                onClick = onSaveButtonClicked,
+                enabled = buttonSaveState,
+                modifier = Modifier
+                    .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
+                    .fillMaxWidth(),
+                shape = MaterialTheme.shapes.large
+            ) {
+                Icon(Icons.Filled.Done, null)
+                Text(text = stringResource(R.string.btn_save))
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
     }
+
 
 }
 
