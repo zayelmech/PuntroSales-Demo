@@ -3,7 +3,10 @@ Offline Point of Sales for Android
 
 We’re excited to invite you to test our new app Puntro Sales! 🚀
 
-- First, join our closed testing group here:
+- You can download the app directly from the Google Play Store:
+👉 https://play.google.com/store/apps/details?id=com.imecatro.demosales
+
+- Or,join our closed testing group here:
 👉 https://groups.google.com/g/puntro-sales-demo
 
 - Once you’ve joined the group, you’ll see the link to download the app directly from the Google Play Store.
