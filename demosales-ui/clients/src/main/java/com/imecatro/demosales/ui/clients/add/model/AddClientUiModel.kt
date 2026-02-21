@@ -7,6 +7,8 @@ data class AddClientUiModel(
     var clientName: String = "",
     var phoneNumber: String = "",
     var clientAddress: String = "",
+    val latitude: Double?= null,
+    val longitude: Double?= null,
     val imageUri: Uri? = null,
 
     //Presenter variables

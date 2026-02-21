@@ -1,17 +1,16 @@
 package com.imecatro.demosales.ui.clients.edit.mappers
 
-import androidx.core.net.toUri
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.ui.clients.edit.model.EditClientUiModel
 
-internal fun ClientDomainModel.toUi(current: EditClientUiModel): EditClientUiModel {
-    return current.copy(
+internal fun EditClientUiModel.toDomain(): ClientDomainModel {
+    return ClientDomainModel(
         id = this.id,
-        clientName = this.name,
+        name = this.clientName,
         phoneNumber = this.phoneNumber,
-        clientAddress = this.shipping,
         latitude = this.latitude,
         longitude = this.longitude,
-        imageUri = this.avatarUri ?.toUri()
+        shipping = this.clientAddress,
+        avatarUri = this.imageUri?.toString() ?: ""
     )
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.LatLng
 import com.imecatro.demosales.ui.clients.add.views.AddClientComposable
 import com.imecatro.demosales.ui.clients.edit.model.isFormValid
 import com.imecatro.demosales.ui.clients.edit.model.isLoading
@@ -38,6 +39,8 @@ fun EditClientComposableImpl(
         }
     }
 
+    val latLng = LatLng(uiState.latitude ?: 19.4326, uiState.longitude ?: -99.1332)
+
     AddClientComposable(
         isLoading = uiState.isLoading,
         uri = uiState.imageUri,
@@ -48,6 +51,8 @@ fun EditClientComposableImpl(
         onPhoneNumberChange = (viewModel::onPhoneNumberChange),
         clientAddress = uiState.clientAddress,
         onClientAddressChange = (viewModel::onClientAddressChange),
+        clientLatLng = latLng,
+        onClientLatLngChange = { viewModel.onClientLatLngChange(it.longitude, it.latitude) },
         buttonSaveState = uiState.isFormValid && !uiState.isLoading,
         onNavigateBack = onBackClicked,
         onSaveButtonClicked = { viewModel.onSaveClientAction(uiState) }

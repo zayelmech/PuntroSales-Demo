@@ -10,6 +10,8 @@ fun AddClientUiModel.toDomain(): ClientDomainModel {
         name = clientName,
         phoneNumber = phoneNumber,
         shipping = clientAddress,
+        latitude = latitude,
+        longitude = longitude,
         avatarUri = imageUri?.toString() ?: ""
     )
 

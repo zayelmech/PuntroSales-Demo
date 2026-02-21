@@ -7,6 +7,8 @@ data class ClientDetailsUiModel(
     val clientName: String = "",
     val phoneNumber: String = "",
     val clientAddress: String = "",
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val imageUri: Uri? = null,
 
     // Presenter parameters

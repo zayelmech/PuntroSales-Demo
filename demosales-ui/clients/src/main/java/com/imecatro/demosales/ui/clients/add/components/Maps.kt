@@ -29,13 +29,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun MapCard(
     address: String, // Dirección a geocodificar -> Example: Street Name #, CP, State
+    latLng: LatLng?,
     onCameraMoveFinished: (LatLng) -> Unit
 ) {
     val context = LocalContext.current
     val geocoder = remember { Geocoder(context) }
     val cameraPositionState = rememberCameraPositionState {
         // Coordenadas por defecto (p. ej., Ciudad de México)
-        position = CameraPosition.fromLatLngZoom(LatLng(19.4326, -99.1332), 12f)
+        position = CameraPosition.fromLatLngZoom(latLng ?: LatLng(19.4326, -99.1332), 12f)
     }
 
     val view = LocalView.current
@@ -91,7 +92,9 @@ fun MapCard(
             imageVector = Icons.Default.LocationOn,
             contentDescription = "Pin de ubicación",
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.align(Alignment.Center).size(40.dp)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(40.dp)
         )
     }
 }

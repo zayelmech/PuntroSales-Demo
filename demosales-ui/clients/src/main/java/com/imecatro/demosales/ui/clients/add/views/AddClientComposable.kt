@@ -54,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.google.android.gms.maps.model.LatLng
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.add.components.MapCard
 import com.imecatro.demosales.ui.clients.add.model.AddClientUiModel
@@ -75,7 +76,9 @@ internal fun AddClientComposable(
     phoneNumber: String = "",
     onPhoneNumberChange: (String) -> Unit = {},
     clientAddress: String = "",
+    clientLatLng: LatLng? = null,
     onClientAddressChange: (String) -> Unit = {},
+    onClientLatLngChange: (LatLng) -> Unit = {},
     buttonSaveState: Boolean = false,
     onNavigateBack: () -> Unit = {},
     onSaveButtonClicked: () -> Unit = {}
@@ -174,8 +177,9 @@ internal fun AddClientComposable(
                 .height(200.dp) // Dale un tamaño al contenedor del mapa
                 .fillMaxWidth()
         ) {
-            MapCard(address = clientAddress) { long ->
+            MapCard(address = clientAddress, latLng = clientLatLng) { long ->
                 location = "${long.latitude}, ${long.longitude}"
+                onClientLatLngChange(LatLng(long.latitude, long.longitude))
             }
         }
         Text(location, style = MaterialTheme.typography.bodySmall)
@@ -234,6 +238,8 @@ fun AddClientComposableImpl(
             }
         }
     }
+    val latLng = LatLng(uiState.latitude ?: 19.4326, uiState.longitude ?: -99.1332)
+
     AddClientComposable(
         isLoading = uiState.isLoading,
         uri = formState.imageUri,
@@ -243,7 +249,9 @@ fun AddClientComposableImpl(
         phoneNumber = formState.phoneNumber,
         onPhoneNumberChange = { formState = formState.copy(phoneNumber = it) },
         clientAddress = formState.clientAddress,
+        clientLatLng = latLng,
         onClientAddressChange = { formState = formState.copy(clientAddress = it) },
+        onClientLatLngChange = { formState = formState.copy(longitude = it.longitude, latitude = it.latitude) },
         buttonSaveState = (formState.isFormValid && !uiState.isLoading),
         onNavigateBack = onBackToList,
         onSaveButtonClicked = { addClientViewModel.saveClient(formState) }

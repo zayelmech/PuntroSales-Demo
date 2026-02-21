@@ -44,6 +44,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
 import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
@@ -60,6 +67,22 @@ private fun ClientDetailsComposable(
     onDeleteClicked: () -> Unit = {},
     onEditClicked: () -> Unit = {}
 ) {
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(
+            LatLng(clientDetails.latitude, clientDetails.longitude),
+            15f
+        )
+    }
+
+    LaunchedEffect(clientDetails.latitude, clientDetails.longitude) {
+        cameraPositionState.move(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(clientDetails.latitude, clientDetails.longitude),
+                15f
+            )
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -126,6 +149,18 @@ private fun ClientDetailsComposable(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
+        }
+        GoogleMap(
+            modifier = Modifier
+                .sizeIn(maxWidth = 400.dp)
+                .height(200.dp)
+                .fillMaxWidth(),
+            cameraPositionState = cameraPositionState
+        ) {
+            Marker(
+                state = rememberUpdatedMarkerState(position = LatLng(clientDetails.latitude, clientDetails.longitude)),
+                title = clientDetails.clientName
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
 
@@ -199,4 +234,3 @@ fun ClientDetailsComposableImpl(
                 clientDetailsViewModel.onDeleteClientAction(uiState.clientId)
             })
 }
-

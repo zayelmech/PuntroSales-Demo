@@ -7,6 +7,8 @@ data class EditClientUiModel(
     val clientName: String = "",
     val phoneNumber: String = "",
     val clientAddress: String = "",
+    val latitude: Double?= null,
+    val longitude: Double?= null,
     val imageUri: Uri? = null,
 
     //Presenter

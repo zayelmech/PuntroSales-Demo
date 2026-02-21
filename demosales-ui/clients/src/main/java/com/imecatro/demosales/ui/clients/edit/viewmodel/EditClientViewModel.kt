@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
+import com.imecatro.demosales.ui.clients.edit.mappers.toDomain
 import com.imecatro.demosales.ui.clients.edit.mappers.toUi
 import com.imecatro.demosales.ui.clients.edit.model.EditClientUiModel
 import dagger.assisted.Assisted
@@ -77,6 +78,9 @@ class EditClientViewModel @AssistedInject constructor(
     fun onImageUriChangeAction(uri: Uri) =
         _uiState.update { cs -> cs.copy(imageUri = uri) }
 
+    fun onClientLatLngChange(longitude: Double, latitude: Double) {
+        _uiState.update { cs -> cs.copy(longitude = longitude, latitude = latitude) }
+    }
     @AssistedFactory
     interface Factory {
         fun create(
@@ -84,16 +88,6 @@ class EditClientViewModel @AssistedInject constructor(
         ): EditClientViewModel
     }
 
-}
-
-private fun EditClientUiModel.toDomain(): ClientDomainModel {
-    return ClientDomainModel(
-        id = this.id,
-        name = this.clientName,
-        phoneNumber = this.phoneNumber,
-        shipping = this.clientAddress,
-        avatarUri = this.imageUri?.toString() ?: ""
-    )
 }
 
 
