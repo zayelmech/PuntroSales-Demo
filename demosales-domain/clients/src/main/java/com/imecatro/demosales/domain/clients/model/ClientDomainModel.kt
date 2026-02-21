@@ -8,11 +8,15 @@ package com.imecatro.demosales.domain.clients.model
  * @param phoneNumber The client's phone number.
  * @param shipping The client's shipping address.
  * @param avatarUri The URL of the client's avatar image.
+ * @param latitude The client's location latitude.
+ * @param longitude The client's location longitude.
  */
 data class ClientDomainModel(
     val id: Long = 0,
     val name: String,
     val phoneNumber: String,
     val shipping: String,
-    val avatarUri: String?
+    val avatarUri: String?,
+    val latitude: Double? = null,
+    val longitude: Double? = null
 )

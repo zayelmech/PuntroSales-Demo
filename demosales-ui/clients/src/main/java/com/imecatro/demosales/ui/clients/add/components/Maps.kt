@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun MapCard(
-    address: String,
+    address: String, // Dirección a geocodificar -> Example: Street Name #, CP, State
     onCameraMoveFinished: (LatLng) -> Unit
 ) {
     val context = LocalContext.current

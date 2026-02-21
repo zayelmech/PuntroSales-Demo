@@ -14,5 +14,7 @@ data class ClientRoomEntity(
     val imageUri: String,
     //useful
     val timestamp: Long,
-    val tableVersion: String
+    val tableVersion: String,
+    val latitude: Double? = null,
+    val longitude: Double? = null
 )

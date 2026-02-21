@@ -12,6 +12,8 @@ fun ClientDomainModel.toData(version: Int): ClientRoomEntity {
         address = this.shipping,
         imageUri = avatarUri ?: "",
         timestamp = timestamp,
-        tableVersion = version.toString()
+        tableVersion = version.toString(),
+        latitude = this.latitude,
+        longitude = this.longitude
     )
 }

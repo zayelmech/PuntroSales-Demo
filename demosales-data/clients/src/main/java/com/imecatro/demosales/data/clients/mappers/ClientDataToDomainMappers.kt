@@ -10,6 +10,8 @@ internal fun ClientRoomEntity.toDomain(): ClientDomainModel {
         name = name,
         phoneNumber = this.phone?:"",
         shipping = this.address?:"",
-        avatarUri = this.imageUri?.ifEmpty { null }
+        avatarUri = this.imageUri?.ifEmpty { null },
+        latitude = this.latitude,
+        longitude = this.longitude
     )
 }
