@@ -53,7 +53,7 @@ class SalesListViewModel @Inject constructor(
                     statusFilter.filter { it.isChecked }.map{it.toDomain()}
 
                 if (statusSelected.isEmpty())
-                    sales // By default show all sales
+                    sales // By default, show all sales
                 else
                     sales.filter { sale -> sale.status in statusSelected }
             }
@@ -94,20 +94,24 @@ class SalesListViewModel @Inject constructor(
     }
 
     fun onDownloadCsv() = viewModelScope.launch(coroutineProvider.io) {
-        exportSalesReportUseCase.execute {
-            ids = reportState.value.ids
-        }.onSuccess { file ->
-            _reportState.update { it.copy(salesFile = file) }
-        }.onFailure { err ->
-            Log.e(TAG, "onDownloadCsv: ", err)
+        launch {
+            exportSalesReportUseCase.execute {
+                ids = reportState.value.ids
+            }.onSuccess { file ->
+                _reportState.update { it.copy(salesFile = file) }
+            }.onFailure { err ->
+                Log.e(TAG, "onDownloadCsv: ", err)
+            }
         }
 
-        exportProductsFromSaleUseCase.execute {
-            ids = reportState.value.ids
-        }.onSuccess { file ->
-            _reportState.update { it.copy(groupedProductsFile = file) }
-        }.onFailure { err ->
-            Log.e(TAG, "onDownloadCsv: ", err)
+        launch {
+            exportProductsFromSaleUseCase.execute {
+                ids = reportState.value.ids
+            }.onSuccess { file ->
+                _reportState.update { it.copy(groupedProductsFile = file) }
+            }.onFailure { err ->
+                Log.e(TAG, "onDownloadCsv: ", err)
+            }
         }
     }
 

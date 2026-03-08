@@ -47,7 +47,7 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [x] Default product sorting
 
 - [x] Product search bar
-- [ ] Download product inventory as CSV
+- [x] Download product inventory as CSV
 
 #### Stock Control
 - [x] Adjust stock (in/out) by quantity

@@ -79,6 +79,5 @@ object CsvUtil {
     private fun escape(s: String): String {
         val needs = s.contains(',') || s.contains('"') || s.contains('\n') || s.contains('\r')
         val body = s.replace("\"", "\"\"")
-        return if (needs) "\"${'$'}body\"" else body
-    }
+        return if (needs) """"$body"""" else body    }
 }
