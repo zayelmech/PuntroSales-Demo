@@ -172,8 +172,7 @@ fun DetailsComposableStateImpl(
                     TextButton(onClick = {
                         productSelected.file?.open(context)
                     }) {
-                        //Text(stringResource(R.string.btn_download_products_csv))
-                        Text("Open CSV stock history")
+                        Text(stringResource(R.string.btn_download_stokc_csv))
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {

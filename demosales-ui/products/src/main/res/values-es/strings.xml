@@ -55,4 +55,5 @@
     <string name="btn_download_products_csv">Resumen de productos - CSV</string>
     <string name="label_barcode">Código de barras</string>
     <string name="tooltip_info_stock">Es la cantidad de productos que tienes actualmente en tu almacén</string>
+    <string name="btn_download_stokc_csv">Descargar historial de iventario</string>
 </resources>
