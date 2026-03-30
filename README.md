@@ -54,7 +54,7 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [x] Total remaining stock
 - [x] Stock syncs with sales; when a sale is completed, items are automatically deducted
 - [x] Stock may go negative for pending orders to forecast restocking needs
-- [ ] Download stock by product as CSV
+- [x] Download stock by product as CSV
 
 ### Sales
 - [x] List all tickets
