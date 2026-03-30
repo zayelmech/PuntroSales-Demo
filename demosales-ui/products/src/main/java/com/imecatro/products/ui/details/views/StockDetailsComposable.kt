@@ -18,6 +18,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -55,6 +56,7 @@ fun StockComposable(
             "Initial stock"
         ), ProductDetailsUiModel.History("2024-02-01T14:00:00Z", "-1", "Venta #123")
     ),
+    onDownloadClicked: () -> Unit = {},
     onStockAdded: (String) -> Unit = {},
     onStockOut: (String) -> Unit = {}
 ) {
@@ -168,12 +170,27 @@ fun StockComposable(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
-                    Text(
-                        text = stringResource(R.string.title_history),
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        modifier= Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text(
+                            text = stringResource(R.string.title_history),
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                            fontWeight = FontWeight.Bold
+                        )
+                        IconButton(onClick = onDownloadClicked) {
+                            Icon(
+                                painter = painterResource(R.drawable.download),
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+
                 }
             }
 
@@ -192,7 +209,9 @@ fun StockComposable(
                             text = if (isNegative) item.qty else "+${item.qty}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = if (isNegative) MaterialTheme.colorScheme.error else Color(0xff37c8ab)
+                            color = if (isNegative) MaterialTheme.colorScheme.error else Color(
+                                0xff37c8ab
+                            )
                         )
                     },
                     supportingContent = {

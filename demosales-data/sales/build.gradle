@@ -34,7 +34,6 @@ dependencies {
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
-    implementation libs.material
     implementation project(path: ':demosales-domain:sales')
     implementation project(path: ':demosales-data:clients') // is kind of tricky but sales datasource known client data
     implementation libs.androidx.room.common

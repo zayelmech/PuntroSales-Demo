@@ -2,6 +2,7 @@ package com.imecatro.products.ui.details.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.usecases.ExportStockHistoryCsvUseCase
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.products.ui.details.mappers.toUiModel
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
@@ -10,32 +11,23 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ProductsDetailsViewModel.Factory::class)
 class ProductsDetailsViewModel @AssistedInject constructor(
     @Assisted("productId") private var productId: Long,
-    private val productsRepository: ProductsRepository
+    private val productsRepository: ProductsRepository,
+    private val exportStockHistoryCsvUseCase: ExportStockHistoryCsvUseCase,
 ) : BaseViewModel<ProductDetailsUiModel>(ProductDetailsUiModel.idle) {
 
-    private val _product: MutableStateFlow<ProductDetailsUiModel> =
-        MutableStateFlow(ProductDetailsUiModel.idle)
-    val product: StateFlow<ProductDetailsUiModel> = _product.onStart {
-        getDetailsById()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ProductDetailsUiModel.idle)
 
+    override fun onStart() = getDetailsById()
 
     private fun getDetailsById() {
         viewModelScope.launch(Dispatchers.IO) {
             val response =
                 productsRepository.getProductDetailsById(productId)?.toUiModel()
-            response?.let { _product.update { response } }
+            response?.let { updateState { response } }
         }
     }
 
@@ -70,7 +62,7 @@ class ProductsDetailsViewModel @AssistedInject constructor(
     fun onDeleteAction() {
         viewModelScope.launch(Dispatchers.IO) {
             productsRepository.deleteProductById(productId)
-            _product.update { it.copy(productDeleted = true) }
+            updateState { copy(productDeleted = true) }
         }
     }
 
@@ -79,8 +71,18 @@ class ProductsDetailsViewModel @AssistedInject constructor(
             val response =
                 productsRepository.getProductDetailsById(id)?.toUiModel()
             productId = id
-            response?.let { _product.update { response } }
+            response?.let { updateState { response } }
         }
+    }
+
+    fun onStockHistoryDownload() = viewModelScope.launch(Dispatchers.IO) {
+        updateState { copy(isProcessingCsv = true) }
+        exportStockHistoryCsvUseCase.execute(productId).onSuccess { file ->
+            updateState { copy(file = file, isProcessingCsv = false) }
+        }.onFailure {
+            updateState { copy(isProcessingCsv = false) }
+        }
+
     }
 
     @AssistedFactory

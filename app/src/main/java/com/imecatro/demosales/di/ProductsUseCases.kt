@@ -11,6 +11,7 @@ import com.imecatro.demosales.domain.products.usecases.UpdateCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.products.usecases.ExportProductsCsvUseCase
+import com.imecatro.demosales.domain.products.usecases.ExportStockHistoryCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
@@ -102,4 +103,13 @@ object ProductsUseCases {
         coroutineDispatcher: CoroutineProvider
     ): ExportProductsCsvUseCase =
         ExportProductsCsvUseCase(productsRepository, fileInteractor, coroutineDispatcher)
+
+
+    @Provides
+    fun providesExportStockHistoryCsvUseCase(
+        productsRepository: ProductsRepository,
+        fileInteractor: FileInteractor,
+        coroutineDispatcher: CoroutineProvider
+    ): ExportStockHistoryCsvUseCase =
+        ExportStockHistoryCsvUseCase(productsRepository, fileInteractor, coroutineDispatcher)
 }

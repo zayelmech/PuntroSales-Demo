@@ -3,6 +3,7 @@ package com.imecatro.products.ui.details.model
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.demosales.ui.theme.architect.Idle
 import com.imecatro.demosales.ui.theme.architect.UiState
+import java.io.File
 
 data class ProductDetailsUiModel(
     val id: Long?,
@@ -16,6 +17,8 @@ data class ProductDetailsUiModel(
     val stockQty: String,
     val stockPrice: String,
     val stockHistory: List<History>,
+    val isProcessingCsv : Boolean = false,
+    val file : File? = null,
     val categoryName: String,
     val productDeleted : Boolean = false,
 ) : UiState {
@@ -30,7 +33,7 @@ data class ProductDetailsUiModel(
     )
 
     override fun isFetchingOrProcessingData(): Boolean {
-        return false
+        return isProcessingCsv
     }
 
     override fun getError(): ErrorUiModel? {
@@ -50,8 +53,8 @@ data class ProductDetailsUiModel(
                 barcode = "",
                 stockQty = "0.0",
                 stockPrice = "0",
-                emptyList(),
-                ""
+                stockHistory = emptyList(),
+                categoryName = ""
             )
     }
 }
