@@ -104,7 +104,7 @@ fun ListOfProducts(
     onNavigateAction: () -> Unit = {},
 ) {
     var text by rememberSaveable { mutableStateOf("") }
-    var expanded by rememberSaveable { mutableStateOf(false) }
+            //var expanded by rememberSaveable { mutableStateOf(false) }
 
     val scrollState = rememberLazyListState()
 
@@ -130,12 +130,19 @@ fun ListOfProducts(
 
     Scaffold(
         floatingActionButton = {
-            if (!expanded)
-                FloatingActionButton(
-                    onClick = { onNavigateAction() },
-                ) {
+            FloatingActionButton(
+                onClick = { onNavigateAction() },
+            ) {
+
+                Row(Modifier.padding(10.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    AnimatedVisibility(!scrollState.isScrollInProgress) {
+                        Spacer(modifier = Modifier.size(5.dp))
+                        Text(stringResource(R.string.btn_new_product))
+                    }
                 }
+
+            }
         },
         topBar = {
             val windowInsets = TopAppBarDefaults.windowInsets

@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -54,6 +55,7 @@ import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
 import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
+import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.download
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
@@ -64,6 +66,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SalesListComposable(
     list: List<SaleOnListUiModel> = fakelist,
+    todayTotal: Double = 0.0,
     statusList: List<StatusFilterUiModel> = emptyList(),
     onStatusFilterChecked: (StatusFilterUiModel) -> Unit = {},
     itemsSelectedQty: Int = 0, // The amount of items selected in the list
@@ -89,11 +92,9 @@ fun SalesListComposable(
         FloatingActionButton(
             onClick = { onAddNewSale() },
         ) {
-            if (scrollState.isScrollInProgress)
+            Row(Modifier.padding(10.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = null)
-            else {
-                Row(Modifier.padding(10.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = null)
+                AnimatedVisibility(!scrollState.isScrollInProgress) {
                     Spacer(modifier = Modifier.size(5.dp))
                     Text(stringResource(R.string.btn_new_sale))
                 }
@@ -172,6 +173,21 @@ fun SalesListComposable(
                 state = scrollState,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                item {
+                    ListItem(
+                        headlineContent = {
+                            Text(stringResource(R.string.txt_sales_list))
+                        },
+                        supportingContent = {
+                            Text(stringResource(R.string.txt_sales_list_description))
+                        },
+                        trailingContent = {
+                            TextButton(onClick = { /**/ }) {
+                                Text(Money.format(todayTotal))
+                            }
+                        })
+                    HorizontalDivider()
+                }
                 items(list) { sale ->
                     CardOfSaleComposable(
                         sale = sale,
@@ -246,6 +262,7 @@ fun SalesListComposableStateImpl(
 
     SalesListComposable(
         list = listUiState,
+        todayTotal = salesListViewModel.todayTotalAmount.collectAsState().value,
         onCardClicked = { id ->
             if (showOptions)
                 salesListViewModel.onCardSelected(id ?: 0L)

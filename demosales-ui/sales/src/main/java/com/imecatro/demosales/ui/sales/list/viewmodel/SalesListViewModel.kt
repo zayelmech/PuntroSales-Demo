@@ -7,6 +7,7 @@ import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvid
 import com.imecatro.demosales.domain.sales.list.usecases.ExportProductsFromSaleUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.ExportSalesReportUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
+import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.list.mappers.toUiModel
 import com.imecatro.demosales.ui.sales.list.model.SalesList
 import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
@@ -23,13 +24,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 private const val TAG = "SalesListViewModel"
 
 @HiltViewModel
 class SalesListViewModel @Inject constructor(
-    getAllSalesUseCase: GetAllSalesUseCase,
+    private val getAllSalesUseCase: GetAllSalesUseCase,
     private val coroutineProvider: CoroutineProvider,
     private val exportSalesReportUseCase: ExportSalesReportUseCase,
     private val exportProductsFromSaleUseCase: ExportProductsFromSaleUseCase,
@@ -44,13 +48,27 @@ class SalesListViewModel @Inject constructor(
 
     val statusFilterState: StateFlow<List<StatusFilterUiModel>> = _statusFilterState.asStateFlow()
 
+    val todayTotalAmount: StateFlow<Double> =
+        getAllSalesUseCase.invoke()
+            .map { sales ->
+                val today = LocalDate.now()
+                sales.filter { sale ->
+                    sale.status == OrderStatus.COMPLETED &&
+                            Instant.ofEpochMilli(sale.date)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate() == today
+                }.sumOf { it.total }
+            }
+            .catch { Log.e(TAG, "todayTotalAmount calculation error: ", it) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0.0)
+
     val salesListUiState: StateFlow<SalesList> =
         getAllSalesUseCase.invoke()
             .map { sales -> sales.toUiModel() }
             .combine(statusFilterState) { sales, statusFilter ->
                 // Filter by status
                 val statusSelected: List<String> =
-                    statusFilter.filter { it.isChecked }.map{it.toDomain()}
+                    statusFilter.filter { it.isChecked }.map { it.toDomain() }
 
                 if (statusSelected.isEmpty())
                     sales // By default, show all sales

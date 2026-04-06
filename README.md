@@ -79,29 +79,12 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [ ] Change Language
 - [ ] Export data (sales, products, clients)) as .zip
 
-## UI Layer
 
-### Libraries
+This project follows a modular architecture organized first by layer and then by feature.
+Dependencies flow inward toward the domain layer:
+ui → domain ← data
 
-- Hilt for dependency injection
-- Compose
-- Material 3
-- Coil for images
-
-Need permissions : N/A
-
-## Domain layer
-
-It contains all use cases the app needs
-
-### Libraries
-
-- KotlinX coroutines
-
-## Data Source layer
-Room Database Instance, it wraps DAOs and migrations
-
-## Libraries
-
-- Room Database
-- Hilt for dependency injection
+Dependency injection is managed with Dagger/Hilt.
+The UI layer is built with Jetpack Compose and Material 3.
+The domain layer depends only on Kotlin Coroutines. Almost free from third party sdk's.
+The data layer is currently implemented with Room.

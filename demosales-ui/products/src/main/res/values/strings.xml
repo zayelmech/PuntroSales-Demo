@@ -54,4 +54,5 @@
     <string name="label_barcode">Barcode</string>
     <string name="tooltip_info_stock">This is the quantity of products you currently have in your warehouse</string>
     <string name="btn_download_stokc_csv">Open CSV stock history</string>
+    <string name="btn_new_product">New Product</string>
 </resources>

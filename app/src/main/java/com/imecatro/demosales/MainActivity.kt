@@ -10,7 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.imecatro.demosales.ui.AppAdaptiveNavigation
-import com.imecatro.demosales.ui.MainScaffoldApp
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import dagger.hilt.android.AndroidEntryPoint
 

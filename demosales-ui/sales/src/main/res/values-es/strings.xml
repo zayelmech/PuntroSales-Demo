@@ -47,4 +47,6 @@
     <string name="txt_filter_cancelled">Cancelada</string>
     <string name="search_product_hint">Buscar por nombre del producto</string>
     <string name="search_client_hint">Buscar por nombre del cliente</string>
+    <string name="txt_sales_list">Ventas de hoy</string>
+    <string name="txt_sales_list_description">Total de ventas completadas</string>
 </resources>
