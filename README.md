@@ -135,7 +135,6 @@ graph TD
     dat_products --> dom_products
     dat_clients --> dom_clients
     dat_sales --> dom_sales
-    dat_sales --> dat_clients
 
     %% Domain Dependencies
     dom_products --> dom_core
