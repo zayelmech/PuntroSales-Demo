@@ -63,7 +63,7 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [x] View ticket details and share a screenshot with overscroll
 - [x] Filter sales by date range, status, etc. --> Still in progress
 - [x] Download sales as CSV
-- [ ] Sales charts and income tracking — *Future*
+- [x] Sales charts and income tracking — *Future*
 
 ### Clients
 - [x] List all clients
@@ -79,10 +79,69 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [ ] Change Language
 - [ ] Export data (sales, products, clients)) as .zip
 
+## Modular Architecture
 
 This project follows a modular architecture organized first by layer and then by feature.
 Dependencies flow inward toward the domain layer:
-ui → domain ← data
+**ui → domain ← data**
+
+```mermaid
+graph TD
+    subgraph App
+        app[":app"]
+    end
+
+    subgraph UI_Layer [UI Layer]
+        ui_products[":ui:products"]
+        ui_sales[":ui:sales"]
+        ui_clients[":ui:clients"]
+        ui_theme[":ui:theme"]
+    end
+
+    subgraph Domain_Layer [Domain Layer]
+        dom_products[":domain:products"]
+        dom_sales[":domain:sales"]
+        dom_clients[":domain:clients"]
+        dom_core[":domain:core"]
+    end
+
+    subgraph Data_Layer [Data Layer]
+        dat_products[":data:products"]
+        dat_sales[":data:sales"]
+        dat_clients[":data:clients"]
+    end
+
+    %% Composition Root
+    app --> UI_Layer
+    app --> Domain_Layer
+    app --> Data_Layer
+
+    %% UI Dependencies
+    ui_products --> dom_products
+    ui_products --> dom_core
+    ui_products --> ui_theme
+
+    ui_sales --> dom_sales
+    ui_sales --> dom_products
+    ui_sales --> dom_clients
+    ui_sales --> dom_core
+    ui_sales --> ui_theme
+
+    ui_clients --> dom_clients
+    ui_clients --> dom_core
+    ui_clients --> ui_theme
+
+    %% Data Dependencies
+    dat_products --> dom_products
+    dat_clients --> dom_clients
+    dat_sales --> dom_sales
+    dat_sales --> dat_clients
+
+    %% Domain Dependencies
+    dom_products --> dom_core
+    dom_sales --> dom_core
+    dom_clients --> dom_core
+```
 
 Dependency injection is managed with Dagger/Hilt.
 The UI layer is built with Jetpack Compose and Material 3.

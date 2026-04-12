@@ -8,8 +8,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.coroutines.CoroutineContext
@@ -30,9 +30,9 @@ object CoroutinesModuleProvider {
 
 class CoroutineDispatcherImpl : CoroutineProvider {
     override val io: CoroutineContext
-        get() = Job() + Dispatchers.IO
+        get() = Dispatchers.IO + CoroutineName("Coroutine Provider IO")
     override val main: CoroutineContext
-        get() = Job() + Dispatchers.Main
+        get() = Dispatchers.Main + CoroutineName("Coroutine Provider Main")
 
 }
 

@@ -20,6 +20,7 @@ import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.details.UpdateSaleStatusUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.ExportProductsFromSaleUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
+import com.imecatro.demosales.domain.sales.list.usecases.GetSalesMetricsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -102,5 +103,9 @@ object SalesUseCases {
     @Provides
     fun providesDeleteProductOnCartUseCase(addSaleRepository: AddSaleRepository) =
         DeleteProductOnCartUseCase(addSaleRepository)
+
+    @Provides
+    fun providesGetSalesMetrics(allSalesRepository: AllSalesRepository) =
+        GetSalesMetricsUseCase(allSalesRepository)
 
 }

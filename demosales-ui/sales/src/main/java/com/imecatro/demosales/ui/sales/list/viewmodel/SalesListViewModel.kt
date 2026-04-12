@@ -4,9 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
+import com.imecatro.demosales.domain.sales.list.model.SalesMetricsDomainModel
 import com.imecatro.demosales.domain.sales.list.usecases.ExportProductsFromSaleUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.ExportSalesReportUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
+import com.imecatro.demosales.domain.sales.list.usecases.GetSalesMetricsUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.list.mappers.toUiModel
 import com.imecatro.demosales.ui.sales.list.model.SalesList
@@ -37,6 +39,7 @@ class SalesListViewModel @Inject constructor(
     private val coroutineProvider: CoroutineProvider,
     private val exportSalesReportUseCase: ExportSalesReportUseCase,
     private val exportProductsFromSaleUseCase: ExportProductsFromSaleUseCase,
+    private val getSalesMetricsUseCase: GetSalesMetricsUseCase,
 ) : ViewModel() {
 
     private val _reportState = MutableStateFlow(ExportSalesReportInput())
@@ -47,6 +50,12 @@ class SalesListViewModel @Inject constructor(
         MutableStateFlow(StatusFilterUiModel.filters)
 
     val statusFilterState: StateFlow<List<StatusFilterUiModel>> = _statusFilterState.asStateFlow()
+
+    val metrics: StateFlow<SalesMetricsDomainModel> = getSalesMetricsUseCase.invoke().stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        SalesMetricsDomainModel(emptyList(), emptyList(), emptyList())
+    )
 
     val todayTotalAmount: StateFlow<Double> =
         getAllSalesUseCase.invoke()

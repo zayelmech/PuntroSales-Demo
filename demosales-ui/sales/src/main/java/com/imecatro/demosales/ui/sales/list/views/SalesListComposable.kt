@@ -36,8 +36,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
 import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
@@ -60,7 +63,6 @@ import com.imecatro.demosales.ui.theme.common.download
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
 import kotlinx.coroutines.launch
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -77,6 +79,7 @@ fun SalesListComposable(
     allSelected: Boolean = false,
     onCardSelected: (id: Long) -> Unit = {},
     onCardClicked: (id: Long?) -> Unit = {},
+    onShowSalesMetrics: () -> Unit = {},
     onAddNewSale: () -> Unit = {}
 ) {
 
@@ -182,7 +185,7 @@ fun SalesListComposable(
                             Text(stringResource(R.string.txt_sales_list_description))
                         },
                         trailingContent = {
-                            TextButton(onClick = { /**/ }) {
+                            TextButton(onClick = { onShowSalesMetrics() }) {
                                 Text(Money.format(todayTotal))
                             }
                         })
@@ -254,11 +257,19 @@ fun SalesListComposableStateImpl(
     // Reports
     val reportState by salesListViewModel.reportState.collectAsState()
 
-    val showOptions = listUiState.any { it.isSelected }
+    val showOptions by remember {
+        derivedStateOf {
+            listUiState.any { it.isSelected }
+        }
+    }
 
     var showReports by remember { mutableStateOf(false) }
 
+    var showGraph by remember { mutableStateOf(false) }
+
     val scope = rememberCoroutineScope()
+
+    val metricsState by salesListViewModel.metrics.collectAsStateWithLifecycle()
 
     SalesListComposable(
         list = listUiState,
@@ -277,6 +288,7 @@ fun SalesListComposableStateImpl(
         allSelected = reportState.allSelected,
         onCardSelected = { salesListViewModel.onCardSelected(it) },
         onStatusFilterChecked = { salesListViewModel.onStatusFilterChange(it) },
+        onShowSalesMetrics = { showGraph = true },
         statusList = statusFilterUiState,
         onAddNewSale = { onNavigate(null) })
 
@@ -329,4 +341,18 @@ fun SalesListComposableStateImpl(
                 }
             }
         }
+
+    if (showGraph) {
+        ModalBottomSheet(
+            onDismissRequest = { showGraph = false }
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                SalesGraphBottomSheetContent(
+                    salesMetrics = metricsState
+                )
+            }
+        }
+    }
 }
