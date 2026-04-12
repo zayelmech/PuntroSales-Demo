@@ -25,14 +25,14 @@ import kotlinx.parcelize.Parcelize
 @Composable
 fun ListAndDetailsPane(
     onAddProduct: () -> Unit = {},
-    onCreateCatalog : (List<Long>) -> Unit = {},
+    onCreateCatalog: (List<Long>) -> Unit = {},
     onEditProduct: (Long) -> Unit = {}
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
     val customDirective = if (isPortrait) {
-        directive.copy(maxHorizontalPartitions = 1)
+        directive.copy( maxVerticalPartitions = 1)
     } else {
         directive
     }

@@ -30,7 +30,7 @@ fun ListAndDetailsSalesPane(
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
     val customDirective = if (isPortrait) {
-        directive.copy(maxHorizontalPartitions = 1)
+        directive.copy(maxVerticalPartitions = 1)
     } else {
         directive
     }
