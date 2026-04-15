@@ -21,12 +21,10 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
   <img src="doc/img/checkout.jpg" alt="screenshot 3" width="320"/>
 </p>
 
-## Video Demo
+## Creates a product
 
 <p align="center">
-  <a href="https://youtube.com/shorts/y-X2fOyn9AI">
-    <img src="https://img.youtube.com/vi/y-X2fOyn9AI/0.jpg" alt="Puntro Sales Demo" width="320">
-  </a>
+  <img src="doc/img/product.gif" alt="screenshot 4" width="400"/>
 </p>
 
 ### Features
