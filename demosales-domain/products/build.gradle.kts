@@ -1,0 +1,22 @@
+plugins {
+    `java-library`
+    alias(libs.plugins.jetbrains.kotlin.jvm)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlin.reflect)
+    implementation(project(":demosales-domain:core"))
+    testImplementation(libs.jetbrains.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
+}
+
+tasks.test {
+    useJUnitPlatform()
+}

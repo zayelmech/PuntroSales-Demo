@@ -2,11 +2,10 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.android.library) apply false
-    id 'org.jetbrains.kotlin.jvm' version '2.2.0' apply false
+    id("org.jetbrains.kotlin.jvm") version "2.2.0" apply false
     alias(libs.plugins.hilt.android.gradle.plugin) apply false
-    alias(libs.plugins.compose.compiler) apply(false)
-    alias(libs.plugins.ksp.plugin) apply(false)
+    alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.ksp.plugin) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
-
 }
