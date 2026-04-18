@@ -5,6 +5,7 @@ import com.imecatro.demosales.domain.clients.usecases.AddClientUseCase
 import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.FilterClientsUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetAllClientsUseCase
+import com.imecatro.demosales.domain.clients.usecases.GetClientByPhoneNumberUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
@@ -72,4 +73,10 @@ class ClientsFeaturesModule {
     fun providesSearchClientUseCase(
         clientsRepository: ClientsRepository,
     ): SearchClientUseCase = SearchClientUseCase(clientsRepository)
+
+    @Provides
+    fun providesGetClientByPhoneNumberUseCase(
+        clientsRepository: ClientsRepository,
+        appCoroutineDispatcher: CoroutineProvider
+    ): GetClientByPhoneNumberUseCase = GetClientByPhoneNumberUseCase(clientsRepository, appCoroutineDispatcher)
 }

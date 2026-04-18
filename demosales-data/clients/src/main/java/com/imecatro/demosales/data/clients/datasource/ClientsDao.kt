@@ -29,4 +29,7 @@ interface ClientsDao {
     @Query("SELECT * FROM client_table WHERE name LIKE :clientName || '%'")
     fun searchClients(clientName: String): Flow<List<ClientRoomEntity>>
 
+    @Query("SELECT * FROM client_table WHERE phone = :phoneNumber LIMIT 1")
+    fun getClientByPhoneNumber(phoneNumber: String): ClientRoomEntity?
+
 }

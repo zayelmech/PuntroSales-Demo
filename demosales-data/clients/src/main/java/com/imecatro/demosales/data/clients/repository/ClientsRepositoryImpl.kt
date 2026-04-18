@@ -56,6 +56,10 @@ class ClientsRepositoryImpl(
             it.map { client -> client.toDomain() }
         }
     }
+
+    override fun getClientByPhoneNumber(phoneNumber: String): ClientDomainModel? {
+        return clientsDao.getClientByPhoneNumber(phoneNumber)?.toDomain()
+    }
 }
 
 private const val TAG = "ClientsRepositoryImpl"

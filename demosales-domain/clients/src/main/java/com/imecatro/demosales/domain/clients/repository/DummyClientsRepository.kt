@@ -39,4 +39,8 @@ internal class DummyClientsRepositoryImpl : ClientsRepository {
     override fun searchClient(letter: String): Flow<List<ClientDomainModel>> {
         return flow { clients.filter { it.name.contains(letter) } }
     }
+
+    override fun getClientByPhoneNumber(phoneNumber: String): ClientDomainModel? {
+        TODO("Not yet implemented")
+    }
 }

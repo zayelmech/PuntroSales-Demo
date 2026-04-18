@@ -11,4 +11,9 @@
     <string name="top_bar_client_details">Client Details</string>
     <string name="top_bar_clients">Clients</string>
     <string name="delete_client_message">Do you want to delete this client?</string>
+    <string name="tittle_sync_contacts">Synchronize Contacts</string>
+    <string name="txt_select_sync_option">Choose an option to synchronize your mobile contacts with clients.</string>
+    <string name="btn_sync_all_contacts">Sync All</string>
+    <string name="btn_sync_specific_contact">Select Specific</string>
+    <string name="label_search_contact">Search contacts…</string>
 </resources>

@@ -4,13 +4,25 @@ import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.ui.clients.list.model.ClientUiModel
 
 internal fun List<ClientDomainModel>.toUiModel(): List<ClientUiModel> {
-    return map {
-        ClientUiModel(
-            id = it.id,
-            name = it.name,
-            number = it.phoneNumber,
-            image = it.avatarUri,
-            address = it.shipping
-        )
-    }
+    return map { it.toUiModel() }
+}
+
+internal fun ClientDomainModel.toUiModel(): ClientUiModel {
+    return ClientUiModel(
+        id = this.id,
+        name = this.name,
+        number = this.phoneNumber,
+        image = this.avatarUri,
+        address = this.shipping
+    )
+}
+
+internal fun ClientUiModel.toDomain(): ClientDomainModel {
+    return ClientDomainModel(
+        id = this.id ?: 0,
+        name = this.name ?: "",
+        phoneNumber = this.number ?: "",
+        avatarUri = this.image,
+        shipping = this.address ?: ""
+    )
 }

@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 sealed class NavigationDirections {
 
     @Serializable
+    @Keep
     object ProductsFeature : ParentFeature() {
         override val icon: Int
             get() = R.drawable.baseline_art_track_24
@@ -16,6 +17,7 @@ sealed class NavigationDirections {
     }
 
     @Serializable
+    @Keep
     object SalesFeature : ParentFeature() {
         override val icon: Int
             get() = R.drawable.outline_attach_money_24
@@ -24,6 +26,7 @@ sealed class NavigationDirections {
     }
 
     @Serializable
+    @Keep
     object ClientsFeature : ParentFeature() {
         override val icon: Int
             get() = R.drawable.round_account_circle_24

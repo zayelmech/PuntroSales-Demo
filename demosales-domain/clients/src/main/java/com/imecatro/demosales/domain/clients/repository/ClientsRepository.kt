@@ -26,5 +26,6 @@ interface ClientsRepository {
     @Throws(ClientNotFoundException::class)
     fun getClientDetailsById(id: Long): ClientDomainModel
     fun searchClient(letter: String): Flow<List<ClientDomainModel>>
+    fun getClientByPhoneNumber(phoneNumber: String): ClientDomainModel?
 
 }
