@@ -73,7 +73,7 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 ### Clients
 - [x] List all clients
 - [x] Add client
-- [ ] Sync phone contacts
+- [x] Sync phone contacts
 - [x] Edit client
 - [x] Delete client
 - [ ] Client sales history
