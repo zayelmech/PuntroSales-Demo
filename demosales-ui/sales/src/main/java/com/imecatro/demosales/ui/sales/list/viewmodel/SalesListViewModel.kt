@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -51,11 +52,13 @@ class SalesListViewModel @Inject constructor(
 
     val statusFilterState: StateFlow<List<StatusFilterUiModel>> = _statusFilterState.asStateFlow()
 
-    val metrics: StateFlow<SalesMetricsDomainModel> = getSalesMetricsUseCase.invoke().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        SalesMetricsDomainModel(emptyList(), emptyList(), emptyList())
-    )
+    val metrics: StateFlow<SalesMetricsDomainModel> = getSalesMetricsUseCase.invoke()
+        .flowOn(coroutineProvider.io)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            SalesMetricsDomainModel(emptyList(), emptyList(), emptyList())
+        )
 
     val todayTotalAmount: StateFlow<Double> =
         getAllSalesUseCase.invoke()
@@ -69,6 +72,7 @@ class SalesListViewModel @Inject constructor(
                 }.sumOf { it.total }
             }
             .catch { Log.e(TAG, "todayTotalAmount calculation error: ", it) }
+            .flowOn(coroutineProvider.io)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0.0)
 
     val salesListUiState: StateFlow<SalesList> =
@@ -89,10 +93,11 @@ class SalesListViewModel @Inject constructor(
                 sales.map { sale -> sale.copy(isSelected = ids.contains(sale.id)) }
             }
             .catch { Log.e(TAG, ": ", it) }
+            .flowOn(coroutineProvider.io)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
 
-    fun onStatusFilterChange(status: StatusFilterUiModel) {
+    fun onStatusFilterChange(status: StatusFilterUiModel) = viewModelScope.launch(coroutineProvider.io) {
         _statusFilterState.update { lst ->
             val index = lst.indexOf(status)
             lst.mapIndexed { i, statusFilterUiModel ->
