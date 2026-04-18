@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.imecatro.demosales.data.clients"
-    compileSdk = 34
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         minSdk = 24
