@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -128,7 +128,7 @@ private fun ListOfClients(
 //                        Icon(Icons.Default.Search, contentDescription = "Sync Contacts")
 //                    }
                         IconButton(onClick = onSyncClicked) {
-                            Icon(Icons.Default.Sync, contentDescription = "Sync Contacts")
+                            Icon(Icons.Default.Contacts, contentDescription = "Sync Contacts")
                         }
                     }
                 )

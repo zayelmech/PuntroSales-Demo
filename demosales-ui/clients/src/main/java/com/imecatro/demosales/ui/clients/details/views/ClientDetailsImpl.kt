@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
+import com.imecatro.demosales.ui.clients.details.model.PurchaseUiModel
 import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
 import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
@@ -45,6 +46,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ClientDetailsComposable(
     clientDetails: ClientDetailsUiModel = ClientDetailsUiModel.dummy,
+    purchases: List<PurchaseUiModel> = emptyList(),
     isLoading: Boolean = false,
     onNavigateBack: () -> Unit = {},
     onDeleteClicked: () -> Unit = {},
@@ -119,7 +121,7 @@ fun ClientDetailsComposable(
 
                 1 -> ClientPurchasesScreen(
                     accumulated = clientDetails.accumulatedPurchases,
-                    purchases = clientDetails.purchases
+                    purchases = purchases
                 )
             }
         }
@@ -134,12 +136,13 @@ fun ClientDetailsComposableImpl(
     onEditClicked: () -> Unit = {}
 ) {
 
-    val uiState by clientDetailsViewModel.uiState.collectAsState()
+    val uiState by clientDetailsViewModel.uiState.collectAsStateWithLifecycle()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     ClientDetailsComposable(
-        clientDetails = uiState,
+        clientDetails = uiState.clientDetails,
+        purchases = uiState.purchases,
         isLoading = uiState.isLoading,
         onNavigateBack = onBackToList,
         onDeleteClicked = { showDeleteDialog = true },
@@ -163,6 +166,6 @@ fun ClientDetailsComposableImpl(
             },
             onConfirmClicked = {
                 showDeleteDialog = false
-                clientDetailsViewModel.onDeleteClient(uiState.clientId)
+                clientDetailsViewModel.onDeleteClient()
             })
 }

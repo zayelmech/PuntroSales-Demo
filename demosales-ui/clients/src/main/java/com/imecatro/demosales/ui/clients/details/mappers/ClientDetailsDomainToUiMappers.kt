@@ -1,12 +1,13 @@
 package com.imecatro.demosales.ui.clients.details.mappers
 
+import androidx.core.net.toUri
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
-import androidx.core.net.toUri
 import java.util.Locale
 
-internal fun ClientDomainModel.toUi(current: ClientDetailsUiModel): ClientDetailsUiModel {
-    return current.copy(
+internal fun ClientDomainModel.toUi(): ClientDetailsUiModel {
+
+    return ClientDetailsUiModel(
         clientId = this.id,
         clientName = this.name,
         phoneNumber = this.phoneNumber,

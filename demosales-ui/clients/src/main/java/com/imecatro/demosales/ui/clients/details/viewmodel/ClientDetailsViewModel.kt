@@ -6,18 +6,15 @@ import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCas
 import com.imecatro.demosales.domain.clients.usecases.GetPurchasesByClientIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateFavoriteStatusUseCase
 import com.imecatro.demosales.domain.core.architecture.usecase.onAny
+import com.imecatro.demosales.ui.clients.details.mappers.toPurchaseUiModel
 import com.imecatro.demosales.ui.clients.details.mappers.toUi
-import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
-import com.imecatro.demosales.ui.clients.details.model.PurchaseUiModel
+import com.imecatro.demosales.ui.clients.details.state.ClientDetailsUiState
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  *
@@ -36,26 +33,20 @@ class ClientDetailsViewModel @AssistedInject constructor(
     private val deleteClientByIdUseCase: DeleteClientByIdUseCase,
     private val getPurchasesByClientIdUseCase: GetPurchasesByClientIdUseCase,
     private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase
-) : BaseViewModel<ClientDetailsUiModel>(ClientDetailsUiModel.idle) {
+) : BaseViewModel<ClientDetailsUiState>(ClientDetailsUiState.idle) {
+
+    private val client get() = uiState.value.clientDetails
 
 
     override fun onStart() {
         loadClientDetails()
-        viewModelScope.launch {
-            getPurchasesByClientIdUseCase(clientId).collect { list ->
-                updateState {
-                    copy(purchases = list.map { p ->
-                        PurchaseUiModel(
-                            id = p.id,
-                            purchaseNumber = p.purchaseNumber,
-                            description = p.description,
-                            amount = String.format(Locale.getDefault(), "$%.2f", p.amount),
-                            date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(
-                                Date(p.date)
-                            )
-                        )
-                    })
-                }
+        loadPurchases()
+    }
+
+    private fun loadPurchases() = viewModelScope.launch {
+        getPurchasesByClientIdUseCase(clientId).collect { list ->
+            updateState {
+                copy(purchases = list.map(::toPurchaseUiModel))
             }
         }
     }
@@ -65,11 +56,11 @@ class ClientDetailsViewModel @AssistedInject constructor(
         getClientDetailsByIdUseCase.execute(clientId)
             .onAny { updateState { copy(isFetchingClientDetails = false) } }
             .onSuccess { details ->
-                updateState { details.toUi(uiState.value) }
+                updateState { copy(clientDetails = details.toUi()) }
             }.onFailure { updateState { copy(error = it.message) } }
     }
 
-    fun onDeleteClient(clientId: Long) = viewModelScope.launch {
+    fun onDeleteClient() = viewModelScope.launch {
         updateState { copy(isDeletingClient = true) }
         deleteClientByIdUseCase.execute(clientId)
             .onAny { updateState { copy(isDeletingClient = false) } } // stop loading on any failure or success
@@ -79,7 +70,7 @@ class ClientDetailsViewModel @AssistedInject constructor(
     }
 
     fun onToggleFavorite() = viewModelScope.launch {
-        val newFavoriteStatus = !uiState.value.isFavorite
+        val newFavoriteStatus = !client.isFavorite
         updateState { copy(isTogglingFavorite = true) }
         val input = UpdateFavoriteStatusUseCase.Input(clientId, newFavoriteStatus)
         updateFavoriteStatusUseCase.execute(input)

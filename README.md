@@ -76,7 +76,7 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [x] Sync phone contacts
 - [x] Edit client
 - [x] Delete client
-- [ ] Client sales history
+- [x] Client sales history
 
 ### Home & Settings 
 - [ ] Add/Update Store Logo and name, address, phone number

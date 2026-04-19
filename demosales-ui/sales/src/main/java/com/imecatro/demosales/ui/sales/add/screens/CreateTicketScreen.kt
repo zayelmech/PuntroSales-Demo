@@ -344,7 +344,7 @@ fun CreateTicketComposableStateImpl(
         if (ticketState.productNotFount == true){
             scope.launch {
                 Toast.makeText(context, "Product Not found", Toast.LENGTH_SHORT).show()
-                addSaleViewModel.updateState { copy(productNotFount = false) }
+                //addSaleViewModel.updateState { copy(productNotFount = false) }
 
             }
         }
