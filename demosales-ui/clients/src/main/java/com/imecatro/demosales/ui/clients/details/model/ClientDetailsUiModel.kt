@@ -1,6 +1,8 @@
 package com.imecatro.demosales.ui.clients.details.model
 
 import android.net.Uri
+import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
+import com.imecatro.demosales.ui.theme.architect.UiState
 
 data class ClientDetailsUiModel(
     val clientId: Long = 0,
@@ -18,15 +20,24 @@ data class ClientDetailsUiModel(
     val isFetchingClientDetails: Boolean = false,
     val error: String? = null,
     val isDeletingClient: Boolean = false,
-    val isClientDeleted: Boolean = false
-) {
+    val isClientDeleted: Boolean = false,
+    val isTogglingFavorite: Boolean = false
+) : UiState {
+
+    override fun isFetchingOrProcessingData(): Boolean {
+        return isFetchingClientDetails || isDeletingClient || isTogglingFavorite
+    }
+
+    override fun getError(): ErrorUiModel? {
+        return null
+    }
+
     companion object {
         internal val dummy =
             ClientDetailsUiModel(
                 clientName = "Client Name",
                 phoneNumber = "000 000 00 00",
                 clientAddress = "1750 Broadway Avenue",
-                imageUri = null
             )
 
         internal val idle =
@@ -34,17 +45,6 @@ data class ClientDetailsUiModel(
                 clientName = "-",
                 phoneNumber = "000 000 00 00",
                 clientAddress = "-",
-                imageUri = null
             )
     }
 }
-
-data class PurchaseUiModel(
-    val id: Long,
-    val purchaseNumber: String,
-    val description: String,
-    val amount: String,
-    val date: String
-)
-
-val ClientDetailsUiModel.isLoading get() = isFetchingClientDetails

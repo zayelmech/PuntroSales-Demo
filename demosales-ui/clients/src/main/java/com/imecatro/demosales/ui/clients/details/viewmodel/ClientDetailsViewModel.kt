@@ -1,30 +1,34 @@
 package com.imecatro.demosales.ui.clients.details.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetPurchasesByClientIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.UpdateFavoriteStatusUseCase
+import com.imecatro.demosales.domain.core.architecture.usecase.onAny
 import com.imecatro.demosales.ui.clients.details.mappers.toUi
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
 import com.imecatro.demosales.ui.clients.details.model.PurchaseUiModel
+import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ *
+ * This viewmodel is in charge of handling states and uses cases for the client details screen.
+ *
+ * @param clientId the id of the client to be displayed
+ * @param getClientDetailsByIdUseCase use case to get the client details by id
+ * @param deleteClientByIdUseCase use case to delete the client by id
+ * @param getPurchasesByClientIdUseCase use case to get the purchases by client id
+ * @param updateFavoriteStatusUseCase use case to update the favorite status of the client
+ */
 @HiltViewModel(assistedFactory = ClientDetailsViewModel.Factory::class)
 class ClientDetailsViewModel @AssistedInject constructor(
     @Assisted private val clientId: Long,
@@ -32,21 +36,15 @@ class ClientDetailsViewModel @AssistedInject constructor(
     private val deleteClientByIdUseCase: DeleteClientByIdUseCase,
     private val getPurchasesByClientIdUseCase: GetPurchasesByClientIdUseCase,
     private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase
-) : ViewModel() {
+) : BaseViewModel<ClientDetailsUiModel>(ClientDetailsUiModel.idle) {
 
 
-    private val _uiState:
-            MutableStateFlow<ClientDetailsUiModel> = MutableStateFlow(ClientDetailsUiModel())
-    val uiState: StateFlow<ClientDetailsUiModel> =
-        _uiState.onStart { loadingState() }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClientDetailsUiModel.dummy)
-
-    private fun loadingState() {
+    override fun onStart() {
         loadClientDetails()
         viewModelScope.launch {
             getPurchasesByClientIdUseCase(clientId).collect { list ->
-                _uiState.update {
-                    it.copy(purchases = list.map { p ->
+                updateState {
+                    copy(purchases = list.map { p ->
                         PurchaseUiModel(
                             id = p.id,
                             purchaseNumber = p.purchaseNumber,
@@ -62,49 +60,34 @@ class ClientDetailsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadClientDetails() {
-        viewModelScope.launch {
-            _uiState.update { cs -> cs.copy(isFetchingClientDetails = true) }
-            getClientDetailsByIdUseCase.execute(clientId).onSuccess { details ->
-                _uiState.update { cs -> cs.copy(isFetchingClientDetails = false) }
-                _uiState.update { cs -> details.toUi(cs) }
-            }.onFailure {
-                _uiState.update { cs ->
-                    cs.copy(
-                        isFetchingClientDetails = false,
-                        error = it.message
-                    )
-                }
-            }
-        }
+    private fun loadClientDetails() = viewModelScope.launch {
+        updateState { copy(isFetchingClientDetails = true) } // start loading
+        getClientDetailsByIdUseCase.execute(clientId)
+            .onAny { updateState { copy(isFetchingClientDetails = false) } }
+            .onSuccess { details ->
+                updateState { details.toUi(uiState.value) }
+            }.onFailure { updateState { copy(error = it.message) } }
     }
 
-    fun onDeleteClientAction(clientId: Long) {
-        viewModelScope.launch {
-            _uiState.update { cs -> cs.copy(isDeletingClient = true) }
-            deleteClientByIdUseCase.execute(clientId).onSuccess {
-                _uiState.update { cs -> cs.copy(isDeletingClient = false, isClientDeleted = true) }
-            }.onFailure {
-                Log.e(TAG, "onDeleteClientAction: $it")
-                _uiState.update { cs ->
-                    cs.copy(
-                        isDeletingClient = false,
-                        error = it.message
-                    )
-                }
-            }
-        }
+    fun onDeleteClient(clientId: Long) = viewModelScope.launch {
+        updateState { copy(isDeletingClient = true) }
+        deleteClientByIdUseCase.execute(clientId)
+            .onAny { updateState { copy(isDeletingClient = false) } } // stop loading on any failure or success
+            .onSuccess { updateState { copy(isClientDeleted = true) } } // updating state to success
+            .onFailure { err -> updateState { copy(error = err.message) } } // updating state to error
+
     }
 
-    fun onToggleFavorite() {
-        viewModelScope.launch {
-            val newFavoriteStatus = !_uiState.value.isFavorite
-            updateFavoriteStatusUseCase.execute(
-                UpdateFavoriteStatusUseCase.Input(clientId, newFavoriteStatus)
-            ).onSuccess {
-                loadClientDetails()
-            }
-        }
+    fun onToggleFavorite() = viewModelScope.launch {
+        val newFavoriteStatus = !uiState.value.isFavorite
+        updateState { copy(isTogglingFavorite = true) }
+        val input = UpdateFavoriteStatusUseCase.Input(clientId, newFavoriteStatus)
+        updateFavoriteStatusUseCase.execute(input)
+            .onAny {
+                updateState { copy(isTogglingFavorite = false) }
+            }.onSuccess { loadClientDetails() }
+            .onFailure { err -> updateState { copy(error = err.message) } }
+
     }
 
     @AssistedFactory
@@ -112,5 +95,3 @@ class ClientDetailsViewModel @AssistedInject constructor(
         fun create(clientId: Long): ClientDetailsViewModel
     }
 }
-
-private const val TAG = "ClientDetailsViewModel"

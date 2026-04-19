@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
 import com.imecatro.demosales.ui.clients.details.viewmodel.ClientDetailsViewModel
+import com.imecatro.demosales.ui.theme.architect.isLoading
 import com.imecatro.demosales.ui.theme.dialogs.ActionDialog
 import com.imecatro.demosales.ui.theme.dialogs.DialogType
 import kotlinx.coroutines.launch
@@ -43,6 +45,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ClientDetailsComposable(
     clientDetails: ClientDetailsUiModel = ClientDetailsUiModel.dummy,
+    isLoading: Boolean = false,
     onNavigateBack: () -> Unit = {},
     onDeleteClicked: () -> Unit = {},
     onEditClicked: () -> Unit = {},
@@ -74,6 +77,8 @@ fun ClientDetailsComposable(
                 }
             }
         )
+        if (isLoading)
+            LinearProgressIndicator()
 
         PrimaryTabRow(
             selectedTabIndex = pagerState.currentPage,
@@ -135,6 +140,7 @@ fun ClientDetailsComposableImpl(
 
     ClientDetailsComposable(
         clientDetails = uiState,
+        isLoading = uiState.isLoading,
         onNavigateBack = onBackToList,
         onDeleteClicked = { showDeleteDialog = true },
         onEditClicked = onEditClicked,
@@ -157,6 +163,6 @@ fun ClientDetailsComposableImpl(
             },
             onConfirmClicked = {
                 showDeleteDialog = false
-                clientDetailsViewModel.onDeleteClientAction(uiState.clientId)
+                clientDetailsViewModel.onDeleteClient(uiState.clientId)
             })
 }

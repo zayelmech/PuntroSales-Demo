@@ -1,5 +1,6 @@
 package com.imecatro.demosales.ui.theme.architect
 
+import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,5 +21,5 @@ abstract class BaseViewModel<T>(idle: T) : ViewModel() {
 
     open fun onStart() = Unit
 
-    fun updateState(state: T.() -> T) = _uiState.update(state)
+    fun BaseViewModel<T>.updateState(state: T.() -> T) = _uiState.update(state)
 }
