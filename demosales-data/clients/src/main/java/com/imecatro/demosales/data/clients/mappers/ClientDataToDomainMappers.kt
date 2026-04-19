@@ -14,7 +14,9 @@ internal fun ClientRoomEntity.toDomain(): ClientDomainModel {
         shipping = this.address?:"",
         avatarUri = this.imageUri?.ifEmpty { null },
         latitude = this.latitude,
-        longitude = this.longitude
+        longitude = this.longitude,
+        accumulatedPurchases = this.accumulatedPurchases,
+        isFavorite = this.isFavorite
     )
 }
 

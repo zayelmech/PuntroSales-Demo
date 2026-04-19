@@ -11,6 +11,8 @@ data class ClientDetailsUiModel(
     val longitude: Double = 0.0,
     val imageUri: Uri? = null,
     val purchases: List<PurchaseUiModel> = emptyList(),
+    val accumulatedPurchases: String = "$0.00",
+    val isFavorite: Boolean = false,
 
     // Presenter parameters
     val isFetchingClientDetails: Boolean = false,
@@ -24,6 +26,14 @@ data class ClientDetailsUiModel(
                 clientName = "Client Name",
                 phoneNumber = "000 000 00 00",
                 clientAddress = "1750 Broadway Avenue",
+                imageUri = null
+            )
+
+        internal val idle =
+            ClientDetailsUiModel(
+                clientName = "-",
+                phoneNumber = "000 000 00 00",
+                clientAddress = "-",
                 imageUri = null
             )
     }

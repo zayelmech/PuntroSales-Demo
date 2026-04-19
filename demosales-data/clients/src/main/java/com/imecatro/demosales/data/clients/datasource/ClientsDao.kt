@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.imecatro.demosales.data.clients.model.ClientRoomEntity
 import com.imecatro.demosales.data.clients.model.PurchaseRoomEntity
@@ -45,4 +46,26 @@ interface ClientsDao {
 
     @Query("UPDATE purchases_table SET description = description || '-Cancelled', amount = 0 WHERE purchaseNumber = :purchaseNumber")
     fun cancelPurchaseByNumber(purchaseNumber: String)
+
+    @Query("SELECT client_id FROM purchases_table WHERE purchaseNumber = :purchaseNumber")
+    fun getClientIdByPurchaseNumber(purchaseNumber: String): Long
+
+    @Query("UPDATE client_table SET accumulatedPurchases = (SELECT SUM(amount) FROM purchases_table WHERE client_id = :clientId) WHERE id = :clientId")
+    fun recalculateAccumulatedPurchases(clientId: Long)
+
+    @Transaction
+    fun cancelPurchaseAndRecalculate(purchaseNumber: String) {
+        val clientId = getClientIdByPurchaseNumber(purchaseNumber)
+        cancelPurchaseByNumber(purchaseNumber)
+        recalculateAccumulatedPurchases(clientId)
+    }
+
+    @Transaction
+    fun addPurchaseAndRecalculate(purchase: PurchaseRoomEntity) {
+        addPurchase(purchase)
+        recalculateAccumulatedPurchases(purchase.clientId)
+    }
+
+    @Query("UPDATE client_table SET isFavorite = :isFavorite WHERE id = :clientId")
+    fun updateFavoriteStatus(clientId: Long, isFavorite: Boolean)
 }

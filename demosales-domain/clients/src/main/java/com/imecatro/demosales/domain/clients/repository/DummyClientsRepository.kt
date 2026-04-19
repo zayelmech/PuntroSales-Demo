@@ -56,4 +56,8 @@ internal class DummyClientsRepositoryImpl : ClientsRepository {
     override fun cancelPurchaseByNumber(purchaseNumber: String) {
         TODO("Not yet implemented")
     }
+
+    override fun updateFavoriteStatus(clientId: Long, isFavorite: Boolean) {
+        TODO("Not yet implemented")
+    }
 }

@@ -10,6 +10,8 @@ package com.imecatro.demosales.domain.clients.model
  * @param avatarUri The URL of the client's avatar image.
  * @param latitude The client's location latitude.
  * @param longitude The client's location longitude.
+ * @param accumulatedPurchases The sum of all totals' in purchases made by the client
+ * @param isFavorite If the user selected as favorite
  */
 data class ClientDomainModel(
     val id: Long = 0,
@@ -18,5 +20,7 @@ data class ClientDomainModel(
     val shipping: String,
     val avatarUri: String?,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val accumulatedPurchases: Double = 0.0,
+    val isFavorite : Boolean = false,
 )

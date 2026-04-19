@@ -87,4 +87,10 @@ class ClientsFeaturesModule {
     fun providesCancelPurchaseByNumberUseCase(
         clientsRepository: ClientsRepository,dispatcher: CoroutineProvider
     ): CancelPurchaseByNumberUseCase = CancelPurchaseByNumberUseCase(clientsRepository,dispatcher)
+
+    @Provides
+    fun providesUpdateFavoriteStatusUseCase(
+        clientsRepository: ClientsRepository,
+        dispatcher: CoroutineProvider
+    ): UpdateFavoriteStatusUseCase = UpdateFavoriteStatusUseCase(clientsRepository, dispatcher)
 }

@@ -69,11 +69,15 @@ class ClientsRepositoryImpl(
     }
 
     override fun addPurchase(purchase: PurchaseDomainModel) {
-        clientsDao.addPurchase(purchase.toData())
+        clientsDao.addPurchaseAndRecalculate(purchase.toData())
     }
 
     override fun cancelPurchaseByNumber(purchaseNumber: String) {
-        clientsDao.cancelPurchaseByNumber(purchaseNumber)
+        clientsDao.cancelPurchaseAndRecalculate(purchaseNumber)
+    }
+
+    override fun updateFavoriteStatus(clientId: Long, isFavorite: Boolean) {
+        clientsDao.updateFavoriteStatus(clientId, isFavorite)
     }
 }
 

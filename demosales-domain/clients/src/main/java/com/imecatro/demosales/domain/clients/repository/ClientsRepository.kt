@@ -32,4 +32,5 @@ interface ClientsRepository {
     fun getPurchasesByClientId(id: Long): Flow<List<PurchaseDomainModel>>
     fun addPurchase(purchase: PurchaseDomainModel)
     fun cancelPurchaseByNumber(purchaseNumber: String)
+    fun updateFavoriteStatus(clientId: Long, isFavorite: Boolean)
 }

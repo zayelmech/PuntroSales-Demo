@@ -27,7 +27,7 @@ import com.imecatro.products.data.model.StockRoomEntity
         PurchaseRoomEntity::class,
         StockRoomEntity::class,
         CategoryRoomEntity::class],
-    version = 13
+    version = 14
 )
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -61,7 +61,8 @@ abstract class AppRoomDatabase : RoomDatabase() {
                     MIGRATION_9_10,
                     MIGRATION_10_11,
                     MIGRATION_11_12,
-                    MIGRATION_12_13
+                    MIGRATION_12_13,
+                    MIGRATION_13_14
                 )
                 .build()
 
@@ -271,5 +272,12 @@ val MIGRATION_12_13 = object : Migration(12, 13) {
             )
         """.trimIndent())
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_purchases_table_client_id` ON `purchases_table` (`client_id`)")
+    }
+}
+
+val MIGRATION_13_14 = object : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE client_table ADD COLUMN accumulatedPurchases REAL NOT NULL DEFAULT 0.0")
+        db.execSQL("ALTER TABLE client_table ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
     }
 }

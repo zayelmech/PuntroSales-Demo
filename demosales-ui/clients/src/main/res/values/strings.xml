@@ -19,4 +19,5 @@
     <string name="tab_details">Details</string>
     <string name="tab_purchases">Purchases</string>
     <string name="txt_no_purchases">No purchases recorded yet.</string>
+    <string name="txt_accumulated_purchases">Accumulated Purchases</string>
 </resources>

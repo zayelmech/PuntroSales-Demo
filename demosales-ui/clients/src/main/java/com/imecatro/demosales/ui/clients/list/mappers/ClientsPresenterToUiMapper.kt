@@ -23,6 +23,8 @@ internal fun ClientUiModel.toDomain(): ClientDomainModel {
         name = this.name ?: "",
         phoneNumber = this.number ?: "",
         avatarUri = this.image,
-        shipping = this.address ?: ""
+        shipping = this.address ?: "",
+        accumulatedPurchases = 0.0, // Default or not used here
+        isFavorite = false // Default or not used here
     )
 }

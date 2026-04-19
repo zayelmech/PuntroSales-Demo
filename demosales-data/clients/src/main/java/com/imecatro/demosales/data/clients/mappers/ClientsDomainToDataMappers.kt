@@ -14,6 +14,8 @@ fun ClientDomainModel.toData(version: Int): ClientRoomEntity {
         timestamp = timestamp,
         tableVersion = version.toString(),
         latitude = this.latitude,
-        longitude = this.longitude
+        longitude = this.longitude,
+        accumulatedPurchases = this.accumulatedPurchases,
+        isFavorite = this.isFavorite
     )
 }
