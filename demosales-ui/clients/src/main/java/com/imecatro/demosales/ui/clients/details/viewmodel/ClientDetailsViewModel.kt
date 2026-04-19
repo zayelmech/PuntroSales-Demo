@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
+import com.imecatro.demosales.domain.clients.usecases.GetPurchasesByClientIdUseCase
 import com.imecatro.demosales.ui.clients.details.mappers.toUi
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
+import com.imecatro.demosales.ui.clients.details.model.PurchaseUiModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -16,12 +18,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @HiltViewModel(assistedFactory = ClientDetailsViewModel.Factory::class)
 class ClientDetailsViewModel @AssistedInject constructor(
     @Assisted private val clientId: Long,
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
-    private val deleteClientByIdUseCase: DeleteClientByIdUseCase
+    private val deleteClientByIdUseCase: DeleteClientByIdUseCase,
+    private val getPurchasesByClientIdUseCase: GetPurchasesByClientIdUseCase
 ) : ViewModel() {
 
 
@@ -43,6 +49,19 @@ class ClientDetailsViewModel @AssistedInject constructor(
                         error = it.message
                     )
                 }
+            }
+        }
+        viewModelScope.launch {
+            getPurchasesByClientIdUseCase(clientId).collect { list ->
+                _uiState.update { it.copy(purchases = list.map { p ->
+                    PurchaseUiModel(
+                        id = p.id,
+                        purchaseNumber = p.purchaseNumber,
+                        description = p.description,
+                        amount = String.format(Locale.getDefault(), "$%.2f", p.amount),
+                        date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(p.date))
+                    )
+                }) }
             }
         }
     }

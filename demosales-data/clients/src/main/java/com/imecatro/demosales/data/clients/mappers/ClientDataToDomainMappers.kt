@@ -1,7 +1,9 @@
 package com.imecatro.demosales.data.clients.mappers
 
 import com.imecatro.demosales.data.clients.model.ClientRoomEntity
+import com.imecatro.demosales.data.clients.model.PurchaseRoomEntity
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
+import com.imecatro.demosales.domain.clients.model.PurchaseDomainModel
 
 
 internal fun ClientRoomEntity.toDomain(): ClientDomainModel {
@@ -13,5 +15,17 @@ internal fun ClientRoomEntity.toDomain(): ClientDomainModel {
         avatarUri = this.imageUri?.ifEmpty { null },
         latitude = this.latitude,
         longitude = this.longitude
+    )
+}
+
+
+internal fun PurchaseRoomEntity.toDomain(): PurchaseDomainModel {
+    return PurchaseDomainModel(
+        id = id,
+        purchaseNumber = purchaseNumber,
+        clientId = clientId,
+        description = description,
+        amount = amount,
+        date = date
     )
 }

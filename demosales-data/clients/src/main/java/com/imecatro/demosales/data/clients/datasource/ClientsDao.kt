@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.imecatro.demosales.data.clients.model.ClientRoomEntity
+import com.imecatro.demosales.data.clients.model.PurchaseRoomEntity
 import kotlinx.coroutines.flow.Flow
 
 
@@ -32,4 +33,16 @@ interface ClientsDao {
     @Query("SELECT * FROM client_table WHERE phone = :phoneNumber LIMIT 1")
     fun getClientByPhoneNumber(phoneNumber: String): ClientRoomEntity?
 
+
+    @Query("SELECT * FROM purchases_table where client_id = :id")
+    fun getPurchasesByClientId(id: Long): Flow<List<PurchaseRoomEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addPurchase(purchase: PurchaseRoomEntity)
+
+    @Query("DELETE FROM purchases_table WHERE purchaseNumber = :purchaseNumber")
+    fun deletePurchaseByNumber(purchaseNumber: String)
+
+    @Query("UPDATE purchases_table SET description = description || '-Cancelled', amount = 0 WHERE purchaseNumber = :purchaseNumber")
+    fun cancelPurchaseByNumber(purchaseNumber: String)
 }

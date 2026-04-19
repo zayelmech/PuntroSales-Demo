@@ -22,4 +22,4 @@ data class StockRoomEntity(
     val amount: Double,   // << precise
     val date : String,
     val timeStamp : String,
-    )
+)

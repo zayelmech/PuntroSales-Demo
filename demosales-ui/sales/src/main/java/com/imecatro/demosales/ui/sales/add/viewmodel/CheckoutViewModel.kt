@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
+import com.imecatro.demosales.domain.clients.model.PurchaseDomainModel
+import com.imecatro.demosales.domain.clients.usecases.AddPurchaseUseCase
 import com.imecatro.demosales.domain.clients.usecases.FilterClientsUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
@@ -40,7 +42,8 @@ class CheckoutViewModel @AssistedInject constructor(
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
     private val filterClientsUseCase: FilterClientsUseCase,
     private val removeFromStockUseCase: RemoveFromStockUseCase,
-    private val updateSaleClientUseCase: UpdateSaleClientUseCase
+    private val updateSaleClientUseCase: UpdateSaleClientUseCase,
+    private val addPurchaseUseCase: AddPurchaseUseCase
 ) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
 
     private val _results: MutableStateFlow<List<ClientResultUiModel>> =
@@ -107,9 +110,10 @@ class CheckoutViewModel @AssistedInject constructor(
     fun onCheckoutAction() {
         viewModelScope.launch(Dispatchers.IO) {
             val currentTicket = uiState.value.ticket
+            val timestamp = System.currentTimeMillis()
             saveSaleUseCase(currentTicket.id) {
                 note = currentTicket.note
-                date = System.currentTimeMillis().toString()
+                date = timestamp.toString()
                 totals = currentTicket.totals.toDomain()
                 client = SaleDomainModel.Client(
                     id = currentTicket.clientId,
@@ -119,6 +123,20 @@ class CheckoutViewModel @AssistedInject constructor(
                 tickedPaid = true
             }
             deductStock(currentTicket.id)
+
+            // Save purchase record for client
+            if (currentTicket.clientId > 0) {
+                addPurchaseUseCase(
+                    PurchaseDomainModel(
+                        purchaseNumber = currentTicket.id.toString(),
+                        clientId = currentTicket.clientId,
+                        description = "Sale completed. Note: ${currentTicket.note}",
+                        amount = currentTicket.totals.total,
+                        date = timestamp
+                    )
+                )
+            }
+
             updateState {
                 copy(ticket = ticket.copy(ticketSaved = true))
             }

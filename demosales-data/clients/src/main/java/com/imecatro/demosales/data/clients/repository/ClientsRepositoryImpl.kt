@@ -6,6 +6,7 @@ import com.imecatro.demosales.data.clients.datasource.ClientsDao
 import com.imecatro.demosales.data.clients.mappers.toData
 import com.imecatro.demosales.data.clients.mappers.toDomain
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
+import com.imecatro.demosales.domain.clients.model.PurchaseDomainModel
 import com.imecatro.demosales.domain.clients.repository.ClientsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -59,6 +60,20 @@ class ClientsRepositoryImpl(
 
     override fun getClientByPhoneNumber(phoneNumber: String): ClientDomainModel? {
         return clientsDao.getClientByPhoneNumber(phoneNumber)?.toDomain()
+    }
+
+    override fun getPurchasesByClientId(id: Long): Flow<List<PurchaseDomainModel>> {
+        return clientsDao.getPurchasesByClientId(id).map {
+            it.map { purchase -> purchase.toDomain() }
+        }
+    }
+
+    override fun addPurchase(purchase: PurchaseDomainModel) {
+        clientsDao.addPurchase(purchase.toData())
+    }
+
+    override fun cancelPurchaseByNumber(purchaseNumber: String) {
+        clientsDao.cancelPurchaseByNumber(purchaseNumber)
     }
 }
 

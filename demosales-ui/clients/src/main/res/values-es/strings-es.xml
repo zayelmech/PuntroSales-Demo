@@ -16,4 +16,7 @@
     <string name="btn_sync_all_contacts">Todos</string>
     <string name="btn_sync_specific_contact">Seleccionar</string>
     <string name="label_search_contact">Buscar contactos…</string>
+    <string name="tab_details">Detalles</string>
+    <string name="tab_purchases">Compras</string>
+    <string name="txt_no_purchases">Aún no ha realizado compras.</string>
 </resources>

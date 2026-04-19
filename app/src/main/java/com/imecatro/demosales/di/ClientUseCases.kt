@@ -1,14 +1,7 @@
 package com.imecatro.demosales.di
 
 import com.imecatro.demosales.domain.clients.repository.ClientsRepository
-import com.imecatro.demosales.domain.clients.usecases.AddClientUseCase
-import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
-import com.imecatro.demosales.domain.clients.usecases.FilterClientsUseCase
-import com.imecatro.demosales.domain.clients.usecases.GetAllClientsUseCase
-import com.imecatro.demosales.domain.clients.usecases.GetClientByPhoneNumberUseCase
-import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
-import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
-import com.imecatro.demosales.domain.clients.usecases.UpdateClientUseCase
+import com.imecatro.demosales.domain.clients.usecases.*
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import dagger.Module
 import dagger.Provides
@@ -79,4 +72,19 @@ class ClientsFeaturesModule {
         clientsRepository: ClientsRepository,
         appCoroutineDispatcher: CoroutineProvider
     ): GetClientByPhoneNumberUseCase = GetClientByPhoneNumberUseCase(clientsRepository, appCoroutineDispatcher)
+
+    @Provides
+    fun providesAddPurchaseUseCase(
+        clientsRepository: ClientsRepository
+    ): AddPurchaseUseCase = AddPurchaseUseCase(clientsRepository)
+
+    @Provides
+    fun providesGetPurchasesByClientIdUseCase(
+        clientsRepository: ClientsRepository
+    ): GetPurchasesByClientIdUseCase = GetPurchasesByClientIdUseCase(clientsRepository)
+
+    @Provides
+    fun providesCancelPurchaseByNumberUseCase(
+        clientsRepository: ClientsRepository,dispatcher: CoroutineProvider
+    ): CancelPurchaseByNumberUseCase = CancelPurchaseByNumberUseCase(clientsRepository,dispatcher)
 }

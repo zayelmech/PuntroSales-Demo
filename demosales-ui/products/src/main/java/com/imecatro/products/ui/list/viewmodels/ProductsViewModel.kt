@@ -188,7 +188,7 @@ class ProductsViewModel @Inject constructor(
         updateState { copy(idsSelected = emptyList()) }
     }
 
-    fun onProcessProducts() = viewModelScope.launch(Dispatchers.IO) {
+    fun onProcessProducts() = viewModelScope.launch {
         updateState{ copy(isProcessingCatalog = true) }
 
         exportProductsCsvUseCase.execute{
@@ -197,7 +197,6 @@ class ProductsViewModel @Inject constructor(
             updateState { copy(catalogFile = file, isProcessingCatalog = false) }
         }.onFailure {
             updateState { copy(isProcessingCatalog = false) }
-            Log.e(TAG, "onProcessProducts: ", it)
         }
     }
 
@@ -205,6 +204,4 @@ class ProductsViewModel @Inject constructor(
         updateState { copy(catalogFile = null) }
     }
 }
-
-private const val TAG = "ProductsViewModel"
 

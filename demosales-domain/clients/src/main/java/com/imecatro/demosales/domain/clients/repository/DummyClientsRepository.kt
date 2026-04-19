@@ -2,6 +2,7 @@ package com.imecatro.demosales.domain.clients.repository
 
 import com.imecatro.demosales.domain.clients.exception.ClientNotFoundException
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
+import com.imecatro.demosales.domain.clients.model.PurchaseDomainModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -41,6 +42,18 @@ internal class DummyClientsRepositoryImpl : ClientsRepository {
     }
 
     override fun getClientByPhoneNumber(phoneNumber: String): ClientDomainModel? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getPurchasesByClientId(id: Long): Flow<List<PurchaseDomainModel>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun addPurchase(purchase: PurchaseDomainModel) {
+        TODO("Not yet implemented")
+    }
+
+    override fun cancelPurchaseByNumber(purchaseNumber: String) {
         TODO("Not yet implemented")
     }
 }

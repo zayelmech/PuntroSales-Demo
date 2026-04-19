@@ -2,6 +2,7 @@ package com.imecatro.demosales.ui.sales.details.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.domain.clients.usecases.CancelPurchaseByNumberUseCase
 import com.imecatro.demosales.domain.clients.usecases.GetClientDetailsByIdUseCase
 import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
@@ -29,6 +30,7 @@ class TicketDetailsViewModel @AssistedInject constructor(
     private val updateSaleStatus: UpdateSaleStatusUseCase,
     private val getClientDetailsByIdUseCase: GetClientDetailsByIdUseCase,
     private val addStockUseCase: AddStockUseCase,
+    private val cancelPurchaseByNumberUseCase: CancelPurchaseByNumberUseCase
 ) : ViewModel() {
 
     private val _sale: MutableStateFlow<TicketDetailsUiModel> =
@@ -68,6 +70,9 @@ class TicketDetailsViewModel @AssistedInject constructor(
                     )
                 }
             }
+            // Mark purchase as cancelled in client history
+            cancelPurchaseByNumberUseCase.execute(saleId.toString())
+            
             _sale.update { it.copy(allProductsWereRefunded = true) }
         }
     }
@@ -86,5 +91,3 @@ class TicketDetailsViewModel @AssistedInject constructor(
         ): TicketDetailsViewModel
     }
 }
-
-

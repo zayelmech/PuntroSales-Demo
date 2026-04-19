@@ -2,6 +2,7 @@ package com.imecatro.demosales.domain.clients.repository
 
 import com.imecatro.demosales.domain.clients.exception.ClientNotFoundException
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
+import com.imecatro.demosales.domain.clients.model.PurchaseDomainModel
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -28,4 +29,7 @@ interface ClientsRepository {
     fun searchClient(letter: String): Flow<List<ClientDomainModel>>
     fun getClientByPhoneNumber(phoneNumber: String): ClientDomainModel?
 
+    fun getPurchasesByClientId(id: Long): Flow<List<PurchaseDomainModel>>
+    fun addPurchase(purchase: PurchaseDomainModel)
+    fun cancelPurchaseByNumber(purchaseNumber: String)
 }

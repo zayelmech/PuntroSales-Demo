@@ -1,10 +1,9 @@
 package com.imecatro.demosales.ui.sales.add.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
+import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.SearchProductByBarcode
 import com.imecatro.demosales.domain.sales.add.usecases.AddProductToCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.DeleteProductOnCartUseCase
@@ -13,8 +12,6 @@ import com.imecatro.demosales.domain.sales.add.usecases.GetCartFlowUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.GetMostPopularProductsUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateProductOnCartUseCase
 import com.imecatro.demosales.domain.sales.add.usecases.UpdateTicketStatusUseCase
-import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
-import com.imecatro.demosales.domain.sales.model.Order
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.add.mappers.toAddSaleUi
 import com.imecatro.demosales.ui.sales.add.mappers.toDomain
@@ -25,9 +22,6 @@ import com.imecatro.demosales.ui.sales.add.model.ProductOnCartUiModel
 import com.imecatro.demosales.ui.sales.add.model.ProductResultUiModel
 import com.imecatro.demosales.ui.sales.add.state.TicketUiState
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
-import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
-import com.imecatro.demosales.ui.theme.architect.Idle
-import com.imecatro.demosales.ui.theme.architect.UiState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -37,18 +31,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
 private const val TAG = "AddSaleViewModel"
@@ -69,7 +57,7 @@ class AddSaleViewModel @AssistedInject constructor(
     private val getProductsLikeUseCase: GetProductsLikeUseCase,
     private val searchProductByBarcode: SearchProductByBarcode,
     private val getProductDetailsByIdUseCase: GetProductDetailsByIdUseCase,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
 ) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
 
     private val _results: MutableStateFlow<List<ProductResultUiModel>> =
@@ -230,6 +218,3 @@ class AddSaleViewModel @AssistedInject constructor(
     }
 
 }
-
-
-

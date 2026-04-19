@@ -10,6 +10,7 @@ data class ClientDetailsUiModel(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val imageUri: Uri? = null,
+    val purchases: List<PurchaseUiModel> = emptyList(),
 
     // Presenter parameters
     val isFetchingClientDetails: Boolean = false,
@@ -28,6 +29,12 @@ data class ClientDetailsUiModel(
     }
 }
 
+data class PurchaseUiModel(
+    val id: Long,
+    val purchaseNumber: String,
+    val description: String,
+    val amount: String,
+    val date: String
+)
 
 val ClientDetailsUiModel.isLoading get() = isFetchingClientDetails
-

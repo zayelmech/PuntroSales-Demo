@@ -8,6 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.imecatro.demosales.data.clients.datasource.ClientsDao
 import com.imecatro.demosales.data.clients.model.ClientRoomEntity
+import com.imecatro.demosales.data.clients.model.PurchaseRoomEntity
 import com.imecatro.demosales.data.sales.datasource.OrdersRoomDao
 import com.imecatro.demosales.data.sales.datasource.SalesRoomDao
 import com.imecatro.demosales.data.sales.model.OrderDataRoomModel
@@ -23,9 +24,10 @@ import com.imecatro.products.data.model.StockRoomEntity
         SaleDataRoomModel::class,
         OrderDataRoomModel::class,
         ClientRoomEntity::class,
+        PurchaseRoomEntity::class,
         StockRoomEntity::class,
         CategoryRoomEntity::class],
-    version = 12
+    version = 13
 )
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -58,7 +60,8 @@ abstract class AppRoomDatabase : RoomDatabase() {
                     MIGRATION_8_9,
                     MIGRATION_9_10,
                     MIGRATION_10_11,
-                    MIGRATION_11_12
+                    MIGRATION_11_12,
+                    MIGRATION_12_13
                 )
                 .build()
 
@@ -251,5 +254,22 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE client_table ADD COLUMN latitude REAL")
         db.execSQL("ALTER TABLE client_table ADD COLUMN longitude REAL")
+    }
+}
+
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS `purchases_table` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                `purchaseNumber` TEXT NOT NULL, 
+                `client_id` INTEGER NOT NULL, 
+                `description` TEXT NOT NULL, 
+                `amount` REAL NOT NULL, 
+                `date` INTEGER NOT NULL, 
+                FOREIGN KEY(`client_id`) REFERENCES `client_table`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE 
+            )
+        """.trimIndent())
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_purchases_table_client_id` ON `purchases_table` (`client_id`)")
     }
 }
