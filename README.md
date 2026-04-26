@@ -24,7 +24,7 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 ## Creates a product
 
 <p align="center">
-  <img src="doc/img/product.gif" alt="screenshot 4" width="400"/>
+  <img src="doc/img/product.gif" alt="screenshot 4" width="320"/>
 </p>
 
 ### Features
@@ -91,60 +91,49 @@ Dependencies flow inward toward the domain layer:
 **ui → domain ← data**
 
 ```mermaid
-graph TD
-    subgraph App
-        app[":app"]
+
+flowchart TB
+
+    subgraph APP[":app"]
+        direction LR
+
+        subgraph CORE["Core Layer"]
+            direction TB
+            ui_theme[":ui:theme"]
+            dom_core[":domain:core"]
+        end
+
+        subgraph FEATURES["Feature Modules"]
+            direction TB
+
+            subgraph UI["UI Layer"]
+                direction LR
+                ui_products[":ui:products"]
+                ui_sales[":ui:sales"]
+                ui_clients[":ui:clients"]
+            end
+
+            subgraph DOMAIN["Domain Layer"]
+                direction LR
+                dom_products[":domain:products"]
+                dom_sales[":domain:sales"]
+                dom_clients[":domain:clients"]
+            end
+
+            subgraph DATA["Data Layer"]
+                direction LR
+                dat_products[":data:products"]
+                dat_sales[":data:sales"]
+                dat_clients[":data:clients"]
+            end
+        end
     end
 
-    subgraph UI_Layer [UI Layer]
-        ui_products[":ui:products"]
-        ui_sales[":ui:sales"]
-        ui_clients[":ui:clients"]
-        ui_theme[":ui:theme"]
-    end
+    UI --> DOMAIN
+    DATA --> DOMAIN
 
-    subgraph Domain_Layer [Domain Layer]
-        dom_products[":domain:products"]
-        dom_sales[":domain:sales"]
-        dom_clients[":domain:clients"]
-        dom_core[":domain:core"]
-    end
-
-    subgraph Data_Layer [Data Layer]
-        dat_products[":data:products"]
-        dat_sales[":data:sales"]
-        dat_clients[":data:clients"]
-    end
-
-    %% Composition Root
-    app --> UI_Layer
-    app --> Domain_Layer
-    app --> Data_Layer
-
-    %% UI Dependencies
-    ui_products --> dom_products
-    ui_products --> dom_core
-    ui_products --> ui_theme
-
-    ui_sales --> dom_sales
-    ui_sales --> dom_products
-    ui_sales --> dom_clients
-    ui_sales --> dom_core
-    ui_sales --> ui_theme
-
-    ui_clients --> dom_clients
-    ui_clients --> dom_core
-    ui_clients --> ui_theme
-
-    %% Data Dependencies
-    dat_products --> dom_products
-    dat_clients --> dom_clients
-    dat_sales --> dom_sales
-
-    %% Domain Dependencies
-    dom_products --> dom_core
-    dom_sales --> dom_core
-    dom_clients --> dom_core
+    UI -. uses .-> CORE
+    DOMAIN -. uses .-> CORE
 ```
 
 Dependency injection is managed with Dagger/Hilt.

@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -101,7 +102,7 @@ fun CategoriesScreenImpl(
 
     var showAddDialog: Boolean by remember { mutableStateOf(false) }
 
-    var deleteCategoryId: Long  by remember { mutableStateOf(0L) }
+    var deleteCategoryId: Long  by remember { mutableLongStateOf(0L) }
 
     var categoryEditable: CategoryUiModel by remember { mutableStateOf(CategoryUiModel(0, "")) }
 
@@ -150,7 +151,7 @@ fun CategoriesScreenImpl(
                 deleteCategoryId = 0L
             },
             onConfirmClicked = {
-                deleteCategoryId = 0L
                 categoriesViewModel.deleteCategory(deleteCategoryId)
+                deleteCategoryId = 0L
             })
 }

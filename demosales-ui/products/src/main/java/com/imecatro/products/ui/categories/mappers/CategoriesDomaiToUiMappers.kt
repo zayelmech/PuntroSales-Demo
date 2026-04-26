@@ -4,9 +4,9 @@ import com.imecatro.demosales.domain.products.model.ProductCategoryDomainModel
 import com.imecatro.products.ui.categories.model.CategoryUiModel
 
 
-fun ProductCategoryDomainModel.toUi(): CategoryUiModel {
+internal fun toCategoryUiModel(p: ProductCategoryDomainModel): CategoryUiModel {
     return CategoryUiModel(
-        id = id ?: 0L,
-        name = name
+        id = p.id ?: 0L,
+        name = p.name
     )
 }

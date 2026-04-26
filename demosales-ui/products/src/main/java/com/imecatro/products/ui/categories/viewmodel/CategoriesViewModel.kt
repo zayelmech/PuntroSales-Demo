@@ -1,12 +1,13 @@
 package com.imecatro.products.ui.categories.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.usecases.AddCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.DeleteCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
 import com.imecatro.demosales.domain.products.usecases.UpdateCategoryUseCase
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
-import com.imecatro.products.ui.categories.mappers.toUi
+import com.imecatro.products.ui.categories.mappers.toCategoryUiModel
 import com.imecatro.products.ui.categories.model.CategoryUiModel
 import com.imecatro.products.ui.categories.state.CategoriesUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,7 @@ class CategoriesViewModel @Inject constructor(
     override fun onStart() {
         viewModelScope.launch {
             getAllCategoriesUseCase().collect { lst ->
-                updateState { copy(categories = lst.map { it.toUi() }) }
+                updateState { copy(categories = lst.map(::toCategoryUiModel)) }
             }
         }
     }
@@ -51,8 +52,12 @@ class CategoriesViewModel @Inject constructor(
 
     fun deleteCategory(it: Long) {
         viewModelScope.launch {
-            deleteCategoryUseCase.execute { id = it }
+            deleteCategoryUseCase.execute { id = it }.onSuccess {
+                Log.d(TAG, "deleteCategory: done")
+            }
         }
     }
 
 }
+
+private const val TAG = "CategoriesViewModel"
