@@ -101,6 +101,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.1" ) // Use latest stable version
+
     //NAV
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
