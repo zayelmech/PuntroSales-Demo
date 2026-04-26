@@ -9,7 +9,7 @@ import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.products.ui.add.mappers.toDomain
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.state.AddProductUiState
-import com.imecatro.products.ui.categories.mappers.toUi
+import com.imecatro.products.ui.categories.mappers.toCategoryUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ class AddViewModel @Inject constructor(
     override fun onStart() {
         viewModelScope.launch {
             getAllCategoriesUseCase().collect { list ->
-                updateState { copy(categories = list.map { it.toUi() }) }
+                updateState { copy(categories = list.map(::toCategoryUiModel)) }
             }
         }
     }

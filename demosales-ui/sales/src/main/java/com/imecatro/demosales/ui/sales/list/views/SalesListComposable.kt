@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -32,6 +33,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -80,7 +82,9 @@ fun SalesListComposable(
     onCardSelected: (id: Long) -> Unit = {},
     onCardClicked: (id: Long?) -> Unit = {},
     onShowSalesMetrics: () -> Unit = {},
-    onAddNewSale: () -> Unit = {}
+    onAddNewSale: () -> Unit = {},
+    searchQuery: String = "",
+    onSearchQueryChange: (String) -> Unit = {}
 ) {
 
     val scrollState = rememberLazyListState()
@@ -88,6 +92,8 @@ fun SalesListComposable(
     var dateFilter by remember { mutableStateOf(false) }
 
     var statusFilter by remember { mutableStateOf(false) }
+
+    var isSearching by remember { mutableStateOf(false) }
 
     Scaffold(floatingActionButton = {
 
@@ -141,8 +147,9 @@ fun SalesListComposable(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp),
+                        .padding(horizontal = 10.dp),
                     horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     FilterChip(
                         onClick = { statusFilter = true },
@@ -158,9 +165,38 @@ fun SalesListComposable(
                             }
                         }
                     )
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { isSearching = true }) {
+                        Icon(Icons.Default.Search, contentDescription = null)
+                    }
                 }
             }
 
+            if (isSearching) {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = onSearchQueryChange,
+                    onSearch = { isSearching = false },
+                    active = isSearching,
+                    onActiveChange = { isSearching = it },
+                    placeholder = { Text("Search by ID") },
+                    leadingIcon = { Icon(Icons.Default.Search, null) },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            if (searchQuery.isNotEmpty()) {
+                                onSearchQueryChange("")
+                            } else {
+                                isSearching = false
+                            }
+                        }) {
+                            Icon(Icons.Default.Close, null)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Results are filtered in the main list
+                }
+            }
         }
 
     }
@@ -271,6 +307,8 @@ fun SalesListComposableStateImpl(
 
     val metricsState by salesListViewModel.metrics.collectAsStateWithLifecycle()
 
+    val searchQuery by salesListViewModel.searchQuery.collectAsState()
+
     SalesListComposable(
         list = listUiState,
         todayTotal = salesListViewModel.todayTotalAmount.collectAsState().value,
@@ -290,7 +328,10 @@ fun SalesListComposableStateImpl(
         onStatusFilterChecked = { salesListViewModel.onStatusFilterChange(it) },
         onShowSalesMetrics = { showGraph = true },
         statusList = statusFilterUiState,
-        onAddNewSale = { onNavigate(null) })
+        onAddNewSale = { onNavigate(null) },
+        searchQuery = searchQuery,
+        onSearchQueryChange = { salesListViewModel.onSearchQueryChange(it) }
+    )
 
     LaunchedEffect(reportState) {
         if (reportState.salesFile != null) {

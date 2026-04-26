@@ -52,6 +52,9 @@ class SalesListViewModel @Inject constructor(
 
     val statusFilterState: StateFlow<List<StatusFilterUiModel>> = _statusFilterState.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
     val metrics: StateFlow<SalesMetricsDomainModel> = getSalesMetricsUseCase.invoke()
         .flowOn(coroutineProvider.io)
         .stateIn(
@@ -88,6 +91,15 @@ class SalesListViewModel @Inject constructor(
                 else
                     sales.filter { sale -> sale.status in statusSelected }
             }
+            .combine(searchQuery) { sales, query ->
+                if (query.isBlank()) {
+                    sales
+                } else {
+                    sales.filter { sale ->
+                        sale.id.toString().contains(query, ignoreCase = true)
+                    }
+                }
+            }
             .combine(reportState) { sales, report ->
                 val ids = report.ids
                 sales.map { sale -> sale.copy(isSelected = ids.contains(sale.id)) }
@@ -96,6 +108,10 @@ class SalesListViewModel @Inject constructor(
             .flowOn(coroutineProvider.io)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
+
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
+    }
 
     fun onStatusFilterChange(status: StatusFilterUiModel) = viewModelScope.launch(coroutineProvider.io) {
         _statusFilterState.update { lst ->
