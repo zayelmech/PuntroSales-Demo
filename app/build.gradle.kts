@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.dokka")
+    id("org.jetbrains.kotlinx.kover")
 }
 
 android {

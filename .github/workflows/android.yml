@@ -31,4 +31,81 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew :app:assembleDebug --stacktrace
 
-      
+      - name: Generate Lint report
+        run: ./gradlew :app:lintDebug --stacktrace
+
+      - name: Generate Dokka docs
+        run: ./gradlew :app:dokkaGenerate --stacktrace
+
+      - name: Generate Kover coverage report
+        run: ./gradlew :app:koverHtmlReportDebug --stacktrace
+
+      - name: Prepare static reports folder
+        run: |
+          rm -rf _site
+          mkdir -p _site/lint
+          mkdir -p _site/dokka
+          mkdir -p _site/coverage
+
+          # Android Lint
+          if [ -f app/build/reports/lint-results-debug.html ]; then
+            cp app/build/reports/lint-results-debug.html _site/lint/index.html
+          fi
+
+          # Dokka
+          if [ -d app/build/dokka/html ]; then
+            cp -R app/build/dokka/html/* _site/dokka/
+          elif [ -d app/build/dokka/htmlMultiModule ]; then
+            cp -R app/build/dokka/htmlMultiModule/* _site/dokka/
+          elif [ -d app/build/dokka ]; then
+            cp -R app/build/dokka/* _site/dokka/
+          fi
+
+          # Kover
+          if [ -d app/build/reports/kover/htmlDebug ]; then
+            cp -R app/build/reports/kover/htmlDebug/* _site/coverage/
+          elif [ -d app/build/reports/kover/html ]; then
+            cp -R app/build/reports/kover/html/* _site/coverage/
+          fi
+
+          cat > _site/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>PuntroSales Reports</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              a { display: block; margin: 12px 0; font-size: 18px; }
+            </style>
+          </head>
+          <body>
+            <h1>PuntroSales CI Reports</h1>
+            <a href="./lint/">Android Lint Report</a>
+            <a href="./dokka/">Dokka Documentation</a>
+            <a href="./coverage/">Kover Coverage Report</a>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy reports to Apache server
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh -i ~/.ssh/deploy_key -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=no \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "mkdir -p $DEPLOY_PATH"
+
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p $DEPLOY_PORT -o StrictHostKeyChecking=no" \
+            _site/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
