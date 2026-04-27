@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     alias(libs.plugins.jetbrains.kotlin.jvm)
+    alias(libs.plugins.kotlin.dokka)
 }
 
 java {

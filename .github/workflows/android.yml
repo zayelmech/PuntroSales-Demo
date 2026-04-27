@@ -32,13 +32,13 @@ jobs:
         run: ./gradlew :app:assembleDebug --stacktrace
 
       - name: Generate Lint report
-        run: ./gradlew :app:lintDebug --stacktrace
+        run: ./gradlew lintDebug --stacktrace
 
       - name: Generate Dokka docs
-        run: ./gradlew :app:dokkaGenerate --stacktrace
+        run: ./gradlew dokkaGenerateHtml --stacktrace
 
       - name: Generate Kover coverage report
-        run: ./gradlew :app:koverHtmlReportDebug --stacktrace
+        run: ./gradlew koverHtmlReportDebug --stacktrace
 
       - name: Prepare static reports folder
         run: |
@@ -53,7 +53,9 @@ jobs:
           fi
 
           # Dokka
-          if [ -d app/build/dokka/html ]; then
+          if [ -d build/dokka/html ]; then
+            cp -R build/dokka/html/* _site/dokka/
+          elif [ -d app/build/dokka/html ]; then
             cp -R app/build/dokka/html/* _site/dokka/
           elif [ -d app/build/dokka/htmlMultiModule ]; then
             cp -R app/build/dokka/htmlMultiModule/* _site/dokka/

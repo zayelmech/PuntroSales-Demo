@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlin.serialization)
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.kotlin.dokka)
     id("org.jetbrains.kotlinx.kover")
 }
 
@@ -131,11 +131,5 @@ dokka {
     dokkaSourceSets.configureEach {
         // Point to the markdown file for the home page (module/package documentation)
         includes.from(project.layout.projectDirectory.file("src/main/dokka/module.md"))
-
-        // Sample for suppressing a class or package
-        // perPackageOption {
-        //     matchingRegex.set(".*\\.InternalClass.*")
-        //     suppress.set(true)
-        // }
     }
 }
