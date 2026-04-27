@@ -24,11 +24,25 @@ import com.imecatro.demosales.navigation.clients.clientsNavigation
 import com.imecatro.demosales.navigation.products.productsNavigation
 import com.imecatro.demosales.navigation.sales.salesFeature
 
+/**
+ * Represents the main top-level destinations of the application.
+ */
 @Keep
 enum class AppDestinations {
-    PRODUCTS, SALES, CLIENTS
+    /** Destination for product management. */
+    PRODUCTS, 
+    /** Destination for sales management. */
+    SALES, 
+    /** Destination for client management. */
+    CLIENTS
 }
 
+/**
+ * Extension function to populate the [NavigationSuiteScope] with items based on [AppDestinations].
+ *
+ * @param currentDestination The current [NavDestination] to determine the selected state.
+ * @param onCurrentDestinationChanged Callback invoked when a destination is selected.
+ */
 fun NavigationSuiteScope.adaptiveNavigationBar(
     currentDestination: NavDestination?,
     onCurrentDestinationChanged: (AppDestinations) -> Unit
@@ -49,6 +63,11 @@ fun NavigationSuiteScope.adaptiveNavigationBar(
     }
 }
 
+/**
+ * Maps an [AppDestinations] enum value to its corresponding [ParentFeature] route.
+ *
+ * @return The [ParentFeature] associated with the destination.
+ */
 fun AppDestinations.toRoute(): ParentFeature {
     return when (this) {
         AppDestinations.PRODUCTS -> NavigationDirections.ProductsFeature
@@ -57,6 +76,13 @@ fun AppDestinations.toRoute(): ParentFeature {
     }
 }
 
+/**
+ * Navigates to a root destination in the navigation graph.
+ *
+ * Uses [NavOptions] to clear the backstack up to the start destination and maintain state.
+ *
+ * @param route The root [ParentFeature] route to navigate to.
+ */
 fun NavHostController.navigateToRoot(route: ParentFeature) {
     this.navigate(route) {
         popUpTo(this@navigateToRoot.graph.findStartDestination().id) { saveState = true }
@@ -65,6 +91,12 @@ fun NavHostController.navigateToRoot(route: ParentFeature) {
     }
 }
 
+/**
+ * Root Composable that sets up the adaptive navigation structure of the app.
+ *
+ * It uses [NavigationSuiteScaffold] to automatically switch between bottom navigation,
+ * navigation rail, or navigation drawer based on the device's screen size and state.
+ */
 @Composable
 fun AppAdaptiveNavigation() {
 

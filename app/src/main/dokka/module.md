@@ -20,3 +20,14 @@ The project is modularized by feature and by layer:
 -   **`:demosales-data:*`**: Modules responsible for data management (Room entities, DAOs, Repositories).
 
 This structure allows for independent development of features and faster build times.
+
+## App Module Folder Structure
+
+The `:app` module acts as the orchestrator of the application, connecting all feature modules and providing global configurations.
+
+- **`com.imecatro.demosales.di`**: Contains Hilt modules for dependency injection, providing database instances, repositories, and use cases to the rest of the application.
+- **`com.imecatro.demosales.ui`**: Houses top-level UI components, such as the `AdaptiveScaffold`, which handles the main navigation layout (rail, drawer, or bottom bar) based on screen size.
+- **`com.imecatro.demosales.datasource`**: Includes the main Room database definition (`AppRoomDatabase`) that aggregates all DAOs from the data modules.
+- **`com.imecatro.demosales.navigation`**: Contains the navigation graphs and destination definitions for each feature (Products, Sales, Clients), facilitating a decoupled navigation system.
+- **`MainActivity.kt`**: The single activity of the application, responsible for setting up the UI and navigation.
+- **`PuntroSalesDemoApp.kt`**: The `Application` class, annotated with `@HiltAndroidApp` to initialize Hilt.

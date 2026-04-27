@@ -21,6 +21,16 @@ import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
+/**
+ * A Composable that provides an adaptive list-detail layout for products.
+ *
+ * It uses [NavigableSupportingPaneScaffold] to handle different screen sizes and orientations.
+ * In large screens or landscape mode, it can show the list and details (or categories) simultaneously.
+ *
+ * @param onAddProduct Callback invoked when the user chooses to add a new product.
+ * @param onCreateCatalog Callback invoked with a list of product IDs to create a catalog.
+ * @param onEditProduct Callback invoked when the user chooses to edit a specific product.
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ListAndDetailsPane(
@@ -99,11 +109,19 @@ fun ListAndDetailsPane(
     )
 }
 
+/**
+ * Parcelable class used for navigation within the [ListAndDetailsPane].
+ *
+ * @property id The ID of the product.
+ * @property mode The mode of the pane (e.g., details, categories).
+ */
 @Parcelize
 class MyProduct(val id: Long, val mode: Int = 0) : Parcelable {
 
     companion object {
+        /** Mode for displaying product categories. */
         const val MODE_CATEGORIES = 1
+        /** Mode for displaying a catalog. */
         const val MODE_CATALOG = 2
     }
 }

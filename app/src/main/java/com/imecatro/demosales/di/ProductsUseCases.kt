@@ -26,10 +26,16 @@ import dagger.hilt.android.components.ViewModelComponent
 import kotlinx.coroutines.CoroutineDispatcher
 
 
+/**
+ * Hilt module for providing Use Case dependencies related to Products and Categories.
+ */
 @Module
 @InstallIn(ViewModelComponent::class)
 object ProductsUseCases {
 
+    /**
+     * Provides [GetAllCategoriesUseCase].
+     */
     @Provides
     fun providesGetAllCategoriesUseCase(
         categoriesRepository: CategoriesRepository,
@@ -37,6 +43,9 @@ object ProductsUseCases {
     ): GetAllCategoriesUseCase =
         GetAllCategoriesUseCase(categoriesRepository, coroutineDispatcher)
 
+    /**
+     * Provides [AddCategoryUseCase].
+     */
     @Provides
     fun providesAddCategoryUseCase(
         categoriesRepository: CategoriesRepository,
@@ -45,6 +54,9 @@ object ProductsUseCases {
         AddCategoryUseCase(categoriesRepository, coroutineDispatcher)
 
 
+    /**
+     * Provides [UpdateCategoryUseCase].
+     */
     @Provides
     fun providesUpdateCategoryUseCase(
         categoriesRepository: CategoriesRepository,
@@ -52,6 +64,9 @@ object ProductsUseCases {
     ): UpdateCategoryUseCase =
         UpdateCategoryUseCase(categoriesRepository, coroutineDispatcher)
 
+    /**
+     * Provides [DeleteCategoryUseCase].
+     */
     @Provides
     fun providesDeleteCategoryUseCase(
         categoriesRepository: CategoriesRepository,
@@ -60,27 +75,45 @@ object ProductsUseCases {
         DeleteCategoryUseCase(categoriesRepository, coroutineDispatcher)
 
 
+    /**
+     * Provides [AddStockUseCase].
+     */
     @Provides
     fun providesAddStockUseCase(productsRepository: ProductsRepository) =
         AddStockUseCase(productsRepository)
 
+    /**
+     * Provides [RemoveFromStockUseCase].
+     */
     @Provides
     fun providesRemoveFromStockUseCase(productsRepository: ProductsRepository) =
         RemoveFromStockUseCase(productsRepository)
 
+    /**
+     * Provides [GetListOfCurrenciesUseCase].
+     */
     @Provides
     fun provideGetListOfCurrenciesUseCase(): GetListOfCurrenciesUseCase =
         GetListOfCurrenciesUseCase()
 
+    /**
+     * Provides [GetListOfUnitsUseCase].
+     */
     @Provides
     fun provideGetListOfUnitsUseCase(): GetListOfUnitsUseCase = GetListOfUnitsUseCase()
 
 
+    /**
+     * Provides [GetProductsLikeUseCase].
+     */
     @Provides
     fun providesGetProductsLikeUseCase(productsRepository: ProductsRepository): GetProductsLikeUseCase {
         return GetProductsLikeUseCase(productsRepository)
     }
 
+    /**
+     * Provides [SearchProductByBarcode].
+     */
     @Provides
     fun providesSearchProductByBarcode(productsRepository: ProductsRepository,ioDispatcher: CoroutineProvider) : SearchProductByBarcode {
      return SearchProductByBarcode(productsRepository, ioDispatcher)
@@ -88,6 +121,9 @@ object ProductsUseCases {
     }
 
 
+    /**
+     * Provides [GetProductDetailsByIdUseCase].
+     */
     @Provides
     fun providesGetProductDetailsByIdUseCase(
         productsRepository: ProductsRepository,
@@ -96,6 +132,9 @@ object ProductsUseCases {
         GetProductDetailsByIdUseCase(productsRepository, ioDispatcher)
 
 
+    /**
+     * Provides [ExportProductsCsvUseCase].
+     */
     @Provides
     fun providesExportProductsCsvUseCase(
         productsRepository: ProductsRepository,
@@ -105,6 +144,9 @@ object ProductsUseCases {
         ExportProductsCsvUseCase(productsRepository, fileInteractor, coroutineDispatcher)
 
 
+    /**
+     * Provides [ExportStockHistoryCsvUseCase].
+     */
     @Provides
     fun providesExportStockHistoryCsvUseCase(
         productsRepository: ProductsRepository,

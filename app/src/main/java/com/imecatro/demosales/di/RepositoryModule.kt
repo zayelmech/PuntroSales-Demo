@@ -23,10 +23,23 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Hilt module for providing Repository implementations.
+ *
+ * This module binds the domain-level Repository interfaces to their concrete
+ * data-level implementations using Room as the data source.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 class RepositoryModule {
 
+    /**
+     * Provides the [ProductsRepository] implementation.
+     *
+     * @param dao The DAO for products.
+     * @param categories The DAO for categories.
+     * @return An instance of [ProductsRepositoryImpl].
+     */
     @Provides
     fun provideRoomRepositoryImplementation(
         dao: ProductsDao,
@@ -34,16 +47,35 @@ class RepositoryModule {
     ): ProductsRepository =
         ProductsRepositoryImpl(dao, categories)
 
+    /**
+     * Provides the [CategoriesRepository] implementation.
+     *
+     * @param categories The DAO for categories.
+     * @return An instance of [CategoriesRepositoryImpl].
+     */
     @Provides
     fun providesCategoriesRepoImplementation(categories: CategoriesDao): CategoriesRepository =
         CategoriesRepositoryImpl(categories)
 
+    /**
+     * Provides the [AllSalesRepository] implementation for listing sales.
+     *
+     * @param dao The DAO for sales.
+     * @return An instance of [AllSalesRepositoryImpl].
+     */
     @Provides
     fun providesSalesListRepository(
         dao: SalesRoomDao
     ): AllSalesRepository =
         AllSalesRepositoryImpl(dao)
 
+    /**
+     * Provides a singleton instance of [AddSaleRepository] for managing new sales.
+     *
+     * @param dao The DAO for sales.
+     * @param ordersRoomDao The DAO for orders.
+     * @return An instance of [AddSaleRepositoryImpl].
+     */
     @Provides
     @Singleton
     fun providesAddSaleRepoImpl(
@@ -52,6 +84,13 @@ class RepositoryModule {
     ): AddSaleRepository = AddSaleRepositoryImpl(dao, ordersRoomDao)
 
 
+    /**
+     * Provides the [DetailsSaleRepository] implementation for viewing sale details.
+     *
+     * @param salesRoomDao The DAO for sales.
+     * @param ordersRoomDao The DAO for orders.
+     * @return An instance of [DetailsSaleRepositoryImpl].
+     */
     @Provides
     fun providesDetailsSaleRepoImpl(
         salesRoomDao: SalesRoomDao,
@@ -59,6 +98,12 @@ class RepositoryModule {
     ): DetailsSaleRepository = DetailsSaleRepositoryImpl(salesRoomDao, ordersRoomDao)
 
 
+    /**
+     * Provides a singleton instance of [ClientsRepository].
+     *
+     * @param clientsDao The DAO for clients.
+     * @return An instance of [ClientsRepositoryImpl].
+     */
     @Provides
     @Singleton
     fun providesClientsRepository(

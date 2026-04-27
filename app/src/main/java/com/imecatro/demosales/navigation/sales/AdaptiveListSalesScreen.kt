@@ -19,6 +19,16 @@ import com.imecatro.demosales.ui.sales.list.views.SalesListComposableStateImpl
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
+/**
+ * A Composable that provides an adaptive list-detail layout for sales.
+ *
+ * It uses [NavigableSupportingPaneScaffold] to display the sales list in the main pane
+ * and sale details in a supporting pane when a sale is selected.
+ *
+ * @param onAddSale Callback invoked when the user chooses to add a new sale.
+ * @param onEditSale Callback invoked when the user chooses to edit an existing sale.
+ * @param onDuplicateSale Callback invoked when the user chooses to duplicate a sale.
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ListAndDetailsSalesPane(
@@ -80,5 +90,10 @@ fun ListAndDetailsSalesPane(
     )
 }
 
+/**
+ * Parcelable class used for navigation within the [ListAndDetailsSalesPane].
+ *
+ * @property id The ID of the sale.
+ */
 @Parcelize
 class MySale(val id: Long) : Parcelable

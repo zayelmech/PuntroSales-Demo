@@ -19,6 +19,15 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "ProductsNavigation"
 
+/**
+ * Defines the navigation graph for the Products feature.
+ *
+ * This includes routes for listing products, adding/editing products, managing categories,
+ * and creating catalogs.
+ *
+ * @param T The type of the root destination for this feature.
+ * @param navController The [NavHostController] used for navigation between screens.
+ */
 inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: NavHostController) {
     navigation<T>(startDestination = ProductsDestinations.ListAndDetails) {
         composable<ProductsDestinations.ListAndDetails> {

@@ -19,6 +19,18 @@ import com.imecatro.products.data.model.CategoryRoomEntity
 import com.imecatro.products.data.model.ProductRoomEntity
 import com.imecatro.products.data.model.StockRoomEntity
 
+/**
+ * The main Room database for the application.
+ *
+ * This database aggregates entities from all feature modules and provides
+ * access to their respective DAOs.
+ *
+ * @property productsRoomDao DAO for products.
+ * @property categoriesRoomDao DAO for categories.
+ * @property salesRoomDao DAO for sales.
+ * @property ordersRoomDao DAO for orders.
+ * @property clientsRoomDao DAO for clients.
+ */
 @Database(
     entities = [ProductRoomEntity::class,
         SaleDataRoomModel::class,
@@ -48,6 +60,12 @@ abstract class AppRoomDatabase : RoomDatabase() {
 
         private var categoriesDao: CategoriesDao? = null
 
+        /**
+         * Initializes and returns the [AppRoomDatabase] instance.
+         *
+         * @param context The application context.
+         * @return The initialized [AppRoomDatabase].
+         */
         fun initDatabase(context: Context): AppRoomDatabase {
             val db = Room.databaseBuilder(
                 context,
@@ -75,6 +93,11 @@ abstract class AppRoomDatabase : RoomDatabase() {
             return db
         }
 
+        /**
+         * Checks if the database DAOs are initialized.
+         *
+         * @return True if initialized, false otherwise.
+         */
         fun isActive(): Boolean {
             return productsDao?.let { true } ?: false
         }

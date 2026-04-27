@@ -14,20 +14,42 @@ import java.io.File
 import java.io.FileOutputStream
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * Hilt module for providing core application dependencies.
+ *
+ * This module provides common utilities such as coroutine dispatchers and file interaction
+ * capabilities that are used throughout the application.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object CoroutinesModuleProvider {
 
+    /**
+     * Provides the implementation for [CoroutineProvider].
+     *
+     * @return An instance of [CoroutineDispatcherImpl].
+     */
     @Provides
     fun providesCoroutineDispatcher(): CoroutineProvider = CoroutineDispatcherImpl()
 
 
+    /**
+     * Provides the implementation for [FileInteractor].
+     *
+     * @param ctx The application context.
+     * @return An instance of [FileInteractorImpl].
+     */
     @Provides
     fun providesFileInteractor(@ApplicationContext ctx: Context): FileInteractor =
         FileInteractorImpl(ctx)
 }
 
 
+/**
+ * Implementation of [CoroutineProvider] using standard Kotlin Coroutine Dispatchers.
+ *
+ * Provides [Dispatchers.IO] for I/O operations and [Dispatchers.Main] for UI-related tasks.
+ */
 class CoroutineDispatcherImpl : CoroutineProvider {
     override val io: CoroutineContext
         get() = Dispatchers.IO + CoroutineName("Coroutine Provider IO")
@@ -37,6 +59,14 @@ class CoroutineDispatcherImpl : CoroutineProvider {
 }
 
 
+/**
+ * Implementation of [FileInteractor] for handling file system operations.
+ *
+ * This class provides methods for writing data to files within the application's
+ * specific directories.
+ *
+ * @property ctx The application context used to access internal/external storage.
+ */
 class FileInteractorImpl(private val ctx: Context) : FileInteractor {
 
     private fun ticketsDir(): File {
@@ -44,6 +74,13 @@ class FileInteractorImpl(private val ctx: Context) : FileInteractor {
         return File(root, "Tickets").also { it.mkdirs() }
     }
 
+    /**
+     * Writes a list of rows to a CSV file in the "Tickets" directory.
+     *
+     * @param filename The name of the file to be created.
+     * @param rows The data to be written, structured as a list of string lists.
+     * @return The [File] object representing the created CSV file.
+     */
     override fun writeCsvToTickets(
         filename: String,
         rows: List<List<String>>
@@ -63,7 +100,16 @@ class FileInteractorImpl(private val ctx: Context) : FileInteractor {
 
 }
 
+/**
+ * Utility object for CSV-related operations.
+ */
 object CsvUtil {
+    /**
+     * Converts a list of string lists into a CSV-formatted string.
+     *
+     * @param lines The data to convert.
+     * @return A string in CSV format.
+     */
     fun toCsv(lines: List<List<String>>): String {
         return buildString {
             lines.forEachIndexed { i, row ->

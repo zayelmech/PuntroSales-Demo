@@ -14,6 +14,14 @@ import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
 
+/**
+ * Defines the navigation graph for the Sales feature.
+ *
+ * This includes routes for listing sales, adding a new sale, checking out, and viewing details.
+ *
+ * @param T The type of the root destination for this feature.
+ * @param navController The [NavHostController] used for navigation between screens.
+ */
 inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHostController) {
     navigation<T>(startDestination = SalesDestinations.List) {
         composable<SalesDestinations.List> {
