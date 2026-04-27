@@ -1,4 +1,4 @@
-# Puntro Sales Demo
+# Module app
 
 This project follows a **Clean Architecture** approach combined with **MVVM** and is highly **Modularized** to ensure scalability, testability, and separation of concerns.
 
