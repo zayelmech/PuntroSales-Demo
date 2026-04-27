@@ -2,6 +2,7 @@ package com.imecatro.demosales.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import android.view.WindowInsets
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -13,7 +14,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 
 
 private val lightScheme = lightColorScheme(
@@ -92,6 +93,14 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+/**
+ * The main theme for the Puntro Sales Demo application.
+ *
+ * @param darkTheme Whether the theme should use dark mode colors. Defaults to the system setting.
+ * @param dynamicColor Whether to use dynamic color (available on Android 12+).
+ * Defaults to false to maintain brand consistency.
+ * @param content The composable content to be displayed within this theme.
+ */
 @Composable
 fun PuntroSalesDemoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -110,8 +119,8 @@ fun PuntroSalesDemoTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).window.statusBarColor = colorScheme.background.toArgb()
-            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = !darkTheme
+            val window = (view.context as Activity).window
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
