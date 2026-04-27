@@ -84,6 +84,11 @@ We’re excited to invite you to test our new app Puntro Sales! 🚀
 - [ ] Change Language
 - [ ] Export data (sales, products, clients)) as .zip
 
+## Project Reports
+
+Check out the latest reports for code quality, documentation, and test coverage:
+👉 https://apps.imecatro.com/puntrosales/
+
 ## Modular Architecture
 
 This project follows a modular architecture organized first by layer and then by feature.

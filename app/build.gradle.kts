@@ -122,3 +122,20 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     androidTestImplementation(libs.androidx.room.testing)
 }
+
+dokka {
+    dokkaPublications.configureEach {
+        suppressInheritedMembers.set(true)
+    }
+
+    dokkaSourceSets.configureEach {
+        // Point to the markdown file for the home page (module/package documentation)
+        includes.from(project.layout.projectDirectory.file("src/main/dokka/module.md"))
+
+        // Sample for suppressing a class or package
+        // perPackageOption {
+        //     matchingRegex.set(".*\\.InternalClass.*")
+        //     suppress.set(true)
+        // }
+    }
+}
