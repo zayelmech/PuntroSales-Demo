@@ -6,17 +6,7 @@ import com.imecatro.demosales.domain.clients.model.PurchaseDomainModel
 import kotlinx.coroutines.flow.Flow
 
 /**
- *
- * @author imecatro
- *
- * @version 1.0
- * @method addClient add a new client
- * @method getAllClients get all clients
- * @method deleteClientById delete a client by id
- * @method updateClient update a client
- * @method getClientDetailsById get a client details by id
- * @method searchClient search a client
- *
+ * Repository interface for managing client data and their associated purchases.
  */
 interface ClientsRepository {
     fun addClient(client: ClientDomainModel)
