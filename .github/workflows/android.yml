@@ -53,22 +53,20 @@ jobs:
           fi
 
           # Dokka
-          if [ -d build/dokka/html ]; then
-            cp -R build/dokka/html/* _site/dokka/
-          elif [ -d app/build/dokka/html ]; then
-            cp -R app/build/dokka/html/* _site/dokka/
-          elif [ -d app/build/dokka/htmlMultiModule ]; then
-            cp -R app/build/dokka/htmlMultiModule/* _site/dokka/
-          elif [ -d app/build/dokka ]; then
-            cp -R app/build/dokka/* _site/dokka/
-          fi
+          for dir in build/dokka/html app/build/dokka/html app/build/dokka/htmlMultiModule app/build/dokka; do
+            if [ -d "$dir" ] && [ -n "$(ls -A "$dir" 2>/dev/null)" ]; then
+              cp -R "$dir"/* _site/dokka/
+              break
+            fi
+          done
 
           # Kover
-          if [ -d app/build/reports/kover/htmlDebug ]; then
-            cp -R app/build/reports/kover/htmlDebug/* _site/coverage/
-          elif [ -d app/build/reports/kover/html ]; then
-            cp -R app/build/reports/kover/html/* _site/coverage/
-          fi
+          for dir in app/build/reports/kover/htmlDebug app/build/reports/kover/html; do
+            if [ -d "$dir" ] && [ -n "$(ls -A "$dir" 2>/dev/null)" ]; then
+              cp -R "$dir"/* _site/coverage/
+              break
+            fi
+          done
 
           cat > _site/index.html <<'EOF'
           <!DOCTYPE html>
