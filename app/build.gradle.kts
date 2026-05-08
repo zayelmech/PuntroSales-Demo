@@ -48,6 +48,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             signingConfig = signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -116,7 +117,6 @@ dependencies {
     implementation(project(":demosales-domain:clients"))
     implementation(project(":demosales-domain:core"))
     implementation(project(":demosales-data:clients"))
-    implementation(libs.androidx.constraintlayout.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

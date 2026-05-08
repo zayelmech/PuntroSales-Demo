@@ -1,6 +1,6 @@
 package com.imecatro.demosales.navigation.clients
 
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -13,15 +13,6 @@ import com.imecatro.demosales.ui.clients.edit.viewmodel.EditClientViewModel
 import com.imecatro.demosales.ui.clients.edit.views.EditClientComposableImpl
 import com.imecatro.demosales.ui.clients.list.views.ClientListImpl
 
-/**
- * Defines the navigation graph for the Clients feature.
- *
- * This includes routes for listing clients, adding a new client, editing a client,
- * and viewing client details.
- *
- * @param T The type of the root destination for this feature.
- * @param navController The [NavHostController] used for navigation between screens.
- */
 /**
  * Defines the navigation graph for the Clients feature.
  *

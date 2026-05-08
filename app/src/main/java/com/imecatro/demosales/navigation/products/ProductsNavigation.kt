@@ -1,6 +1,6 @@
 package com.imecatro.demosales.navigation.products
 
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -15,9 +15,6 @@ import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
 import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 import com.imecatro.products.ui.update.views.UpdateProductComposableStateImpl
-import kotlinx.coroutines.launch
-
-private const val TAG = "ProductsNavigation"
 
 /**
  * Defines the navigation graph for the Products feature.
