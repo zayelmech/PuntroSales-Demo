@@ -83,6 +83,16 @@ android {
     }
 }
 
+// Disable google-services plugin for huawei flavor
+afterEvaluate {
+    tasks.matching { 
+        it.name.contains("googleServices", ignoreCase = true) && 
+        it.name.contains("huawei", ignoreCase = true) 
+    }.configureEach {
+        enabled = false
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
