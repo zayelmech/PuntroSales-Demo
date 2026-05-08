@@ -107,8 +107,8 @@ internal fun ClientCardCompose(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-private fun ListOfClients(
-    list: List<ClientUiModel> = listOf(ClientUiModel.getDummy(), ClientUiModel.getDummy()),
+fun ListOfClients(
+    list: List<ClientUiModel> = emptyList(),
     isLoading: Boolean = false,
     onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {},

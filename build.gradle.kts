@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp.plugin) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
+    id("com.google.gms.google-services") version "4.4.4" apply false
     alias(libs.plugins.kotlin.dokka)
     id("org.jetbrains.kotlinx.kover") version "0.9.8" apply false
 }

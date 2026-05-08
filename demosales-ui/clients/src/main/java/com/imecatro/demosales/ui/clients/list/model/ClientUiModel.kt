@@ -17,7 +17,13 @@ class ClientUiModel(
     companion object {
         @VisibleForTesting(otherwise = VisibleForTesting.NONE)
         fun getDummy(): ClientUiModel {
-            return ClientUiModel(id = 0, name = "Abdiel C. Rojas", number = "123456", image = "", address = "Calle 123")
+            return ClientUiModel(
+                id = 1,
+                name = "Juan Pérez - Abarrotes 'La Esquina'",
+                number = "555-0123-456",
+                image = "",
+                address = "Av. Principal 123, Col. Centro"
+            )
         }
     }
 

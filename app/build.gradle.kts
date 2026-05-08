@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.hilt.android.gradle.plugin)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
     alias(libs.plugins.kotlin.dokka)
     id("org.jetbrains.kotlinx.kover")
 }
@@ -68,6 +69,18 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    flavorDimensions += "distribution"
+
+    productFlavors {
+        create("google") {
+            dimension = "distribution"
+        }
+
+        create("huawei") {
+            dimension = "distribution"
+            applicationIdSuffix = ".hw"
+        }
+    }
 }
 
 dependencies {
@@ -121,6 +134,12 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     androidTestImplementation(libs.androidx.room.testing)
+
+    debugImplementation(libs.androidx.compose.material.icons.core)
+
+    add("googleImplementation", platform(libs.firebase.bom))
+    add("googleImplementation", libs.firebase.analytics)
+    add("googleImplementation", "com.google.firebase:firebase-crashlytics")
 }
 
 dokka {

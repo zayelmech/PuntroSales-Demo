@@ -53,7 +53,7 @@ object Money{
 @Composable
 @ReadOnlyComposable // Indica que la función solo lee el estado de Compose (LocalContext)
 fun String.formatAsCurrency(
-    defaultLocale: Locale? = null,
+    defaultLocale: Locale? = Locale("es", "MX"),
     onErrorReturn: String = this // Devuelve la cadena original en caso de error por defecto
 ): String {
     val context = LocalContext.current
@@ -89,7 +89,7 @@ fun String.formatAsCurrency(
 @Composable
 @ReadOnlyComposable // Indica que la función solo lee el estado de Compose (LocalContext)
 fun Double.formatAsCurrency(
-    defaultLocale: Locale? = null,
+    defaultLocale: Locale? = Locale.getDefault(),
     onErrorReturn: String = "0.0" // Devuelve la cadena original en caso de error por defecto
 ): String {
     val context = LocalContext.current
