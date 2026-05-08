@@ -23,7 +23,7 @@ android {
         applicationId = "com.imecatro.demosales"
         minSdk = 26
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 23
+        versionCode = 24
         versionName = "1.14.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
