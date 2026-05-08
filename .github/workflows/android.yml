@@ -32,7 +32,7 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        
+      # Specific flavor build
       - name: Build with Gradle
         run: ./gradlew :app:assembleGoogleDebug --stacktrace
 
