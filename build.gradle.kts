@@ -11,5 +11,10 @@ plugins {
     id("com.google.gms.google-services") version "4.4.4" apply false
     id("com.google.firebase.crashlytics") version "3.0.7" apply false
     alias(libs.plugins.kotlin.dokka)
-    id("org.jetbrains.kotlinx.kover") version "0.9.8" apply false
+    id("org.jetbrains.kotlinx.kover") version "0.9.8"
+}
+
+subprojects {
+    pluginManager.apply("org.jetbrains.kotlinx.kover")
+    pluginManager.apply("org.jetbrains.dokka")
 }

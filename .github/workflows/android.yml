@@ -37,13 +37,13 @@ jobs:
         run: ./gradlew :app:assembleGoogleDebug --stacktrace
 
       - name: Generate Lint report
-        run: ./gradlew lintDebug --stacktrace
+        run: ./gradlew :app:lintGoogleDebug --stacktrace
 
       - name: Generate Dokka docs
         run: ./gradlew dokkaGenerateHtml --stacktrace
 
       - name: Generate Kover coverage report
-        run: ./gradlew koverHtmlReportDebug --stacktrace
+        run: ./gradlew koverHtmlReport --stacktrace || ./gradlew :app:koverHtmlReportGoogleDebug --stacktrace
 
       - name: Prepare static reports folder
         run: |
@@ -53,25 +53,23 @@ jobs:
           mkdir -p _site/coverage
 
           # Android Lint
-          if [ -f app/build/reports/lint-results-debug.html ]; then
-            cp app/build/reports/lint-results-debug.html _site/lint/index.html
+          LINT_PATH=$(find . -name "lint-results-googleDebug.html" -o -name "lint-results-debug.html" | head -n 1)
+          if [ -n "$LINT_PATH" ]; then
+            cp "$LINT_PATH" _site/lint/index.html
           fi
 
-          # Dokka
-          for dir in build/dokka/html app/build/dokka/html app/build/dokka/htmlMultiModule app/build/dokka; do
-            if [ -d "$dir" ] && [ -n "$(ls -A "$dir" 2>/dev/null)" ]; then
-              cp -R "$dir"/* _site/dokka/
-              break
-            fi
-          done
+          # Dokka - Aggregated report
+          if [ -d "build/dokka/html" ]; then
+            cp -R build/dokka/html/* _site/dokka/
+          elif [ -d "app/build/dokka/html" ]; then
+            cp -R app/build/dokka/html/* _site/dokka/
+          fi
 
-          # Kover
-          for dir in app/build/reports/kover/htmlDebug app/build/reports/kover/html; do
-            if [ -d "$dir" ] && [ -n "$(ls -A "$dir" 2>/dev/null)" ]; then
-              cp -R "$dir"/* _site/coverage/
-              break
-            fi
-          done
+          # Kover - Aggregated report
+          KOVER_PATH=$(find . -type d \( -name "html" -o -name "htmlGoogleDebug" \) | grep kover | head -n 1)
+          if [ -n "$KOVER_PATH" ]; then
+            cp -R "$KOVER_PATH"/* _site/coverage/
+          fi
 
           cat > _site/index.html <<'EOF'
           <!DOCTYPE html>
