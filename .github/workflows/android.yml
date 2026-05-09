@@ -52,23 +52,22 @@ jobs:
           mkdir -p _site/dokka
           mkdir -p _site/coverage
 
-          # Android Lint
+          # Android Lint - Find the report regardless of flavor
           LINT_PATH=$(find . -name "lint-results-googleDebug.html" -o -name "lint-results-debug.html" | head -n 1)
-          if [ -n "$LINT_PATH" ]; then
+          if [ -n "$LINT_PATH" ] && [ -f "$LINT_PATH" ]; then
             cp "$LINT_PATH" _site/lint/index.html
           fi
 
-          # Dokka - Aggregated report
-          if [ -d "build/dokka/html" ]; then
-            cp -R build/dokka/html/* _site/dokka/
-          elif [ -d "app/build/dokka/html" ]; then
-            cp -R app/build/dokka/html/* _site/dokka/
+          # Dokka - Search for generated docs and copy contents safely using /.
+          DOKKA_DIR=$(find . -path "*/build/dokka/html" -type d | head -n 1)
+          if [ -n "$DOKKA_DIR" ] && [ -d "$DOKKA_DIR" ]; then
+            cp -a "$DOKKA_DIR"/. _site/dokka/
           fi
 
-          # Kover - Aggregated report
-          KOVER_PATH=$(find . -type d \( -name "html" -o -name "htmlGoogleDebug" \) | grep kover | head -n 1)
-          if [ -n "$KOVER_PATH" ]; then
-            cp -R "$KOVER_PATH"/* _site/coverage/
+          # Kover - Search for generated coverage reports and copy contents safely
+          KOVER_DIR=$(find . -path "*/build/reports/kover/html*" -type d | head -n 1)
+          if [ -n "$KOVER_DIR" ] && [ -d "$KOVER_DIR" ]; then
+            cp -a "$KOVER_DIR"/. _site/coverage/
           fi
 
           cat > _site/index.html <<'EOF'
