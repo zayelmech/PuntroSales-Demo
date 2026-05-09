@@ -40,34 +40,67 @@ jobs:
         run: ./gradlew :app:lintGoogleDebug --stacktrace
 
       - name: Generate Dokka docs
-        run: ./gradlew dokkaGenerateHtml --stacktrace
+        run: |
+          ./gradlew dokkaGeneratePublicationHtml --stacktrace || ./gradlew dokkaGenerate --stacktrace
 
       - name: Generate Kover coverage report
-        run: ./gradlew koverHtmlReport --stacktrace || ./gradlew :app:koverHtmlReportGoogleDebug --stacktrace
+        run: |
+          ./gradlew testGoogleDebugUnitTest --stacktrace
+          ./gradlew koverHtmlReport --stacktrace || ./gradlew :app:koverHtmlReportGoogleDebug --stacktrace
 
       - name: Prepare static reports folder
         run: |
+          set -e
+
           rm -rf _site
           mkdir -p _site/lint
           mkdir -p _site/dokka
           mkdir -p _site/coverage
 
-          # Android Lint - Find the report regardless of flavor
-          LINT_PATH=$(find . -name "lint-results-googleDebug.html" -o -name "lint-results-debug.html" | head -n 1)
-          if [ -n "$LINT_PATH" ] && [ -f "$LINT_PATH" ]; then
-            cp "$LINT_PATH" _site/lint/index.html
+          echo "=== Searching Lint report ==="
+          LINT_INDEX=$(find . \
+            \( -name "lint-results-googleDebug.html" -o -name "lint-results-debug.html" -o -name "lint-results*.html" \) \
+            | head -n 1)
+
+          if [ -n "$LINT_INDEX" ] && [ -f "$LINT_INDEX" ]; then
+            echo "Lint report found at: $LINT_INDEX"
+            cp "$LINT_INDEX" _site/lint/index.html
+          else
+            echo "ERROR: Lint report not found"
+            find . -path "*/build/reports/*" -type f | sort
+            exit 1
           fi
 
-          # Dokka - Search for generated docs and copy contents safely using /.
-          DOKKA_DIR=$(find . -path "*/build/dokka/html" -type d | head -n 1)
-          if [ -n "$DOKKA_DIR" ] && [ -d "$DOKKA_DIR" ]; then
+          echo "=== Searching Dokka index.html ==="
+          DOKKA_INDEX=$(find . \
+            -path "*/build/dokka*" \
+            -name "index.html" \
+            | head -n 1)
+
+          if [ -n "$DOKKA_INDEX" ] && [ -f "$DOKKA_INDEX" ]; then
+            DOKKA_DIR=$(dirname "$DOKKA_INDEX")
+            echo "Dokka docs found at: $DOKKA_DIR"
             cp -a "$DOKKA_DIR"/. _site/dokka/
+          else
+            echo "ERROR: Dokka index.html not found"
+            find . -path "*/build/dokka*" -type f | sort || true
+            exit 1
           fi
 
-          # Kover - Search for generated coverage reports and copy contents safely
-          KOVER_DIR=$(find . -path "*/build/reports/kover/html*" -type d | head -n 1)
-          if [ -n "$KOVER_DIR" ] && [ -d "$KOVER_DIR" ]; then
+          echo "=== Searching Kover index.html ==="
+          KOVER_INDEX=$(find . \
+            -path "*/build/reports/kover/*" \
+            -name "index.html" \
+            | head -n 1)
+
+          if [ -n "$KOVER_INDEX" ] && [ -f "$KOVER_INDEX" ]; then
+            KOVER_DIR=$(dirname "$KOVER_INDEX")
+            echo "Kover report found at: $KOVER_DIR"
             cp -a "$KOVER_DIR"/. _site/coverage/
+          else
+            echo "ERROR: Kover index.html not found"
+            find . -path "*/build/reports/kover*" -type f | sort || true
+            exit 1
           fi
 
           cat > _site/index.html <<'EOF'
@@ -90,7 +123,10 @@ jobs:
           </html>
           EOF
 
-      - name: Deploy reports to Apache server
+          echo "=== Final _site content ==="
+          find _site -maxdepth 3 -type f | sort
+
+      - name: Deploy reports to Nginx server
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
