@@ -50,7 +50,10 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("debug")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -87,9 +90,16 @@ android {
 
 // Disable google-services plugin for huawei flavor
 afterEvaluate {
-    tasks.matching { 
-        it.name.contains("googleServices", ignoreCase = true) && 
-        it.name.contains("huawei", ignoreCase = true) 
+    tasks.matching {
+        it.name.contains("googleServices", ignoreCase = true) &&
+                it.name.contains("huawei", ignoreCase = true)
+    }.configureEach {
+        enabled = false
+    }
+
+    tasks.matching {
+        it.name.contains("crashlytics", ignoreCase = true) &&
+                it.name.contains("huawei", ignoreCase = true)
     }.configureEach {
         enabled = false
     }
@@ -125,7 +135,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4 ) // Use latest stable version
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4) // Use latest stable version
 
     //NAV
     implementation(libs.androidx.navigation.compose)
