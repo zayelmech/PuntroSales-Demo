@@ -49,6 +49,17 @@ sealed class NavigationDirections {
             get() = R.string.clients
     }
 
+    /**
+     * Navigation destination for the Profile feature.
+     */
+    @Serializable
+    @Keep
+    object ProfileFeature : ParentFeature() {
+        override val icon: Int
+            get() = R.drawable.shop
+        override val tittle: Int
+            get() = R.string.profile
+    }
 }
 
 /**

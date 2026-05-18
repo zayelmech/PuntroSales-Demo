@@ -3,4 +3,10 @@
     <string name="products">Inventory</string>
     <string name="sales">Sales</string>
     <string name="clients">Clients</string>
+    <string name="profile">Profile</string>
+    <string name="title_profile">Profile</string>
+    <string name="txt_store_name">Store Name</string>
+    <string name="txt_language">Language</string>
+    <string name="txt_currency">Currency</string>
+    <string name="txt_dark_theme">Dark Theme</string>
 </resources>

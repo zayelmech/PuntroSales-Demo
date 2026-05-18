@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.imecatro.demosales.navigation.clients.clientsNavigation
 import com.imecatro.demosales.navigation.products.productsNavigation
+import com.imecatro.demosales.navigation.profile.profileNavigation
 import com.imecatro.demosales.navigation.sales.salesFeature
 
 /**
@@ -30,11 +31,14 @@ import com.imecatro.demosales.navigation.sales.salesFeature
 @Keep
 enum class AppDestinations {
     /** Destination for product management. */
-    PRODUCTS, 
+    PRODUCTS,
     /** Destination for sales management. */
-    SALES, 
+    SALES,
     /** Destination for client management. */
-    CLIENTS
+    CLIENTS,
+
+    /** Profile destination for the store profile, settings, and more. */
+    PROFILE
 }
 
 /**
@@ -57,7 +61,9 @@ fun NavigationSuiteScope.adaptiveNavigationBar(
                 )
             },
             label = { Text(stringResource(screen.tittle)) },
-            selected = currentDestination?.hierarchy?.any { it.route?.contains(screen::class.qualifiedName.toString()) ?: false } == true,
+            selected = currentDestination?.hierarchy?.any {
+                it.route?.contains(screen::class.qualifiedName.toString()) ?: false
+            } == true,
             onClick = { onCurrentDestinationChanged(destination) }
         )
     }
@@ -73,6 +79,7 @@ fun AppDestinations.toRoute(): ParentFeature {
         AppDestinations.PRODUCTS -> NavigationDirections.ProductsFeature
         AppDestinations.SALES -> NavigationDirections.SalesFeature
         AppDestinations.CLIENTS -> NavigationDirections.ClientsFeature
+        AppDestinations.PROFILE -> NavigationDirections.ProfileFeature
     }
 }
 
@@ -123,6 +130,7 @@ fun AppAdaptiveNavigation() {
                     AppDestinations.PRODUCTS -> navController.navigateToRoot(NavigationDirections.ProductsFeature)
                     AppDestinations.SALES -> navController.navigateToRoot(NavigationDirections.SalesFeature)
                     AppDestinations.CLIENTS -> navController.navigateToRoot(NavigationDirections.ClientsFeature)
+                    AppDestinations.PROFILE -> navController.navigateToRoot(NavigationDirections.ProfileFeature)
                 }
             }
         }) {
@@ -136,6 +144,8 @@ fun AppAdaptiveNavigation() {
             salesFeature<NavigationDirections.SalesFeature>(navController)
             // We can add, see, edit or delete any client
             clientsNavigation<NavigationDirections.ClientsFeature>(navController)
+            // We can edit global configurations
+            profileNavigation<NavigationDirections.ProfileFeature>(navController)
         }
     }
 }

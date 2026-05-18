@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Products images   -->
+    <!-- Broad paths to prevent "Failed to find configured root" crashes -->
+    <files-path name="internal_files" path="." />
+    <external-path name="external_root" path="." />
+    <external-files-path name="external_files" path="." />
+    <cache-path name="internal_cache" path="." />
+    <external-cache-path name="external_cache" path="." />
+
+    <!-- Specific legacy paths   -->
     <external-files-path
         name="images"
         path="Pictures/" />

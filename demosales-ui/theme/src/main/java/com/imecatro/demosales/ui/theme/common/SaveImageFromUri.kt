@@ -41,29 +41,37 @@ inline fun Context.saveMediaToStorage(uriPicked: Uri, crossinline onUri: (Uri) -
 
     val fos: OutputStream = file.outputStream()
 
-    onUri(file.absolutePath.toUri())
-
-
     fos.use {
         //Finally writing the bitmap to the output stream that we opened
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it)
-        //context?.//toast("Saved to Photos")
     }
 
-    fos.close()
+    onUri(file.absolutePath.toUri())
 }
 
 
 fun Context.createImageFile(): Uri? {
-    // Create an image file name
-    val timeStamp =
-        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(java.util.Date())
-    val imageFileName = "JPEG_" + timeStamp + "_"
-    val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-    val image = java.io.File.createTempFile(
-        imageFileName,  /* prefix */
-        ".jpg",         /* suffix */
-        storageDir      /* directory */
-    )
-    return FileProvider.getUriForFile(this, "${packageName}.fileprovider", image)
+    return try {
+        // Create an image file name
+        val timeStamp =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(java.util.Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        
+        // Use external storage if available, fallback to internal filesDir
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: filesDir
+        
+        if (!storageDir.exists()) {
+            storageDir.mkdirs()
+        }
+
+        val image = File.createTempFile(
+            imageFileName,  /* prefix */
+            ".jpg",         /* suffix */
+            storageDir      /* directory */
+        )
+        FileProvider.getUriForFile(this, "${packageName}.fileprovider", image)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

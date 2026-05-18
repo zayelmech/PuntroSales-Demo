@@ -3,4 +3,11 @@
     <string name="products">Inventario</string>
     <string name="sales">Ventas</string>
     <string name="clients">Clientes</string>
+
+    <string name="profile">Ajustes</string>
+    <string name="title_profile">Mi Negocio</string>
+    <string name="txt_store_name">Nombre de tu negocio</string>
+    <string name="txt_language">Lenguaje</string>
+    <string name="txt_currency">Moneda</string>
+    <string name="txt_dark_theme">Modo obscuro</string>
 </resources>

@@ -23,7 +23,7 @@ android {
         applicationId = "com.imecatro.demosales"
         minSdk = 26
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 24
+        versionCode = 25
         versionName = "1.14.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -146,6 +146,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    //Coil for images in compose
+    implementation(libs.coil.compose)
 
     implementation(libs.androidx.adaptive)
     implementation(libs.androidx.adaptive.layout)
@@ -156,7 +158,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     androidTestImplementation(libs.androidx.room.testing)
 
-    debugImplementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.core)
 
     add("googleImplementation", platform(libs.firebase.bom))
     add("googleImplementation", libs.firebase.analytics)
