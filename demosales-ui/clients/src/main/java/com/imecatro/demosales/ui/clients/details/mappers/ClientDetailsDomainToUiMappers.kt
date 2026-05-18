@@ -3,7 +3,6 @@ package com.imecatro.demosales.ui.clients.details.mappers
 import androidx.core.net.toUri
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.ui.clients.details.model.ClientDetailsUiModel
-import java.util.Locale
 
 internal fun ClientDomainModel.toUi(): ClientDetailsUiModel {
 
@@ -15,7 +14,7 @@ internal fun ClientDomainModel.toUi(): ClientDetailsUiModel {
         latitude = this.latitude ?: 0.0,
         longitude = this.longitude ?: 0.0,
         imageUri = (this.avatarUri ?: "").toUri(),
-        accumulatedPurchases = String.format(Locale.getDefault(), "$%.2f", this.accumulatedPurchases),
+        accumulatedPurchases = this.accumulatedPurchases,
         isFavorite = this.isFavorite
     )
 }

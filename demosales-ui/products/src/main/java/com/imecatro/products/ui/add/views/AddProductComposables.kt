@@ -43,7 +43,6 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +62,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.DropListPicker
+import com.imecatro.demosales.ui.theme.LocalCurrencyCode
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
+import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.createImageFile
@@ -71,11 +72,9 @@ import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
-import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import kotlinx.coroutines.launch
-import java.util.Currency
 import java.util.Locale
 
 
@@ -91,9 +90,9 @@ fun AddProductComposable(
     onProductNameChange: (String) -> Unit = {},
     productPrice: String = "",
     onProductPriceChange: (String) -> Unit = {},
-    currencyList: List<String> = emptyList(),
-    currencyPicked: String = "",
-    onCurrencyChange: (String) -> Unit = {},
+    //currencyList: List<String> = emptyList(),
+    //currencyPicked: String = "",
+    //onCurrencyChange: (String) -> Unit = {},
     unitList: List<String> = emptyList(),
     unitPicked: String = "",
     onUnitPicked: (String) -> Unit = {},
@@ -116,12 +115,8 @@ fun AddProductComposable(
 ) {
 
     val context = LocalContext.current
-    val locale: Locale = Locale.getDefault()
-    val currency = Currency.getInstance(locale)
+    val currencyPicked =LocalCurrencyCode.current
 
-    LaunchedEffect(currencyList) {
-        onCurrencyChange(currency.currencyCode)
-    }
     val state = rememberTooltipState()
     val scope = rememberCoroutineScope()
 
@@ -196,7 +191,7 @@ fun AddProductComposable(
                     supportingText = { if (productPrice.isBlank()) Text(stringResource(R.string.supporting_price_txt)) },
                     singleLine = true,
                     modifier = Modifier.sizeIn(minWidth = 150.dp),
-                    visualTransformation = CurrencyVisualTransformation(),
+                    visualTransformation = CurrencyVisualTransformation(currencyCode = currencyPicked),
                     suffix = { Text(currencyPicked) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
@@ -375,8 +370,9 @@ fun AddProductComposableStateImpl(
         mutableStateOf("")
     }
 
+    val locale: Locale = Locale.getDefault()
     var currencySelected by remember {
-        mutableStateOf("USD")
+        mutableStateOf(Money.getCurrency(locale))
     }
     var unitSelected by remember {
         mutableStateOf("pz")
@@ -427,8 +423,6 @@ fun AddProductComposableStateImpl(
         onProductNameChange = { productName = it },
         productPrice = productPrice,
         onProductPriceChange = { productPrice = it },
-        currencyPicked = currencySelected,
-        onCurrencyChange = { currencySelected = it },
         unitList = addViewModel.getUnities(),
         unitPicked = unitSelected,
         onUnitPicked = { unitSelected = it },
@@ -454,7 +448,7 @@ fun AddProductComposableStateImpl(
             AddProductUiModel(
                 name = productName,
                 price = Money.toDouble(productPrice).toString(),
-                currency = currencySelected,
+                currency = currencySelected.symbol,
                 unit = unitSelected,
                 imageUri = imageUri,
                 details = details,

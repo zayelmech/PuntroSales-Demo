@@ -49,6 +49,7 @@ import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.add.components.SearchClientBottomSheet
 import com.imecatro.demosales.ui.sales.add.components.SearchClientEngineModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
+import com.imecatro.demosales.ui.theme.LocalCurrencyCode
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.common.CurrencyVisualTransformation
 import com.imecatro.demosales.ui.theme.common.Money
@@ -72,6 +73,7 @@ fun CheckoutTicketComposable(
     total: String,
     onCheckoutClick: () -> Unit,
     onSavePending: () -> Unit = {},
+    currencyCode: String? = LocalCurrencyCode.current
 ) {
     Column(
         modifier = Modifier
@@ -130,7 +132,7 @@ fun CheckoutTicketComposable(
                     placeholder = { Text("0.00") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
-                    visualTransformation = CurrencyVisualTransformation(),
+                    visualTransformation = CurrencyVisualTransformation(currencyCode = currencyCode),
                     singleLine = true
                 )
             }
@@ -149,7 +151,7 @@ fun CheckoutTicketComposable(
                     placeholder = { Text("0.00") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.End),
-                    visualTransformation = CurrencyVisualTransformation(),
+                    visualTransformation = CurrencyVisualTransformation(currencyCode = currencyCode),
                     singleLine = true
                 )
             }

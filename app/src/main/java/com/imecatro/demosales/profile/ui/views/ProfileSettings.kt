@@ -29,8 +29,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,10 +41,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.R
-import com.imecatro.demosales.profile.ui.mappers.toUiModel
+import com.imecatro.demosales.domain.core.model.Currencies
+import com.imecatro.demosales.domain.core.model.Languages
 import com.imecatro.demosales.profile.ui.model.UserProfileUiModel
 import com.imecatro.demosales.profile.ui.viewmodels.ProfileViewModel
 import com.imecatro.demosales.ui.theme.DropListPicker
@@ -60,7 +60,7 @@ fun ProfileSettingsStateImpl(
     viewModel: ProfileViewModel,
     onBack: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -75,7 +75,7 @@ fun ProfileSettingsStateImpl(
     )
 
     ProfileSettings(
-        profile = uiState.profile.toUiModel(),
+        profile = uiState.profile,
         onBack = onBack,
         onStoreNameChange = viewModel::onUpdateStoreName,
         onLanguageSelected = viewModel::onUpdateLanguage,
@@ -87,9 +87,6 @@ fun ProfileSettingsStateImpl(
             )
         })
 
-    LaunchedEffect(uiState.profile) {
-        viewModel.onSaveSettings()
-    }
     UiStateHandler(uiState, onDismiss = viewModel::onErrorMessage)
 }
 
@@ -186,7 +183,7 @@ fun ProfileSettings(
                 headlineContent = { Text(stringResource(R.string.txt_language)) },
                 trailingContent = {
                     DropListPicker(
-                        list = listOf("English", "Spanish"),
+                        list = Languages.entries.map { it.displayName },
                         itemSelected = profile.language,
                         onItemClicked = onLanguageSelected
                     )
@@ -197,7 +194,7 @@ fun ProfileSettings(
                 headlineContent = { Text(stringResource(R.string.txt_currency)) },
                 trailingContent = {
                     DropListPicker(
-                        list = listOf("USD", "MXN", "EUR"),
+                        list = Currencies.entries.map { it.code },
                         itemSelected = profile.currency,
                         onItemClicked = onCurrencySelected
                     )

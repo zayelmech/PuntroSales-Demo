@@ -1,12 +1,14 @@
 package com.imecatro.demosales.profile.ui.uistate
 
 import com.imecatro.demosales.profile.domain.model.UserProfileDomainModel
+import com.imecatro.demosales.profile.ui.mappers.toUiModel
+import com.imecatro.demosales.profile.ui.model.UserProfileUiModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.demosales.ui.theme.architect.Idle
 import com.imecatro.demosales.ui.theme.architect.UiState
 
 data class ProfileUiState(
-    val profile: UserProfileDomainModel,
+    val profile: UserProfileUiModel,
     val isLoading: Boolean = false,
     val profileError: String? = null
 ) : UiState {
@@ -17,7 +19,7 @@ data class ProfileUiState(
     companion object : Idle<ProfileUiState> {
         override val idle: ProfileUiState
             get() = ProfileUiState(
-                profile = UserProfileDomainModel.default
+                profile = UserProfileDomainModel.default.toUiModel()
             )
     }
 }

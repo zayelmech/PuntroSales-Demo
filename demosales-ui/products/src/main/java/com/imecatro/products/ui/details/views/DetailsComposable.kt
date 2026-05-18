@@ -41,8 +41,6 @@ import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.details.model.ProductDetailsUiModel
-import java.util.Currency
-import java.util.Locale
 
 @Preview(showBackground = true)
 @Composable
@@ -110,10 +108,8 @@ fun DetailsComposable(
                     )
                 }
                 //price
-                val locale: Locale = Locale.getDefault()
-                val currency = Currency.getInstance(locale)
                 Text(
-                    text = "${productDetails?.price?.formatAsCurrency() ?: "0.00"} ${productDetails?.currency ?: currency.symbol}",
+                    text = productDetails?.price?.formatAsCurrency() ?: "0.00",
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Spacer(modifier = Modifier.height(20.dp))

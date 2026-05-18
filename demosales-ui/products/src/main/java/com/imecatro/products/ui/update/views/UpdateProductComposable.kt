@@ -113,8 +113,6 @@ fun UpdateProductComposableStateImpl(
         onProductNameChange = { editedProduct = editedProduct.copy(name = it) },
         productPrice = editedProduct.price,
         onProductPriceChange = { editedProduct = editedProduct.copy(price = it) },
-        currencyPicked = editedProduct.currency,
-        onCurrencyChange = { editedProduct = editedProduct.copy(currency = it) },
         unitList = updateProductViewModel.getUnities(),
         unitPicked = editedProduct.unit,
         onUnitPicked = { editedProduct = editedProduct.copy(unit = it) },

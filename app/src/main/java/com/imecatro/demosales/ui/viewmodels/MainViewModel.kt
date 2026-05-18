@@ -17,7 +17,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getProfileUseCase().collect { profile ->
                 updateState {
-                    copy(isDarkTheme = profile.isDarkTheme)
+                    copy(
+                        isDarkTheme = profile.isDarkTheme,
+                        language = profile.language,
+                        currency = profile.currency
+                    )
                 }
             }
         }

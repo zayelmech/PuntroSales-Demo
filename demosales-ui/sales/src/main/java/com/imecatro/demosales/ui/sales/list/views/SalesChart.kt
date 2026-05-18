@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.domain.sales.list.model.GroupedSalesByDay
 import com.imecatro.demosales.domain.sales.list.model.GroupedSalesByHour
 import com.imecatro.demosales.domain.sales.list.model.SalesMetricsDomainModel
-import java.text.NumberFormat
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -94,7 +94,7 @@ fun SalesGraphBottomSheetContent(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = formatCurrency(periodTotal),
+            text = periodTotal.formatAsCurrency(),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
@@ -313,15 +313,15 @@ private fun SalesSummaryRow(points: List<ChartPoint>) {
     ) {
         SummaryItem(
             title = "Total",
-            value = formatCurrency(total)
+            value = total.formatAsCurrency()
         )
         SummaryItem(
             title = "Avg",
-            value = formatCurrency(average)
+            value = average.formatAsCurrency()
         )
         SummaryItem(
             title = "Peak",
-            value = formatCurrency(highest)
+            value = highest.formatAsCurrency()
         )
     }
 }
@@ -405,7 +405,4 @@ private fun buildMonthPoints(
             value = byDate[date]?.total ?: 0.0
         )
     }
-}
-private fun formatCurrency(value: Double): String {
-    return NumberFormat.getCurrencyInstance().format(value)
 }

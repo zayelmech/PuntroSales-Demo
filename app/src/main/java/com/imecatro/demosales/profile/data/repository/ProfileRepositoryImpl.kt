@@ -1,49 +1,69 @@
 package com.imecatro.demosales.profile.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.imecatro.demosales.profile.domain.model.UserProfileDomainModel
 import com.imecatro.demosales.profile.domain.repository.ProfileRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import java.util.Currency
+import java.util.Locale
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ProfileRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ProfileRepository {
 
     private val sharedPreferences = context.getSharedPreferences("user_profile_prefs", Context.MODE_PRIVATE)
 
-    override fun getProfile(): Flow<UserProfileDomainModel> = callbackFlow {
-        val listener = { _: android.content.SharedPreferences, key: String? ->
-            if (key == null || key in PROFILE_KEYS) {
-                trySend(readProfile())
-            }
+    private val _profileState = MutableStateFlow(readProfile())
+
+    // Keep a strong reference to the listener to prevent GC
+    private val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == null || key in PROFILE_KEYS) {
+            _profileState.value = readProfile()
         }
+    }
+
+    init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-        trySend(readProfile())
-        awaitClose { sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener) }
-    }.onStart { emit(readProfile()) }
+    }
+
+    override fun getProfile(): Flow<UserProfileDomainModel> = _profileState.asStateFlow()
+
+    private fun getDefaultCurrency(): String {
+        return try {
+            Currency.getInstance(Locale.getDefault()).currencyCode
+        } catch (e: Exception) {
+            "USD"
+        }
+    }
 
     private fun readProfile() = UserProfileDomainModel(
-        storeName = sharedPreferences.getString(KEY_STORE_NAME, "Puntro Sales Demo") ?: "Puntro Sales Demo",
+        storeName = sharedPreferences.getString(KEY_STORE_NAME, "Puntro Sales") ?: "Puntro Sales",
         storeLogoUri = sharedPreferences.getString(KEY_STORE_LOGO, "") ?: "",
-        language = sharedPreferences.getString(KEY_LANGUAGE, "English") ?: "English",
-        currency = sharedPreferences.getString(KEY_CURRENCY, "USD") ?: "USD",
+        language = sharedPreferences.getString(KEY_LANGUAGE, Locale.getDefault().language) ?: "en",
+        currency = sharedPreferences.getString(KEY_CURRENCY, getDefaultCurrency()) ?: "USD",
         isDarkTheme = sharedPreferences.getBoolean(KEY_DARK_THEME, false)
     )
 
     override suspend fun updateProfile(profile: UserProfileDomainModel) {
-        sharedPreferences.edit {
+        sharedPreferences.edit(commit = true) {
             putString(KEY_STORE_NAME, profile.storeName)
             putString(KEY_STORE_LOGO, profile.storeLogoUri)
             putString(KEY_LANGUAGE, profile.language)
             putString(KEY_CURRENCY, profile.currency)
             putBoolean(KEY_DARK_THEME, profile.isDarkTheme)
         }
+        // No need to manually update _profileState, the listener will do it.
     }
 
     companion object {

@@ -12,7 +12,7 @@ internal fun toPurchaseUiModel(purchase: PurchaseDomainModel): PurchaseUiModel {
         id = purchase.id,
         purchaseNumber = purchase.purchaseNumber,
         description = purchase.description,
-        amount = String.format(Locale.getDefault(), "$%.2f", purchase.amount),
+        amount = purchase.amount,
         date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(
             Date(purchase.date)
         )

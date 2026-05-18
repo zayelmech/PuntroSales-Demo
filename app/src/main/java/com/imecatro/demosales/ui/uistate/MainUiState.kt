@@ -6,6 +6,8 @@ import com.imecatro.demosales.ui.theme.architect.UiState
 
 data class MainUiState(
     val isDarkTheme: Boolean? = null,
+    val language: String? = null,
+    val currency: String? = null,
     val isLoading: Boolean = false
 ) : UiState {
     override fun isFetchingOrProcessingData(): Boolean = isLoading

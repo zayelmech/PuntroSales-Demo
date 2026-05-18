@@ -9,9 +9,9 @@ data class UserProfileDomainModel(
 ) {
     companion object {
         val default = UserProfileDomainModel(
-            storeName = "Puntro Sales Demo",
+            storeName = "Puntro Sales",
             storeLogoUri = "",
-            language = "English",
+            language = "en",
             currency = "USD",
             isDarkTheme = false
         )

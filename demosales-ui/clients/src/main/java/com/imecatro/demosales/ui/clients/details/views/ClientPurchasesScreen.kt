@@ -25,11 +25,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.clients.R
 import com.imecatro.demosales.ui.clients.details.model.PurchaseUiModel
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 
 @Preview(showBackground = true)
 @Composable
 internal fun ClientPurchasesScreen(
-    accumulated: String = "$0.00",
+    accumulated: Double = 0.0,
     purchases: List<PurchaseUiModel> = emptyList()
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -50,7 +51,7 @@ internal fun ClientPurchasesScreen(
                     style = MaterialTheme.typography.titleSmall
                 )
                 Text(
-                    text = accumulated,
+                    text = accumulated.formatAsCurrency(),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
@@ -90,7 +91,7 @@ internal fun ClientPurchasesScreen(
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 Text(
-                                    text = purchase.amount,
+                                    text = purchase.amount.formatAsCurrency(),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )

@@ -10,7 +10,7 @@ data class ClientDetailsUiModel(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val imageUri: Uri? = null,
-    val accumulatedPurchases: String = "$0.00",
+    val accumulatedPurchases: Double = 0.0,
     val isFavorite: Boolean = false
 ) {
 

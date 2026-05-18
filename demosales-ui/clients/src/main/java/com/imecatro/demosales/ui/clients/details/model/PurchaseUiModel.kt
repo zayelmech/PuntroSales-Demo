@@ -4,6 +4,6 @@ data class PurchaseUiModel(
     val id: Long,
     val purchaseNumber: String,
     val description: String,
-    val amount: String,
+    val amount: Double,
     val date: String
 )

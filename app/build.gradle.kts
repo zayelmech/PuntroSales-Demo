@@ -115,6 +115,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
 
     implementation(project(":demosales-data:products"))
     implementation(project(":demosales-data:sales"))

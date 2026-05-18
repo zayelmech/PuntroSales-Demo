@@ -1,16 +1,19 @@
 package com.imecatro.demosales
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imecatro.demosales.ui.AppAdaptiveNavigation
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
@@ -27,7 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * Applies the [PuntroSalesDemoTheme] and sets up a [Surface] with the theme's background color.
  */
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -38,7 +41,22 @@ class MainActivity : ComponentActivity() {
             val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
             val darkTheme = uiState.isDarkTheme ?: isSystemInDarkTheme()
 
-            PuntroSalesDemoTheme(darkTheme = darkTheme) {
+            // Apply global language preference
+            LaunchedEffect(uiState.language) {
+                uiState.language?.let { lang ->
+                    val appLocales = AppCompatDelegate.getApplicationLocales()
+                    val currentLang = if (!appLocales.isEmpty) appLocales.get(0)?.language else null
+                    
+                    if (lang != currentLang) {
+                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(lang))
+                    }
+                }
+            }
+
+            PuntroSalesDemoTheme(
+                darkTheme = darkTheme,
+                currencyCode = uiState.currency ?: "USD"
+            ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),

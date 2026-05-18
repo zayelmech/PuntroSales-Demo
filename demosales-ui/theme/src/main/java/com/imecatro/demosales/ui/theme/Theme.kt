@@ -10,7 +10,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -93,12 +95,14 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+val LocalCurrencyCode = staticCompositionLocalOf { "USD" }
 /**
  * The main theme for the Puntro Sales Demo application.
  *
  * @param darkTheme Whether the theme should use dark mode colors. Defaults to the system setting.
  * @param dynamicColor Whether to use dynamic color (available on Android 12+).
  * Defaults to false to maintain brand consistency.
+ * @param currencyCode The currency code to be used throughout the app. Defaults to "USD".
  * @param content The composable content to be displayed within this theme.
  */
 @Composable
@@ -106,6 +110,7 @@ fun PuntroSalesDemoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
+    currencyCode: String = "USD",
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -124,9 +129,11 @@ fun PuntroSalesDemoTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalCurrencyCode provides currencyCode) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

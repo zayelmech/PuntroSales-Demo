@@ -61,6 +61,7 @@ import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.download
+import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
 import kotlinx.coroutines.launch
@@ -221,7 +222,7 @@ fun SalesListComposable(
                         },
                         trailingContent = {
                             TextButton(onClick = { onShowSalesMetrics() }) {
-                                Text(Money.format(todayTotal))
+                                Text(todayTotal.formatAsCurrency())
                             }
                         })
                     HorizontalDivider()
