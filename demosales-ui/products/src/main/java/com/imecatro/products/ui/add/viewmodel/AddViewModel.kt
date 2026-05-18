@@ -1,6 +1,7 @@
 package com.imecatro.products.ui.add.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.analytics.AnalyticsTracker
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.AddCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
@@ -20,12 +21,14 @@ class AddViewModel @Inject constructor(
     private val productsRepository: ProductsRepository,
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
-    private val getListOfUnitsUseCase: GetListOfUnitsUseCase
+    private val getListOfUnitsUseCase: GetListOfUnitsUseCase,
+    private val analyticsTracker: AnalyticsTracker
 ) : BaseViewModel<AddProductUiState>(AddProductUiState.idle) {
 
     fun onSaveAction(addProductUiModel: AddProductUiModel) {
         viewModelScope.launch(Dispatchers.IO) {
             productsRepository.addProduct(addProductUiModel.toDomain())
+            analyticsTracker.trackEvent("product_created", mapOf("name" to addProductUiModel.name))
         }
 
     }

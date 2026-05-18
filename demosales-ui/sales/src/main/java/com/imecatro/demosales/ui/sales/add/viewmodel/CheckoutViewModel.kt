@@ -3,6 +3,7 @@ package com.imecatro.demosales.ui.sales.add.viewmodel
 import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
+import com.imecatro.demosales.analytics.AnalyticsTracker
 import com.imecatro.demosales.domain.clients.model.ClientDomainModel
 import com.imecatro.demosales.domain.clients.model.PurchaseDomainModel
 import com.imecatro.demosales.domain.clients.usecases.AddPurchaseUseCase
@@ -43,7 +44,8 @@ class CheckoutViewModel @AssistedInject constructor(
     private val filterClientsUseCase: FilterClientsUseCase,
     private val removeFromStockUseCase: RemoveFromStockUseCase,
     private val updateSaleClientUseCase: UpdateSaleClientUseCase,
-    private val addPurchaseUseCase: AddPurchaseUseCase
+    private val addPurchaseUseCase: AddPurchaseUseCase,
+    private val analyticsTracker: AnalyticsTracker
 ) : BaseViewModel<TicketUiState>(TicketUiState.idle) {
 
     private val _results: MutableStateFlow<List<ClientResultUiModel>> =
@@ -140,6 +142,7 @@ class CheckoutViewModel @AssistedInject constructor(
             updateState {
                 copy(ticket = ticket.copy(ticketSaved = true))
             }
+            analyticsTracker.trackEvent("sale_pending", mapOf("saleId" to currentTicket.id, "total" to currentTicket.totals.total))
         }
     }
 
@@ -192,6 +195,7 @@ class CheckoutViewModel @AssistedInject constructor(
             updateState {
                 copy(ticket = ticket.copy(ticketSaved = true))
             }
+            analyticsTracker.trackEvent("sale_pending", mapOf("saleId" to currentTicket.id, "total" to currentTicket.totals.total))
         }
     }
 
