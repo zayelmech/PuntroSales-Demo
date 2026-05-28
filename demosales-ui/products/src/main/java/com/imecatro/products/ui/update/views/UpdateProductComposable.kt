@@ -17,13 +17,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.architect.isLoading
+import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
 import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.createImageFile
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
 import com.imecatro.demosales.ui.theme.dialogs.InputTextDialogComposable
 import com.imecatro.products.ui.R
-import com.imecatro.demosales.ui.theme.barcode.ScanBarcodeActivity
 import com.imecatro.products.ui.add.views.AddProductComposable
 import com.imecatro.products.ui.update.model.UpdateProductUiModel
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
@@ -117,10 +117,10 @@ fun UpdateProductComposableStateImpl(
         unitPicked = editedProduct.unit,
         onUnitPicked = { editedProduct = editedProduct.copy(unit = it) },
         categories = uiState.categories,
-        categoryPicked = uiState.productDetails?.category?:"",
+        categoryPicked = uiState.productDetails?.category ?: "",
         onCategoryPicked = { updateProductViewModel.onCategoryPicked(it) },
         onAddNewCategory = { showAddNewCategory = true },
-        barcode = uiState.productDetails?.barcode?:"",
+        barcode = uiState.productDetails?.barcode ?: "",
         onBarcodeChange = { updateProductViewModel.onBarcodeChange(it) },
         onBarcodeClicked = {
             val intent = Intent(context, ScanBarcodeActivity::class.java)
@@ -132,22 +132,23 @@ fun UpdateProductComposableStateImpl(
         stock = "${editedProduct.stock}",
         onEditStock = onEditStock,
         onBackToList = onBackToList,
-        isEditMode = true
-    ) {
-        updateProductViewModel.onSaveAction(
-            UpdateProductUiModel(
-                name = editedProduct.name,
-                price = Money.toDouble(editedProduct.price).toString(),
-                currency = editedProduct.currency,
-                unit = editedProduct.unit,
-                imageUri = imageUri,
-                stock = editedProduct.stock,
-                details = editedProduct.details,
-                category = uiState.productDetails?.category,
-                barcode = uiState.productDetails?.barcode
-            )
-        )
-    }
+        isEditMode = true, onSaveButtonClicked =
+            {
+                updateProductViewModel.onSaveAction(
+                    UpdateProductUiModel(
+                        name = editedProduct.name,
+                        price = Money.toDouble(editedProduct.price).toString(),
+                        currency = editedProduct.currency,
+                        unit = editedProduct.unit,
+                        imageUri = imageUri,
+                        stock = editedProduct.stock,
+                        details = editedProduct.details,
+                        category = uiState.productDetails?.category,
+                        barcode = uiState.productDetails?.barcode
+                    )
+                )
+            }, initialShowAdvanced = true
+    )
 
     if (showAddNewCategory) {
         InputTextDialogComposable(

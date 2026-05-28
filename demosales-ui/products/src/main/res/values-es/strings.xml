@@ -60,4 +60,7 @@
     <string name="txt_empty_products_title">No hay productos aún</string>
     <string name="txt_empty_products_desc">Agrega tu primer producto para comenzar a controlar tu inventario y ventas.</string>
     <string name="btn_add_first_product">Agregar primer producto</string>
+    <string name="btn_generate_sample_data">Generar datos de ejemplo</string>
+    <string name="btn_advanced_options">Opciones avanzadas</string>
+    <string name="btn_hide_advanced_options">Ocultar opciones avanzadas</string>
 </resources>

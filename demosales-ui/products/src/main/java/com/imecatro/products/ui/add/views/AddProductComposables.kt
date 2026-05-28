@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,8 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,7 +40,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
@@ -59,6 +65,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.widthIn
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.ui.theme.DropListPicker
@@ -80,7 +88,30 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
-@Preview(showBackground = true, device = "spec:width=1280dp,height=800dp,dpi=240")
+@Composable
+fun AddProductAdvancedOptionsPreview() {
+    AddProductComposable(
+        productName = "",
+        productPrice = "10.00",
+        stock = "5",
+        buttonSaveState = true
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "Advanced Options Expanded")
+@Composable
+fun AddProductAdvancedOptionsExpandedPreview() {
+    AddProductComposable(
+        productName = "Sample Product",
+        productPrice = "10.00",
+        stock = "5",
+        buttonSaveState = true,
+        initialShowAdvanced = true
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductComposable(
     uri: Uri? = null,
@@ -111,17 +142,20 @@ fun AddProductComposable(
     onDetailsChange: (String) -> Unit = {},
     buttonSaveState: Boolean = false,
     onBackToList: () -> Unit = {},
-    onSaveButtonClicked: () -> Unit = {}
+    onSaveButtonClicked: () -> Unit = {},
+    initialShowAdvanced: Boolean = false
 ) {
 
     val context = LocalContext.current
-    val currencyPicked =LocalCurrencyCode.current
+    val currencyPicked = LocalCurrencyCode.current
 
     val state = rememberTooltipState()
     val scope = rememberCoroutineScope()
 
-    LazyColumn {
-        item {
+    var showAdvanced by remember { mutableStateOf(initialShowAdvanced) }
+
+    Scaffold(
+        topBar = {
             TopAppBar(
                 title = {
                     Text(
@@ -136,177 +170,264 @@ fun AddProductComposable(
                     }
                 }
             )
-            Column(modifier = Modifier.padding(10.dp)) {
-
-                Text(
-                    text = stringResource(R.string.txt_image),
-                    style = MaterialTheme.typography.labelLarge
-                )
-                Row(Modifier.height(100.dp)) {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            ImageRequest.Builder(context)
-                                .data(uri)
-                                .placeholder(R.drawable.baseline_add_photo_alternate_24)
-                                .error(R.drawable.baseline_add_photo_alternate_24)
-                                .crossfade(true)
-                                .build()
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .sizeIn(maxWidth = 100.dp)
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(25)),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Column {
-                        FilledTonalButton(onClick = { onPickImage() }) {
-                            Icon(painterResource(R.drawable.gallery_images), null)
-                            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(R.string.btn_image_picker))
-                        }
-
-                        FilledTonalButton(onClick = { onTakePhoto() }) {
-                            Icon(painterResource(R.drawable.camera), null)
-                            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(R.string.btn_take_photo))
-                        }
-                    }
-                }
-
-                OutlinedTextField(
-                    value = productName,
-                    label = { Text(text = stringResource(R.string.label_product_name)) },
-                    supportingText = { if (productName.isBlank()) Text(stringResource(R.string.supporting_name_txt)) },
-                    singleLine = true,
-                    onValueChange = onProductNameChange
-                )
-
-                OutlinedTextField(
-                    value = productPrice,
-                    onValueChange = onProductPriceChange,
-                    label = { Text(text = stringResource(R.string.label_product_price)) },
-                    placeholder = { Text("0.0".formatAsCurrency()) },
-                    supportingText = { if (productPrice.isBlank()) Text(stringResource(R.string.supporting_price_txt)) },
-                    singleLine = true,
-                    modifier = Modifier.sizeIn(minWidth = 150.dp),
-                    visualTransformation = CurrencyVisualTransformation(currencyCode = currencyPicked),
-                    suffix = { Text(currencyPicked) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(
-                        enabled = !isEditMode,
-                        value = stock,
-                        label = { Text(text = stringResource(R.string.label_stock)) },
-                        placeholder = { Text("0.0") },
-                        supportingText = { if (stock.isBlank()) Text(stringResource(R.string.supporting_stock_txt)) },
-                        singleLine = true,
-                        modifier = Modifier.sizeIn(minWidth = 150.dp),
-                        onValueChange = onStockChange,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        leadingIcon = {
-                            TooltipBox(
-                                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                                tooltip = {
-                                    PlainTooltip { Text(stringResource(R.string.tooltip_info_stock)) }
-                                },
-                                state = state
-                            ) {
-                                IconButton(
-                                    onClick = { scope.launch { state.show() } },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Info,
-                                        contentDescription = "Info"
-                                    )
-                                }
-                            }
-                        }
-                    )
-                    Spacer(modifier = Modifier.size(20.dp))
-                    if (isEditMode) {
-                        FilledTonalIconButton(onClick = { onEditStock() }) {
-                            Icon(Icons.Default.Edit, "Edit Stock")
-                        }
-                    }
-                }
-
-                OutlinedTextField(
-                    value = barcode,
-                    placeholder = { Text("000000000000000") },
-                    label = { Text(text = stringResource(R.string.label_barcode)) },
-                    singleLine = true,
-                    modifier = Modifier.sizeIn(minWidth = 300.dp),
-                    onValueChange = onBarcodeChange,
-                    trailingIcon = {
-                        IconButton(onClick = onBarcodeClicked) {
-                            Icon(painterResource(R.drawable.barcode), null)
-                        }
-                    },
-                )
-
-                Row {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.label_unit),
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                        DropListPicker(
-                            unitList, unitPicked
-                        ) { unitPicked ->
-                            onUnitPicked(unitPicked)
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Column {
-                        Text(
-                            text = stringResource(R.string.label_category),
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                        DropListPicker(
-                            categories, categoryPicked, onAddItem = onAddNewCategory
-                        ) { category ->
-                            onCategoryPicked(category)
-                        }
-                    }
-
-                }
-
-                //Details
-                Text(
-                    text = stringResource(R.string.label_details),
-                    style = MaterialTheme.typography.labelLarge
-                )
-                HorizontalDivider(modifier = Modifier.padding(0.dp, 5.dp), thickness = 2.dp)
-
-                OutlinedTextField(
-                    value = detailsText,
-                    onValueChange = onDetailsChange,
-                    singleLine = false,
-                    modifier = Modifier
-                        .sizeIn(maxWidth = 500.dp, minHeight = 100.dp)
-                        .fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(60.dp))
-                Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+        },
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                tonalElevation = 1.dp,
+                shadowElevation = 8.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
                     Button(
                         enabled = buttonSaveState,
                         onClick = onSaveButtonClicked,
                         modifier = Modifier
-                            .sizeIn(maxWidth = 320.dp, minHeight = 50.dp)
+                            .padding(16.dp)
+                            .sizeIn(minHeight = 50.dp)
+                            .widthIn(max = 400.dp)
                             .fillMaxWidth(),
                         shape = MaterialTheme.shapes.large
                     ) {
                         Icon(Icons.Filled.Done, null)
+                        Spacer(Modifier.size(8.dp))
                         Text(text = stringResource(R.string.btn_save))
                     }
                 }
-
             }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .widthIn(max = 600.dp)
+                    .fillMaxHeight()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = productName,
+                        label = { Text(text = stringResource(R.string.label_product_name)) },
+                        supportingText = {
+                            if (productName.isBlank()) Text(
+                                stringResource(R.string.supporting_name_txt),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        onValueChange = onProductNameChange,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = productPrice,
+                        onValueChange = onProductPriceChange,
+                        label = { Text(text = stringResource(R.string.label_product_price)) },
+                        placeholder = { Text("0.0".formatAsCurrency()) },
+                        supportingText = {
+                            if (productPrice.isBlank()) Text(
+                                stringResource(R.string.supporting_price_txt),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        visualTransformation = CurrencyVisualTransformation(currencyCode = currencyPicked),
+                        suffix = { Text(currencyPicked) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
+                item {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedTextField(
+                            enabled = !isEditMode,
+                            value = stock,
+                            label = { Text(text = stringResource(R.string.label_stock)) },
+                            placeholder = { Text("0.0") },
+                            supportingText = {
+                                if (stock.isBlank()) Text(
+                                    stringResource(R.string.supporting_stock_txt),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f),
+                            onValueChange = onStockChange,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            leadingIcon = {
+                                TooltipBox(
+                                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                                    tooltip = {
+                                        PlainTooltip { Text(stringResource(R.string.tooltip_info_stock)) }
+                                    },
+                                    state = state
+                                ) {
+                                    IconButton(
+                                        onClick = { scope.launch { state.show() } },
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Info,
+                                            contentDescription = "Info"
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                        if (isEditMode) {
+                            Spacer(modifier = Modifier.width(16.dp))
+                            FilledTonalIconButton(onClick = { onEditStock() }) {
+                                Icon(Icons.Default.Edit, "Edit Stock")
+                            }
+                        }
+                    }
+                }
 
+                item {
+                    TextButton(
+                        onClick = { showAdvanced = !showAdvanced },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = if (showAdvanced) stringResource(R.string.btn_hide_advanced_options)
+                            else stringResource(R.string.btn_advanced_options)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Icon(
+                            imageVector = if (showAdvanced) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = null
+                        )
+                    }
+                }
+
+                if (showAdvanced) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.txt_image),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                        Row(
+                            Modifier
+                                .height(120.dp)
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    ImageRequest.Builder(context)
+                                        .data(uri)
+                                        .placeholder(R.drawable.baseline_add_photo_alternate_24)
+                                        .error(R.drawable.baseline_add_photo_alternate_24)
+                                        .crossfade(true)
+                                        .build()
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxHeight()
+                            ) {
+                                FilledTonalButton(
+                                    onClick = { onPickImage() },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(painterResource(R.drawable.gallery_images), null)
+                                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                                    Text(stringResource(R.string.btn_image_picker))
+                                }
+
+                                FilledTonalButton(
+                                    onClick = { onTakePhoto() },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(painterResource(R.drawable.camera), null)
+                                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                                    Text(stringResource(R.string.btn_take_photo))
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        OutlinedTextField(
+                            value = barcode,
+                            placeholder = { Text("000000000000000") },
+                            label = { Text(text = stringResource(R.string.label_barcode)) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            onValueChange = onBarcodeChange,
+                            trailingIcon = {
+                                IconButton(onClick = onBarcodeClicked) {
+                                    Icon(painterResource(R.drawable.barcode), null)
+                                }
+                            },
+                        )
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.label_unit),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                                DropListPicker(
+                                    unitList, unitPicked
+                                ) { unitPicked ->
+                                    onUnitPicked(unitPicked)
+                                }
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.label_category),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                                DropListPicker(
+                                    categories, categoryPicked, onAddItem = onAddNewCategory
+                                ) { category ->
+                                    onCategoryPicked(category)
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        Text(
+                            text = stringResource(R.string.label_details),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            thickness = 1.dp
+                        )
+
+                        OutlinedTextField(
+                            value = detailsText,
+                            onValueChange = onDetailsChange,
+                            singleLine = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                        )
+                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
         }
     }
 
@@ -360,7 +481,6 @@ fun AddProductComposableStateImpl(
             }
         }
     }
-
 
 
     var productName by remember {
@@ -442,23 +562,24 @@ fun AddProductComposableStateImpl(
         stock = stock,
         isEditMode = false,
         onBackToList = onBackToList,
-        onStockChange = { stock = it }
-    ) {
-        addViewModel.onSaveAction(
-            AddProductUiModel(
-                name = productName,
-                price = Money.toDouble(productPrice).toString(),
-                currency = currencySelected.symbol,
-                unit = unitSelected,
-                imageUri = imageUri,
-                details = details,
-                stock = stock,
-                category = uiState.category,
-                barcode = barcode
-            )
-        )
-        onSaveAction()
-    }
+        onStockChange = { stock = it },
+        onSaveButtonClicked =
+            {
+                addViewModel.onSaveAction(
+                    AddProductUiModel(
+                        name = productName,
+                        price = Money.toDouble(productPrice).toString(),
+                        currency = currencySelected.symbol,
+                        unit = unitSelected,
+                        imageUri = imageUri,
+                        details = details,
+                        stock = stock,
+                        category = uiState.category,
+                        barcode = barcode
+                    )
+                )
+                onSaveAction()
+            })
 
     if (showAddNewCategory) {
         InputTextDialogComposable(

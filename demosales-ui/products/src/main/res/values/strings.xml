@@ -58,4 +58,7 @@
     <string name="txt_empty_products_title">No products yet</string>
     <string name="txt_empty_products_desc">Add your first product to start managing your inventory and sales.</string>
     <string name="btn_add_first_product">Add first product</string>
+    <string name="btn_generate_sample_data">Generate sample data</string>
+    <string name="btn_advanced_options">Advanced options</string>
+    <string name="btn_hide_advanced_options">Hide advanced options</string>
 </resources>

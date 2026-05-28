@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -106,6 +107,7 @@ fun ListOfProducts(
     onProductSelected: (Long?) -> Unit = {},
     onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {},
+    onGenerateSampleData: () -> Unit = {},
 ) {
     var text by rememberSaveable { mutableStateOf("") }
             //var expanded by rememberSaveable { mutableStateOf(false) }
@@ -134,18 +136,20 @@ fun ListOfProducts(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onNavigateAction() },
-            ) {
+            if (list.isNotEmpty() || text.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = { onNavigateAction() },
+                ) {
 
-                Row(Modifier.padding(10.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                    AnimatedVisibility(!scrollState.isScrollInProgress) {
-                        Spacer(modifier = Modifier.size(5.dp))
-                        Text(stringResource(R.string.btn_new_product))
+                    Row(Modifier.padding(10.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                        AnimatedVisibility(!scrollState.isScrollInProgress) {
+                            Spacer(modifier = Modifier.size(5.dp))
+                            Text(stringResource(R.string.btn_new_product))
+                        }
                     }
-                }
 
+                }
             }
         },
         topBar = {
@@ -227,7 +231,11 @@ fun ListOfProducts(
 
         }) { innerPadding ->
         if (!isLoading && list.isEmpty() && text.isEmpty()) {
-            EmptyProductsState(onAddProductClicked = onNavigateAction, modifier = Modifier.padding(innerPadding))
+            EmptyProductsState(
+                onAddProductClicked = onNavigateAction,
+                onGenerateSampleDataClicked = onGenerateSampleData,
+                modifier = Modifier.padding(innerPadding)
+            )
         } else {
             LazyColumn(
                 modifier = Modifier
@@ -314,6 +322,7 @@ fun ListOfProducts(
 @Composable
 fun EmptyProductsState(
     onAddProductClicked: () -> Unit,
+    onGenerateSampleDataClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -346,12 +355,32 @@ fun EmptyProductsState(
         Spacer(modifier = Modifier.height(32.dp))
         Button(
             onClick = onAddProductClicked,
+            modifier = Modifier
+                .widthIn(max = 400.dp)
+                .fillMaxWidth(),
             shape = MaterialTheme.shapes.medium
         ) {
             Icon(Icons.Default.Add, null)
             Spacer(Modifier.size(8.dp))
             Text(text = stringResource(R.string.btn_add_first_product))
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        TextButton(
+            onClick = onGenerateSampleDataClicked,
+            modifier = Modifier
+                .widthIn(max = 400.dp)
+                .fillMaxWidth(),
+        ) {
+            Text(text = stringResource(R.string.btn_generate_sample_data))
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewEmptyProductsState() {
+    PuntroSalesDemoTheme {
+        EmptyProductsState(onAddProductClicked = { }, onGenerateSampleDataClicked = { })
     }
 }
 
@@ -416,7 +445,8 @@ fun ListOfProductsStateImpl(
         onDownloadClicked = { productsViewModel.onProcessProducts() },
         onSelectAllChecked = { productsViewModel.onSelectAllProducts(it) }, // for selection all item
         allSelected = uiState.allSelected,
-        onNavigateAction = { onNavigateAction(null) })
+        onNavigateAction = { onNavigateAction(null) },
+        onGenerateSampleData = { productsViewModel.generateSampleData() })
 
     UiStateHandler(uiState) {
 

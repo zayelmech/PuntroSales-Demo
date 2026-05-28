@@ -6,6 +6,7 @@ import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.ExportProductsCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
+import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.products.ui.list.mappers.toProductUiModel
@@ -186,6 +187,48 @@ class ProductsViewModel @Inject constructor(
 
     fun onClearSelections() = viewModelScope.launch(Dispatchers.IO) {
         updateState { copy(idsSelected = emptyList()) }
+    }
+
+    fun generateSampleData() = viewModelScope.launch(iODispatcher) {
+        val samples = listOf(
+            ProductDomainModel(
+                id = null,
+                name = "Apple",
+                price = 1.5,
+                currency = "$",
+                unit = "pz",
+                stock = ProductStockDomainModel(10.0, 0.8, emptyList()),
+                details = "Fresh red apples",
+                imageUri = null,
+                category = null,
+                barcode = "123456789"
+            ),
+            ProductDomainModel(
+                id = null,
+                name = "Milk",
+                price = 2.0,
+                currency = "$",
+                unit = "pz",
+                stock = ProductStockDomainModel(5.0, 1.2, emptyList()),
+                details = "Whole milk 1L",
+                imageUri = null,
+                category = null,
+                barcode = "987654321"
+            ),
+            ProductDomainModel(
+                id = null,
+                name = "Bread",
+                price = 1.0,
+                currency = "$",
+                unit = "pz",
+                stock = ProductStockDomainModel(20.0, 0.5, emptyList()),
+                details = "White bread",
+                imageUri = null,
+                category = null,
+                barcode = "456789123"
+            )
+        )
+        samples.forEach { productsRepository.addProduct(it) }
     }
 
     fun onProcessProducts() = viewModelScope.launch {
