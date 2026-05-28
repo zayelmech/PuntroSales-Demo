@@ -17,6 +17,7 @@ data class ListProductsUiState(
     val allSelected: Boolean = false,
     val productsFiltered: List<ProductUiModel>,
     val isSearching: Boolean,
+    val enableSelection: Boolean = false,
 ) : UiState {
 
     override fun isFetchingOrProcessingData(): Boolean {
@@ -34,7 +35,8 @@ data class ListProductsUiState(
                 products = emptyList(),
                 errorFetchingProducts = null,
                 productsFiltered = emptyList(),
-                isSearching = true
+                enableSelection = false,
+                isSearching = true,
             )
     }
 }

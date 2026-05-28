@@ -12,7 +12,6 @@ import com.imecatro.products.ui.catalog.screens.CatalogPreview
 import com.imecatro.products.ui.categories.screens.CategoriesScreenImpl
 import com.imecatro.products.ui.details.viewmodels.ProductsDetailsViewModel
 import com.imecatro.products.ui.details.views.DetailsComposableStateImpl
-import com.imecatro.products.ui.list.views.ListOfProductsStateImpl
 import com.imecatro.products.ui.update.viewmodel.UpdateProductViewModel
 import com.imecatro.products.ui.update.views.UpdateProductComposableStateImpl
 
@@ -40,19 +39,6 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
         }
         composable<ProductsDestinations.Categories> {
             CategoriesScreenImpl(hiltViewModel())
-        }
-        composable<ProductsDestinations.List> {
-            ListOfProductsStateImpl(productsViewModel = hiltViewModel(), onCategoriesNav = {
-                navController.navigate(ProductsDestinations.Categories)
-            }) {
-                it?.let {
-                    navController.navigate(ProductsDestinations.Details(it)) {
-                        popUpTo(ProductsDestinations.List)
-                    }
-                } ?: run {
-                    navController.navigate(ProductsDestinations.Add)
-                }
-            }
         }
         composable<ProductsDestinations.CatalogMaker> { backStackEntry ->
             val navArgs = backStackEntry.toRoute<ProductsDestinations.CatalogMaker>()

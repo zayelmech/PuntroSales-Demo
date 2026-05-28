@@ -1,5 +1,6 @@
 package com.imecatro.products.ui.list.views
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.horizontalScroll
@@ -29,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -48,6 +50,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,9 +74,10 @@ import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.common.download
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
+import com.imecatro.demosales.ui.theme.dialogs.PuntroSalesIcons
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.components.ProductCardCompose
-import com.imecatro.products.ui.list.components.SearchProductTopBar
+import com.imecatro.products.ui.list.components.SearchTopBar
 import com.imecatro.products.ui.list.model.CategoriesFilter
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.uistate.OrderedFilterState
@@ -110,7 +114,7 @@ fun ListOfProducts(
     onGenerateSampleData: () -> Unit = {},
 ) {
     var text by rememberSaveable { mutableStateOf("") }
-            //var expanded by rememberSaveable { mutableStateOf(false) }
+    //var expanded by rememberSaveable { mutableStateOf(false) }
 
     val scrollState = rememberLazyListState()
 
@@ -141,7 +145,10 @@ fun ListOfProducts(
                     onClick = { onNavigateAction() },
                 ) {
 
-                    Row(Modifier.padding(10.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        Modifier.padding(10.dp, 0.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = null)
                         AnimatedVisibility(!scrollState.isScrollInProgress) {
                             Spacer(modifier = Modifier.size(5.dp))
@@ -158,13 +165,31 @@ fun ListOfProducts(
             Column(modifier = Modifier.windowInsetsPadding(windowInsets)) {
                 AnimatedVisibility(visible = !showDownloadOptions) {
                     Column {
-                        SearchProductTopBar(
+                        SearchTopBar(
+                            title = stringResource(R.string.title_products_list),
                             query = text,
                             onQueryChange = { text = it },
                             onSearchAction = { onSearchProduct(text) },
                             onClearSearchBar = { text = "" },
-                            showFilters = showFilters ||  categories.any { it.isChecked },
-                            onShowFiltersClicked = { showFilters = !showFilters }
+                            extraActions = {
+                                FilledTonalIconButton(onClick = { showFilters = !showFilters }) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.filter_sorting),
+                                        contentDescription = "Filters",
+                                        tint = if (showFilters || categories.any { it.isChecked })
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                                IconButton(onClick = { onProductSelected(null) }) {
+                                    Icon(
+                                        painter = painterResource(PuntroSalesIcons.check),
+                                        contentDescription = "Export CSV",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
                         )
                         AnimatedVisibility(visible = showFilters) {
                             Row(
@@ -402,6 +427,7 @@ fun fakeProductsList(qty: Int): List<ProductUiModel> {
  * @param onNavigateAction this lambda function allows you to navigate to another UI according to the value sent.<br> Example: onNavigate(1) will launch the Details screen of the product with the id = 1
  *
  */
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListOfProductsStateImpl(
@@ -421,7 +447,11 @@ fun ListOfProductsStateImpl(
 
     var showShareReport by remember { mutableStateOf(false) }
 
-    val showOptions = productsList.any { it.isSelected }
+    val showOptions by remember {
+        derivedStateOf {
+            productsList.any { it.isSelected || uiState.enableSelection }
+        }
+    }
     ListOfProducts(
         list = productsList.toMutableStateList(),
         isLoading = uiState.isFetchingProducts,

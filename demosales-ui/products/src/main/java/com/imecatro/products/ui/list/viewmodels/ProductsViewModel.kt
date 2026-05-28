@@ -1,20 +1,19 @@
 package com.imecatro.products.ui.list.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.ExportProductsCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
-import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.products.ui.list.mappers.toProductUiModel
 import com.imecatro.products.ui.list.model.CategoriesFilter
-import com.imecatro.products.ui.list.uistate.OrderedFilterState
 import com.imecatro.products.ui.list.model.ProductUiModel
-import com.imecatro.products.ui.list.uistate.checkElement
 import com.imecatro.products.ui.list.uistate.ListProductsUiState
+import com.imecatro.products.ui.list.uistate.OrderedFilterState
+import com.imecatro.products.ui.list.uistate.checkElement
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +32,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.map
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
@@ -161,17 +159,19 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    fun onProductSelected(id: Long?) = viewModelScope.launch(Dispatchers.IO) {
-        if (id == null) return@launch
-        Log.d("onProductSelected", "onProductSelected: $id")
+    fun onProductSelected(id: Long?) {
+        if (id == null) {
+            updateState { copy(enableSelection = true) }
+            return
+        }
         if (uiState.value.idsSelected.contains(id))
-            updateState {  copy(idsSelected = idsSelected.minus(id))  }
+            updateState { copy(idsSelected = idsSelected.minus(id)) }
         else
-            updateState {  copy(idsSelected = idsSelected.plus(id))  }
+            updateState { copy(idsSelected = idsSelected.plus(id)) }
 
         // Uncheck selection
         if (productsList.value.size != uiState.value.idsSelected.size) {
-            updateState { copy(allSelected = false) }
+            updateState { copy(allSelected = false, enableSelection = false) }
         }
 
     }
@@ -186,7 +186,7 @@ class ProductsViewModel @Inject constructor(
     }
 
     fun onClearSelections() = viewModelScope.launch(Dispatchers.IO) {
-        updateState { copy(idsSelected = emptyList()) }
+        updateState { copy(idsSelected = emptyList(), enableSelection = false) }
     }
 
     fun generateSampleData() = viewModelScope.launch(iODispatcher) {
@@ -232,9 +232,9 @@ class ProductsViewModel @Inject constructor(
     }
 
     fun onProcessProducts() = viewModelScope.launch {
-        updateState{ copy(isProcessingCatalog = true) }
+        updateState { copy(isProcessingCatalog = true) }
 
-        exportProductsCsvUseCase.execute{
+        exportProductsCsvUseCase.execute {
             ids = uiState.value.idsSelected
         }.onSuccess { file ->
             updateState { copy(catalogFile = file, isProcessingCatalog = false) }
