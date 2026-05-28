@@ -172,7 +172,7 @@ fun ListOfProducts(
                             onSearchAction = { onSearchProduct(text) },
                             onClearSearchBar = { text = "" },
                             extraActions = {
-                                FilledTonalIconButton(onClick = { showFilters = !showFilters }) {
+                                IconButton(onClick = { showFilters = !showFilters }) {
                                     Icon(
                                         painter = painterResource(R.drawable.filter_sorting),
                                         contentDescription = "Filters",
@@ -185,8 +185,7 @@ fun ListOfProducts(
                                 IconButton(onClick = { onProductSelected(null) }) {
                                     Icon(
                                         painter = painterResource(PuntroSalesIcons.check),
-                                        contentDescription = "Export CSV",
-                                        tint = MaterialTheme.colorScheme.primary
+                                        contentDescription = "Export CSV"
                                     )
                                 }
                             }
