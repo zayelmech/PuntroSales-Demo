@@ -57,4 +57,7 @@
     <string name="tooltip_info_stock">Es la cantidad de productos que tienes actualmente en tu almacén</string>
     <string name="btn_download_stokc_csv">Descargar historial de iventario</string>
     <string name="btn_new_product">Nuevo producto</string>
+    <string name="txt_empty_products_title">No hay productos aún</string>
+    <string name="txt_empty_products_desc">Agrega tu primer producto para comenzar a controlar tu inventario y ventas.</string>
+    <string name="btn_add_first_product">Agregar primer producto</string>
 </resources>

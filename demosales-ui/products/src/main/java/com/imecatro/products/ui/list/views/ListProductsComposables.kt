@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -59,6 +61,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
@@ -222,23 +226,27 @@ fun ListOfProducts(
             }
 
         }) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(innerPadding),
-            state = scrollState,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            if (isLoading)
-                items(10) { ShimmerListItem(Modifier.fillMaxWidth()) }
-            else {
-                items(if (text.isEmpty()) list else searchList) { product ->
+        if (!isLoading && list.isEmpty() && text.isEmpty()) {
+            EmptyProductsState(onAddProductClicked = onNavigateAction, modifier = Modifier.padding(innerPadding))
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding),
+                state = scrollState,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (isLoading)
+                    items(10) { ShimmerListItem(Modifier.fillMaxWidth()) }
+                else {
+                    items(if (text.isEmpty()) list else searchList) { product ->
 
-                    ProductCardCompose(
-                        product = product,
-                        onLongClicked = { if (text.isEmpty()) onProductSelected(product.id) },
-                        onCardClicked = { onCardClicked(product.id) })
-                    HorizontalDivider()
+                        ProductCardCompose(
+                            product = product,
+                            onLongClicked = { if (text.isEmpty()) onProductSelected(product.id) },
+                            onCardClicked = { onCardClicked(product.id) })
+                        HorizontalDivider()
+                    }
                 }
             }
         }
@@ -300,6 +308,51 @@ fun ListOfProducts(
                 }
             }
         }
+}
+
+
+@Composable
+fun EmptyProductsState(
+    onAddProductClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.baseline_insert_photo_24),
+            contentDescription = null,
+            modifier = Modifier.size(120.dp),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(R.string.txt_empty_products_title),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.txt_empty_products_desc),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = onAddProductClicked,
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Icon(Icons.Default.Add, null)
+            Spacer(Modifier.size(8.dp))
+            Text(text = stringResource(R.string.btn_add_first_product))
+        }
+    }
 }
 
 

@@ -55,4 +55,7 @@
     <string name="tooltip_info_stock">This is the quantity of products you currently have in your warehouse</string>
     <string name="btn_download_stokc_csv">Open CSV stock history</string>
     <string name="btn_new_product">New Product</string>
+    <string name="txt_empty_products_title">No products yet</string>
+    <string name="txt_empty_products_desc">Add your first product to start managing your inventory and sales.</string>
+    <string name="btn_add_first_product">Add first product</string>
 </resources>
