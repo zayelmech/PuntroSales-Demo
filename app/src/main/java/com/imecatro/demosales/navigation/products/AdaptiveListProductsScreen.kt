@@ -10,6 +10,7 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.NavigableSupportingPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -71,7 +72,6 @@ fun ListAndDetailsPane(
                     }) { id ->
                     if (id != null) {
                         scope.launch {
-                            viewModel.loadDetailsForProduct(id)
                             navigator.navigateTo(
                                 pane = SupportingPaneScaffoldRole.Supporting,
                                 MyProduct(id)
@@ -84,6 +84,9 @@ fun ListAndDetailsPane(
 
             AnimatedPane {
                 navigator.currentDestination?.contentKey?.let { navArgs ->
+                    LaunchedEffect(navArgs.id) {
+                        viewModel.loadDetailsForProduct(navArgs.id)
+                    }
                     DetailsComposableStateImpl(
                         productDetailsViewModel = viewModel,
                         onNavigateBack = {
