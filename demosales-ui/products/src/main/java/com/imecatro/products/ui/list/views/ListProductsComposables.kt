@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -30,7 +30,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -71,13 +70,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
+import com.imecatro.demosales.ui.theme.common.SearchTopBar
 import com.imecatro.demosales.ui.theme.common.download
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
 import com.imecatro.demosales.ui.theme.dialogs.PuntroSalesIcons
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.components.ProductCardCompose
-import com.imecatro.products.ui.list.components.SearchTopBar
 import com.imecatro.products.ui.list.model.CategoriesFilter
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.uistate.OrderedFilterState

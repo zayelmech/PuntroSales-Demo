@@ -1,6 +1,7 @@
 package com.imecatro.demosales.ui.sales.list.views
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,11 +14,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Checkbox
@@ -30,10 +31,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -59,12 +60,14 @@ import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
 import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
-import com.imecatro.demosales.ui.theme.common.Money
+import com.imecatro.demosales.ui.theme.common.SearchTopBar
 import com.imecatro.demosales.ui.theme.common.download
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
+import com.imecatro.demosales.ui.theme.dialogs.PuntroSalesIcons
 import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -93,7 +96,7 @@ fun SalesListComposable(
 
     var statusFilter by remember { mutableStateOf(false) }
 
-    var isSearching by remember { mutableStateOf(false) }
+    var showFilters by remember { mutableStateOf(false) }
 
     Scaffold(floatingActionButton = {
 
@@ -143,13 +146,41 @@ fun SalesListComposable(
                 }
             }
             AnimatedVisibility(!showDownloadOptions) {
+                SearchTopBar(
+                    title = stringResource(R.string.txt_sales_list_tittle),
+                    query = searchQuery,
+                    onQueryChange = onSearchQueryChange,
+                    onSearchAction = { },
+                    onClearSearchBar = { onSearchQueryChange("") },
+                    placeholder = stringResource(R.string.txt_placeholder_search),
+                    extraActions = {
+                        IconButton(onClick = { showFilters = !showFilters }) {
+                            Icon(
+                                painter = painterResource(PuntroSalesIcons.filter),
+                                contentDescription = "Filters",
+                                tint = if (showFilters)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
+                        IconButton(onClick = { onCardSelected(0) }) {
+                            Icon(
+                                painter = painterResource(PuntroSalesIcons.check),
+                                contentDescription = "Export CSV"
+                            )
+                        }
+                    }
+                )
+            }
+            AnimatedVisibility(visible = showFilters) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(start = 15.dp)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     FilterChip(
                         onClick = { statusFilter = true },
@@ -165,36 +196,7 @@ fun SalesListComposable(
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { isSearching = true }) {
-                        Icon(Icons.Default.Search, contentDescription = null)
-                    }
-                }
-            }
 
-            if (isSearching) {
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = onSearchQueryChange,
-                    onSearch = { isSearching = false },
-                    active = isSearching,
-                    onActiveChange = { isSearching = it },
-                    placeholder = { Text("Search by ID") },
-                    leadingIcon = { Icon(Icons.Default.Search, null) },
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            if (searchQuery.isNotEmpty()) {
-                                onSearchQueryChange("")
-                            } else {
-                                isSearching = false
-                            }
-                        }) {
-                            Icon(Icons.Default.Close, null)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Results are filtered in the main list
                 }
             }
         }
@@ -223,6 +225,8 @@ fun SalesListComposable(
                         trailingContent = {
                             TextButton(onClick = { onShowSalesMetrics() }) {
                                 Text(todayTotal.formatAsCurrency())
+                                Spacer(modifier = Modifier.size(5.dp))
+                                Icon(painterResource(R.drawable.ic_graph_up), null)
                             }
                         })
                     HorizontalDivider()
@@ -295,7 +299,7 @@ fun SalesListComposableStateImpl(
 
     val showOptions by remember {
         derivedStateOf {
-            listUiState.any { it.isSelected }
+            listUiState.any { it.isSelected } || reportState.enableSelection
         }
     }
 
@@ -307,11 +311,11 @@ fun SalesListComposableStateImpl(
 
     val metricsState by salesListViewModel.metrics.collectAsStateWithLifecycle()
 
-    val searchQuery by salesListViewModel.searchQuery.collectAsState()
+    val searchQuery by salesListViewModel.searchQuery.collectAsStateWithLifecycle()
 
     SalesListComposable(
         list = listUiState,
-        todayTotal = salesListViewModel.todayTotalAmount.collectAsState().value,
+        todayTotal = salesListViewModel.todayTotalAmount.collectAsStateWithLifecycle().value,
         onCardClicked = { id ->
             if (showOptions)
                 salesListViewModel.onCardSelected(id ?: 0L)

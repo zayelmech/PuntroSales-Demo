@@ -8,5 +8,6 @@ data class ExportSalesReportInput(
     val isFetchingData: Boolean = false,
     val salesFile: File? = null,
     val groupedProductsFile: File? = null,
-    val allSelected: Boolean = false
+    val allSelected: Boolean = false,
+    val enableSelection: Boolean = false
 )

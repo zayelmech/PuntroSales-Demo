@@ -49,4 +49,6 @@
     <string name="search_client_hint">Buscar por nombre del cliente</string>
     <string name="txt_sales_list">Ventas de hoy</string>
     <string name="txt_sales_list_description">Total de ventas completadas</string>
+    <string name="txt_sales_list_tittle">Ventas</string>
+    <string name="txt_placeholder_search">Buscar venta por id</string>
 </resources>

@@ -22,7 +22,8 @@ kotlinxCoroutinesTest = "1.10.2"
 kotlinxSerializationJson = "1.10.0"
 lifecycleRuntimeKtx = "2.10.0"
 lifecycleViewmodelCompose = "2.10.0"
-mapsCompose = "8.2.2"
+mapsCompose = "8.3.0"
+playServicesMaps = "20.0.0"
 material = "1.13.0"
 materialIconsCore = "1.7.8"
 navigationCompose = "2.9.7"
@@ -105,6 +106,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 androidx-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 

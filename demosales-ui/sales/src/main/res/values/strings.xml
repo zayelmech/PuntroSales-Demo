@@ -44,4 +44,6 @@
     <string name="search_client_hint">Search by client name</string>
     <string name="txt_sales_list">Today’s sales</string>
     <string name="txt_sales_list_description">Total completed today</string>
+    <string name="txt_sales_list_tittle">Sales</string>
+    <string name="txt_placeholder_search">Search sale by id</string>
 </resources>

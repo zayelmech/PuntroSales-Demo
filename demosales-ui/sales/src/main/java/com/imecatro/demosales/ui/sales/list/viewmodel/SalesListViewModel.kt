@@ -113,19 +113,24 @@ class SalesListViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
-    fun onStatusFilterChange(status: StatusFilterUiModel) = viewModelScope.launch(coroutineProvider.io) {
-        _statusFilterState.update { lst ->
-            val index = lst.indexOf(status)
-            lst.mapIndexed { i, statusFilterUiModel ->
-                if (i == index)
-                    statusFilterUiModel.copy(isChecked = !statusFilterUiModel.isChecked)
-                else
-                    statusFilterUiModel
+    fun onStatusFilterChange(status: StatusFilterUiModel) =
+        viewModelScope.launch(coroutineProvider.io) {
+            _statusFilterState.update { lst ->
+                val index = lst.indexOf(status)
+                lst.mapIndexed { i, statusFilterUiModel ->
+                    if (i == index)
+                        statusFilterUiModel.copy(isChecked = !statusFilterUiModel.isChecked)
+                    else
+                        statusFilterUiModel
+                }
             }
         }
-    }
 
-    fun onCardSelected(id: Long) = viewModelScope.launch(coroutineProvider.io) {
+    fun onCardSelected(id: Long) {
+        if (id == 0L) {
+            _reportState.update { it.copy(enableSelection = true) }
+            return
+        }
         if (_reportState.value.ids.contains(id))
             _reportState.update { it.copy(ids = it.ids.minus(id)) }
         else
@@ -133,12 +138,12 @@ class SalesListViewModel @Inject constructor(
 
         // Uncheck selection
         if (salesListUiState.value.size != _reportState.value.ids.size) {
-            _reportState.update { it.copy(allSelected = false) }
+            _reportState.update { it.copy(allSelected = false, enableSelection = false) }
         }
     }
 
-    fun onClearSelections() = viewModelScope.launch(coroutineProvider.io) {
-        _reportState.update { it.copy(ids = emptyList()) }
+    fun onClearSelections() {
+        _reportState.update { it.copy(ids = emptyList(), enableSelection = false) }
     }
 
     fun onDownloadCsv() = viewModelScope.launch(coroutineProvider.io) {
