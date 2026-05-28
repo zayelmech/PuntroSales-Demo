@@ -31,7 +31,7 @@ data class ListProductsUiState(
     companion object : Idle<ListProductsUiState> {
         override val idle: ListProductsUiState
             get() = ListProductsUiState(
-                isFetchingProducts = false,
+                isFetchingProducts = true,
                 products = emptyList(),
                 errorFetchingProducts = null,
                 productsFiltered = emptyList(),
