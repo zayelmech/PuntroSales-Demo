@@ -1,5 +1,6 @@
 package com.imecatro.demosales.profile.ui.views
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,15 +64,22 @@ fun ProfileSettingsStateImpl(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            uri?.let {
-                context.saveMediaToStorage(it) { localUri ->
-                    viewModel.onUpdateLogo(localUri.toString())
-                }
+    val onImagePicked: (Uri?) -> Unit = { uri ->
+        uri?.let {
+            context.saveMediaToStorage(it) { localUri ->
+                viewModel.onUpdateLogo(localUri.toString())
             }
         }
+    }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = onImagePicked
+    )
+
+    val getContentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = onImagePicked
     )
 
     ProfileSettings(
@@ -82,9 +90,13 @@ fun ProfileSettingsStateImpl(
         onCurrencySelected = viewModel::onUpdateCurrency,
         onDarkThemeEnabled = viewModel::onUpdateTheme,
         openImagePicker = {
-            photoPickerLauncher.launch(
-                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-            )
+            try {
+                photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            } catch (e: Exception) {
+                getContentLauncher.launch("image/*")
+            }
         })
 
     UiStateHandler(uiState, onDismiss = viewModel::onErrorMessage)
