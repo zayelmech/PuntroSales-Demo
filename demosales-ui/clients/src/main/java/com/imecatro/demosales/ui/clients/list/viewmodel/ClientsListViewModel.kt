@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
 import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
+import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,12 +37,12 @@ class ClientsListViewModel @Inject constructor(
     private val getClientByPhoneNumberUseCase: GetClientByPhoneNumberUseCase,
     private val searchClientUseCase: SearchClientUseCase,
     private val deleteClientByIdUseCase: DeleteClientByIdUseCase
-) : com.imecatro.demosales.ui.theme.architect.BaseViewModel<ClientsListPresenterModel>(ClientsListPresenterModel()) {
+) : BaseViewModel<ClientsListPresenterModel>(ClientsListPresenterModel()) {
 
     private val _contacts: MutableStateFlow<List<ClientUiModel>> = MutableStateFlow(emptyList())
     val contacts: StateFlow<List<ClientUiModel>> = _contacts.asStateFlow()
 
-    init {
+    override fun onStart() {
         viewModelScope.launch {
             updateState { copy(isFetchingClients = true) }
 
