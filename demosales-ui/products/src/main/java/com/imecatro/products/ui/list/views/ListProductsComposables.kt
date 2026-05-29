@@ -235,7 +235,10 @@ fun ListOfProducts(
                             Text("$itemsSelectedQty")
                             Spacer(Modifier.weight(1f))
 
-                            FilledIconButton(onClick = onDownloadClicked) {
+                            FilledIconButton(
+                                onClick = onDownloadClicked,
+                                enabled = itemsSelectedQty > 0
+                            ) {
                                 Icon(painterResource(R.drawable.file_earmark_richtext), "Download")
                             }
                             Spacer(modifier = Modifier.size(10.dp))

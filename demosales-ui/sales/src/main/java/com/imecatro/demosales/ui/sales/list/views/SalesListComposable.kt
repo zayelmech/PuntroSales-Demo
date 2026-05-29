@@ -130,7 +130,10 @@ fun SalesListComposable(
                         Text("$itemsSelectedQty")
                         Spacer(Modifier.weight(1f))
 
-                        FilledIconButton(onClick = onDownloadClicked) {
+                        FilledIconButton(
+                            onClick = onDownloadClicked,
+                            enabled = itemsSelectedQty > 0
+                        ) {
                             Icon(painterResource(R.drawable.filetype_csv), "Download")
                         }
                         Spacer(modifier = Modifier.size(10.dp))
@@ -297,11 +300,7 @@ fun SalesListComposableStateImpl(
     // Reports
     val reportState by salesListViewModel.reportState.collectAsState()
 
-    val showOptions by remember {
-        derivedStateOf {
-            listUiState.any { it.isSelected } || reportState.enableSelection
-        }
-    }
+    val showOptions = listUiState.any { it.isSelected } || reportState.enableSelection
 
     var showReports by remember { mutableStateOf(false) }
 
