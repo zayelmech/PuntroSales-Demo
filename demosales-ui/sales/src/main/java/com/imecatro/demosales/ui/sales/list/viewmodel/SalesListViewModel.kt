@@ -131,14 +131,12 @@ class SalesListViewModel @Inject constructor(
             _reportState.update { it.copy(enableSelection = true) }
             return
         }
-        if (_reportState.value.ids.contains(id))
-            _reportState.update { it.copy(ids = it.ids.minus(id)) }
-        else
-            _reportState.update { it.copy(ids = it.ids.plus(id)) }
-
-        // Uncheck selection
-        if (salesListUiState.value.size != _reportState.value.ids.size) {
-            _reportState.update { it.copy(allSelected = false, enableSelection = false) }
+        _reportState.update { state ->
+            val newIds = if (state.ids.contains(id)) state.ids.minus(id) else state.ids.plus(id)
+            state.copy(
+                ids = newIds,
+                allSelected = newIds.isNotEmpty() && newIds.size == salesListUiState.value.size
+            )
         }
     }
 

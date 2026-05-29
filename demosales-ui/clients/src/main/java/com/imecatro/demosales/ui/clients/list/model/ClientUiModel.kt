@@ -4,12 +4,13 @@ import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 
-class ClientUiModel(
+data class ClientUiModel(
     val id: Long?,
     val name: String?,
     val number: String?,
     val image: String?,
-    val address: String?
+    val address: String?,
+    val isSelected: Boolean = false
 ) {
 
 

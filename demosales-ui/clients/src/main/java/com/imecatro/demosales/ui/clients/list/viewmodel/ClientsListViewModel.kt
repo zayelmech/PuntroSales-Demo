@@ -17,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import com.imecatro.demosales.domain.clients.usecases.DeleteClientByIdUseCase
+import com.imecatro.demosales.domain.clients.usecases.SearchClientUseCase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,39 +33,102 @@ class ClientsListViewModel @Inject constructor(
     private val getAllClientsUseCase: GetAllClientsUseCase,
     private val addClientUseCase: AddClientUseCase,
     private val updateClientUseCase: UpdateClientUseCase,
-    private val getClientByPhoneNumberUseCase: GetClientByPhoneNumberUseCase
-) : ViewModel() {
-
-    private val _uiState: MutableStateFlow<ClientsListPresenterModel> =
-        MutableStateFlow(ClientsListPresenterModel())
-
-    val uiState: StateFlow<ClientsListPresenterModel> = _uiState.asStateFlow()
+    private val getClientByPhoneNumberUseCase: GetClientByPhoneNumberUseCase,
+    private val searchClientUseCase: SearchClientUseCase,
+    private val deleteClientByIdUseCase: DeleteClientByIdUseCase
+) : com.imecatro.demosales.ui.theme.architect.BaseViewModel<ClientsListPresenterModel>(ClientsListPresenterModel()) {
 
     private val _contacts: MutableStateFlow<List<ClientUiModel>> = MutableStateFlow(emptyList())
     val contacts: StateFlow<List<ClientUiModel>> = _contacts.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _uiState.update { currentState -> currentState.copy(isFetchingClients = true) }
+            updateState { copy(isFetchingClients = true) }
 
             getAllClientsUseCase.execute(Unit).onSuccess { clientsFlow ->
-
-                clientsFlow.collectLatest {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            clients = it.toUiModel(),
+                clientsFlow.collectLatest { clients ->
+                    updateState {
+                        copy(
+                            clients = clients.toUiModel().map { client ->
+                                client.copy(isSelected = idsSelected.contains(client.id))
+                            },
                             isFetchingClients = false
                         )
                     }
                 }
             }.onFailure {
-                _uiState.update { currentState ->
-                    currentState.copy(
+                updateState {
+                    copy(
                         errors = it.message,
                         isFetchingClients = false
                     )
                 }
             }
+        }
+    }
+
+    fun onSearchAction(query: String) {
+        viewModelScope.launch {
+            searchClientUseCase(query).collectLatest { list ->
+                updateState { copy(clientsFiltered = list.toUiModel()) }
+            }
+        }
+    }
+
+    fun onClientSelected(id: Long?) {
+        if (id == null) {
+            updateState { copy(enableSelection = true) }
+            return
+        }
+        val currentIds = uiState.value.idsSelected
+        val newIds = if (currentIds.contains(id)) {
+            currentIds.minus(id)
+        } else {
+            currentIds.plus(id)
+        }
+        
+        updateState { 
+            copy(
+                idsSelected = newIds,
+                clients = clients.map { it.copy(isSelected = newIds.contains(it.id)) }
+            ) 
+        }
+
+        if (uiState.value.clients.size != newIds.size) {
+            updateState { copy(allSelected = false) }
+        } else if (newIds.isNotEmpty()) {
+            updateState { copy(allSelected = true) }
+        }
+    }
+
+    fun onSelectAll(checked: Boolean) {
+        updateState {
+            val allIds = if (checked) clients.mapNotNull { it.id } else emptyList()
+            copy(
+                allSelected = checked,
+                idsSelected = allIds,
+                clients = clients.map { it.copy(isSelected = checked) }
+            )
+        }
+    }
+
+    fun onClearSelections() {
+        updateState {
+            copy(
+                idsSelected = emptyList(),
+                enableSelection = false,
+                allSelected = false,
+                clients = clients.map { it.copy(isSelected = false) }
+            )
+        }
+    }
+
+    fun onDeleteSelectedClients() {
+        viewModelScope.launch {
+            uiState.value.idsSelected.forEach { id ->
+                deleteClientByIdUseCase.execute(id)
+            }
+            onClearSelections()
         }
     }
 
