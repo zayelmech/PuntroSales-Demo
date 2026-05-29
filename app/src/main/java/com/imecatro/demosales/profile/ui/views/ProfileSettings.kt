@@ -59,7 +59,6 @@ import com.imecatro.products.ui.R as ProductR
 @Composable
 fun ProfileSettingsStateImpl(
     viewModel: ProfileViewModel,
-    onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -84,7 +83,6 @@ fun ProfileSettingsStateImpl(
 
     ProfileSettings(
         profile = uiState.profile,
-        onBack = onBack,
         onStoreNameChange = viewModel::onUpdateStoreName,
         onLanguageSelected = viewModel::onUpdateLanguage,
         onCurrencySelected = viewModel::onUpdateCurrency,
@@ -106,7 +104,6 @@ fun ProfileSettingsStateImpl(
 @Composable
 fun ProfileSettings(
     profile: UserProfileUiModel,
-    onBack: () -> Unit = {},
     onStoreNameChange: (String) -> Unit = {},
     onLanguageSelected: (String) -> Unit = {},
     onCurrencySelected: (String) -> Unit = {},
@@ -122,12 +119,7 @@ fun ProfileSettings(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.title_profile)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                    }
-                }
+                title = { Text(stringResource(R.string.title_profile)) }
             )
         }
     ) { padding ->

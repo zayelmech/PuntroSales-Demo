@@ -15,8 +15,7 @@ inline fun <reified T : Any> NavGraphBuilder.profileNavigation(navController: Na
     navigation<T>(startDestination = ProfileRoute) {
         composable<ProfileRoute> {
             ProfileSettingsStateImpl(
-                hiltViewModel<ProfileViewModel>(),
-                onBack = { navController.popBackStack() }
+                hiltViewModel<ProfileViewModel>()
             )
         }
     }
