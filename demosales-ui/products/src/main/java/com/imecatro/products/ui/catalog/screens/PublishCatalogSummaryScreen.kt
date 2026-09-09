@@ -35,6 +35,7 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Store
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -110,6 +111,7 @@ fun PublishCatalogSummaryScreen(
 
     var showStoreDialog by remember { mutableStateOf(false) }
     var showProductDialog by remember { mutableStateOf(false) }
+    var validationIssue by remember { mutableStateOf<SummaryValidationIssue?>(null) }
 
     Scaffold(
         topBar = {
@@ -131,8 +133,16 @@ fun PublishCatalogSummaryScreen(
         bottomBar = {
             BottomActions(
                 onContinue = {
-                    if (summary.storeName.isNotBlank() && summary.whatsapp.isNotBlank() && summary.selectedCount > 0) {
-                        onContinue()
+                    when {
+                        summary.storeName.isBlank() || summary.whatsapp.isBlank() -> {
+                            validationIssue = SummaryValidationIssue.StoreInformation
+                        }
+
+                        summary.selectedCount == 0 -> {
+                            validationIssue = SummaryValidationIssue.Products
+                        }
+
+                        else -> onContinue()
                     }
                 },
                 onCancel = onCancel
@@ -209,6 +219,57 @@ fun PublishCatalogSummaryScreen(
             onToggleProduct = onToggleProduct
         )
     }
+
+    validationIssue?.let { issue ->
+        val isStoreInformationIssue = issue == SummaryValidationIssue.StoreInformation
+        AlertDialog(
+            onDismissRequest = { validationIssue = null },
+            title = { Text(stringResource(R.string.publish_catalog_validation_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        if (isStoreInformationIssue) {
+                            R.string.publish_catalog_validation_store_info_message
+                        } else {
+                            R.string.publish_catalog_validation_products_message
+                        }
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        validationIssue = null
+                        if (isStoreInformationIssue) {
+                            showStoreDialog = true
+                        } else {
+                            showProductDialog = true
+                        }
+                    }
+                ) {
+                    Text(
+                        stringResource(
+                            if (isStoreInformationIssue) {
+                                R.string.publish_catalog_validation_edit_store
+                            } else {
+                                R.string.publish_catalog_validation_edit_products
+                            }
+                        )
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { validationIssue = null }) {
+                    Text(stringResource(R.string.publish_catalog_validation_dismiss))
+                }
+            }
+        )
+    }
+}
+
+private enum class SummaryValidationIssue {
+    StoreInformation,
+    Products
 }
 
 @Composable
@@ -380,6 +441,7 @@ private fun StoreInfoEditDialog(
     var location by remember { mutableStateOf(initialState.location) }
     var template by remember { mutableStateOf(initialState.template) }
     var enableStock by remember { mutableStateOf(initialState.enableStock) }
+    var showValidationErrors by remember { mutableStateOf(false) }
 
     var templateExpanded by remember { mutableStateOf(false) }
     val templates = listOf("store", "restaurant-menu")
@@ -400,12 +462,15 @@ private fun StoreInfoEditDialog(
                     actions = {
                         TextButton(
                             onClick = {
-                                if (name.isNotBlank() && whatsapp.isNotBlank()) {
+                                val hasRequiredInformation =
+                                    name.isNotBlank() && whatsapp.isNotBlank()
+                                showValidationErrors = !hasRequiredInformation
+                                if (hasRequiredInformation) {
                                     onSave(
-                                        name,
-                                        description,
-                                        whatsapp,
-                                        location,
+                                        name.trim(),
+                                        description.trim(),
+                                        whatsapp.trim(),
+                                        location.trim(),
                                         template,
                                         enableStock
                                     )
@@ -455,7 +520,13 @@ private fun StoreInfoEditDialog(
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.publish_catalog_edit_label_name)) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    isError = showValidationErrors && name.isBlank(),
+                    supportingText = if (showValidationErrors && name.isBlank()) {
+                        { Text(stringResource(R.string.publish_catalog_edit_required_error)) }
+                    } else {
+                        null
+                    }
                 )
 
                 OutlinedTextField(
@@ -473,7 +544,13 @@ private fun StoreInfoEditDialog(
                     label = { Text(stringResource(R.string.publish_catalog_edit_label_whatsapp)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Chat, null) }
+                    leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Chat, null) },
+                    isError = showValidationErrors && whatsapp.isBlank(),
+                    supportingText = if (showValidationErrors && whatsapp.isBlank()) {
+                        { Text(stringResource(R.string.publish_catalog_edit_required_error)) }
+                    } else {
+                        null
+                    }
                 )
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {

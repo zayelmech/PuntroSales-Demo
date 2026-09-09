@@ -95,6 +95,12 @@
     <string name="publish_catalog_summary_stat_with_image">With image</string>
     <string name="publish_catalog_summary_stat_without_image">Without image</string>
     <string name="publish_catalog_summary_stat_unavailable">Unavailable</string>
+    <string name="publish_catalog_validation_title">Information required</string>
+    <string name="publish_catalog_validation_store_info_message">Add your store name and WhatsApp number before continuing.</string>
+    <string name="publish_catalog_validation_products_message">Select at least one product before continuing.</string>
+    <string name="publish_catalog_validation_edit_store">Edit store information</string>
+    <string name="publish_catalog_validation_edit_products">Select products</string>
+    <string name="publish_catalog_validation_dismiss">Not now</string>
 
     <string name="publish_catalog_edit_title">Basic information</string>
     <string name="publish_catalog_edit_logo_placeholder">Store logo or image (Recommended)</string>
@@ -106,6 +112,7 @@
     <string name="publish_catalog_edit_label_location">Location</string>
     <string name="publish_catalog_edit_label_show_stock">Show available stock</string>
     <string name="publish_catalog_edit_desc_show_stock">Your customers will see the available quantity</string>
+    <string name="publish_catalog_edit_required_error">Required field</string>
 
     <string name="publish_catalog_selection_title">Products</string>
     <string name="publish_catalog_selection_filter_all">All</string>

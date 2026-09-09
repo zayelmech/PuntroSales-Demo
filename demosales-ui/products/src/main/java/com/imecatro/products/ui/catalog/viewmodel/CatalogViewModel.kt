@@ -13,6 +13,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -66,7 +67,18 @@ class CatalogViewModel @AssistedInject constructor(
         template: String,
         enableStock: Boolean
     ) {
-        viewModelScope.launch {
+        updateState {
+            copy(
+                storeName = name,
+                storeDescription = description,
+                whatsapp = whatsapp,
+                location = location,
+                template = template,
+                enableStock = enableStock
+            )
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
             val currentProfile = profileRepository.getProfile().first()
             profileRepository.updateProfile(
                 currentProfile.copy(
@@ -76,12 +88,6 @@ class CatalogViewModel @AssistedInject constructor(
                     location = location,
                 )
             )
-            updateState {
-                copy(
-                    template = template,
-                    enableStock = enableStock
-                )
-            }
         }
     }
 
