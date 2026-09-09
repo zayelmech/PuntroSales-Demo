@@ -3,7 +3,7 @@ package com.imecatro.demosales.ui
 import androidx.annotation.Keep
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
@@ -19,7 +19,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import com.imecatro.demosales.navigation.clients.clientsNavigation
 import com.imecatro.demosales.navigation.products.productsNavigation
 import com.imecatro.demosales.navigation.profile.profileNavigation
@@ -111,11 +111,11 @@ fun AppAdaptiveNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val adaptiveInfo = currentWindowAdaptiveInfo()
+    val adaptiveInfo = currentWindowAdaptiveInfoV2()
     // Custom configuration that shows a navigation drawer in large screens.
     val customNavSuiteType =
         with(adaptiveInfo) {
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
+            if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                 NavigationSuiteType.NavigationRail
             } else {
                 NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)

@@ -36,25 +36,6 @@ object Money {
 
         return nf.format(amount.toDoubleOrNull() ?: 0.0)
     }
-    @Deprecated("bad behavior")
-    fun format(amount: Double, locale: Locale = Locale.getDefault(), currencyCode: String? = null): String {
-        val formatLocale = getFormatLocale(locale, currencyCode)
-        val nf = NumberFormat.getCurrencyInstance(formatLocale)
-
-        currencyCode?.let {
-            try {
-                nf.currency = Currency.getInstance(it)
-            } catch (e: Exception) {
-            }
-        }
-
-        if (nf is DecimalFormat && isLatamStyle(currencyCode ?: nf.currency?.currencyCode)) {
-            applyLatamSymbols(nf)
-        }
-
-        return nf.format(amount)
-    }
-
     fun getCurrency(locale: Locale): Currency {
         return try {
             Currency.getInstance(locale)
@@ -133,7 +114,7 @@ fun Double.formatAsCurrency(
     val localeToUse = defaultLocale ?: context.getCurrentLocale()
 
     return try {
-        Money.format(this, localeToUse, currencyCode)
+        Money.format(toString(), localeToUse, currencyCode)
     } catch (e: Exception) {
         onErrorReturn
     }

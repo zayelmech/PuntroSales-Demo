@@ -3,6 +3,7 @@ package com.imecatro.demosales.firebase
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.util.Base64
 import android.util.Log
 import androidx.core.net.toUri
@@ -83,11 +84,17 @@ class CatalogRepositoryImpl @Inject constructor(
                 var quality = 80
                 var resultData: ByteArray
                 val baos = ByteArrayOutputStream()
+                val webpFormat = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    Bitmap.CompressFormat.WEBP_LOSSY
+                } else {
+                    @Suppress("DEPRECATION")
+                    Bitmap.CompressFormat.WEBP
+                }
 
                 do {
                     baos.reset()
                     // Compress to WebP format. Reduce quality iteratively if size > 1MB.
-                    bitmap.compress(Bitmap.CompressFormat.WEBP, quality, baos)
+                    bitmap.compress(webpFormat, quality, baos)
                     resultData = baos.toByteArray()
                     quality -= 10
                 } while (resultData.size > 1024 * 1024 && quality > 0)

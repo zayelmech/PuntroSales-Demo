@@ -19,7 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
@@ -257,7 +257,9 @@ fun TicketDetailsComposableImpl(
         TopAppBar(
             title = { Text(text = stringResource(R.string.top_bar_sale_details)) },
             navigationIcon = {
-                IconButton(onClick = { onBackToList() }) { Icon(Icons.Default.ArrowBack, null) }
+                IconButton(onClick = { onBackToList() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                }
             }, actions = {
                 IconButton(onClick = { onShareTicket.invoke() }) {
                     Icon(Icons.Default.Share, contentDescription = "Share ticket")
@@ -346,5 +348,4 @@ fun TicketDetailsComposableImpl(
     }
 
 }
-
 

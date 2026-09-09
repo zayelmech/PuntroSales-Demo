@@ -2,12 +2,10 @@ package com.imecatro.demosales.ui.theme.common
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
+import android.graphics.BitmapFactory
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.OutputStream
@@ -16,17 +14,8 @@ import java.util.Locale
 
 inline fun Context.saveMediaToStorage(uriPicked: Uri, crossinline onUri: (Uri) -> Unit) {
 
-    lateinit var bitmap: Bitmap
-
-    if (Build.VERSION.SDK_INT < 28) {
-        bitmap = MediaStore.Images
-            .Media.getBitmap(contentResolver, uriPicked)
-
-    } else {
-        val source = ImageDecoder
-            .createSource(contentResolver, uriPicked)
-        bitmap = ImageDecoder.decodeBitmap(source) //.scale(500, 500)
-    }
+    val bitmap = contentResolver.openInputStream(uriPicked)?.use(BitmapFactory::decodeStream)
+        ?: return
 
     //Generating a file name
     val filename = "${System.currentTimeMillis()}.jpg"

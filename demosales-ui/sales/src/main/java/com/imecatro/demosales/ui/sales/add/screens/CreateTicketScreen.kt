@@ -36,6 +36,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -239,7 +240,9 @@ fun CreateTicketComposable(
                 val scope = rememberCoroutineScope()
                 TooltipBox(
 
-                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        TooltipAnchorPosition.Above
+                    ),
                     tooltip = {
                         PlainTooltip { Text(stringResource(R.string.tooltip_info_draft)) }
                     },
@@ -432,4 +435,3 @@ fun PreviewCreateTicketComposable() {
         }
     }
 }
-

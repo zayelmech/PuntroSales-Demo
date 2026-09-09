@@ -124,13 +124,13 @@ dependencies {
     implementation(project(":demosales-data:clients"))
 
     testImplementation(libs.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4) // Use latest stable version
 
     //NAV
     implementation(libs.androidx.navigation.compose)

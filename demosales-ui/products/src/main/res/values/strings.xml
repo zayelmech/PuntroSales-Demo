@@ -80,7 +80,10 @@
     <string name="publish_catalog_summary_no_description">No description</string>
     <string name="publish_catalog_summary_btn_edit_info">Edit information</string>
     <string name="publish_catalog_summary_products_title">Catalog products</string>
-    <string name="publish_catalog_summary_products_count">%d products selected</string>
+    <plurals name="publish_catalog_summary_products_count">
+        <item quantity="one">%d product selected</item>
+        <item quantity="other">%d products selected</item>
+    </plurals>
     <string name="publish_catalog_summary_btn_edit_products">Edit products</string>
     <string name="publish_catalog_summary_footer">You can change this information before publishing. Your customers will only see the data you confirm here.</string>
     <string name="publish_catalog_summary_label_currency">Currency</string>
@@ -141,27 +144,27 @@
 
     <string name="publish_catalog_preview_title">Review published catalog</string>
     <string name="publish_catalog_preview_description">Your catalog is already online. Confirm that your customers will see the expected information.</string>
-    <string name="publish_catalog_preview_loading">Preparing preview...</string>
+    <string name="publish_catalog_preview_loading">Preparing preview…</string>
     <string name="publish_catalog_preview_error">We couldn\'t load the preview</string>
     <string name="publish_catalog_preview_retry">Try again</string>
     <string name="publish_catalog_preview_footer">You can close this review or update your catalog whenever you want.</string>
     <string name="publish_catalog_preview_btn_publish">Continue</string>
     <string name="publish_catalog_preview_btn_cancel">Close review</string>
 
-    <string name="publish_catalog_success_title">¡Tu catálogo ya está en línea!</string>
-    <string name="publish_catalog_success_description">Ya puedes compartirlo con tus clientes mediante un enlace web.</string>
-    <string name="publish_catalog_success_url_title">Enlace de tu catálogo</string>
-    <string name="publish_catalog_success_btn_share_whatsapp">Compartir por WhatsApp</string>
-    <string name="publish_catalog_success_btn_view">Ver catálogo</string>
-    <string name="publish_catalog_success_btn_copy">Copiar enlace</string>
-    <string name="publish_catalog_success_next_steps_title">¿Qué sigue?</string>
-    <string name="publish_catalog_success_step_share">Comparte tu catálogo con clientes</string>
-    <string name="publish_catalog_success_step_update">Actualiza productos cuando quieras</string>
-    <string name="publish_catalog_success_step_keep_updated">Mantén siempre la información actualizada</string>
-    <string name="publish_catalog_success_metrics_products">Productos publicados</string>
-    <string name="publish_catalog_success_metrics_images">Imágenes publicadas</string>
-    <string name="publish_catalog_success_metrics_last_update">Última actualización</string>
-    <string name="publish_catalog_success_metrics_now">Hace unos segundos</string>
-    <string name="publish_catalog_share_message">¡Hola! Te comparto mi catálogo de productos actualizado. Puedes verlo aquí: %s</string>
+    <string name="publish_catalog_success_title">Your catalog is now online!</string>
+    <string name="publish_catalog_success_description">You can now share it with your customers using a web link.</string>
+    <string name="publish_catalog_success_url_title">Your catalog link</string>
+    <string name="publish_catalog_success_btn_share_whatsapp">Share via WhatsApp</string>
+    <string name="publish_catalog_success_btn_view">View catalog</string>
+    <string name="publish_catalog_success_btn_copy">Copy link</string>
+    <string name="publish_catalog_success_next_steps_title">What’s next?</string>
+    <string name="publish_catalog_success_step_share">Share your catalog with customers</string>
+    <string name="publish_catalog_success_step_update">Update products whenever you want</string>
+    <string name="publish_catalog_success_step_keep_updated">Keep your information up to date</string>
+    <string name="publish_catalog_success_metrics_products">Published products</string>
+    <string name="publish_catalog_success_metrics_images">Published images</string>
+    <string name="publish_catalog_success_metrics_last_update">Last update</string>
+    <string name="publish_catalog_success_metrics_now">A few seconds ago</string>
+    <string name="publish_catalog_share_message">Hi! I’m sharing my updated product catalog with you. You can view it here: %s</string>
     <string name="catalog_auth_signed">You have signed with your google account you wish to continue or change your account</string>
 </resources>

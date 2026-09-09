@@ -16,6 +16,7 @@ import androidx.core.net.toUri
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
@@ -378,6 +379,8 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
 
                                 viewModel.signInWithGoogle(idToken)
                             }
+                        } catch (e: NoCredentialException) {
+                            e.printStackTrace()
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -458,20 +461,25 @@ inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: N
                 onBack = { navController.popBackStack() },
                 onShareQr = { bitmap: android.graphics.Bitmap ->
                     // Logic to share the bitmap
-                    val path = android.provider.MediaStore.Images.Media.insertImage(
-                        context.contentResolver,
-                        bitmap,
-                        "CatalogQR",
-                        null
+                    val file = java.io.File(
+                        context.cacheDir,
+                        "catalog_qr_${System.currentTimeMillis()}.png"
                     )
-                    if (path != null) {
-                        val uri = path.toUri()
-                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                            type = "image/jpeg"
-                            putExtra(Intent.EXTRA_STREAM, uri)
-                        }
-                        context.startActivity(Intent.createChooser(shareIntent, "Compartir QR"))
+                    file.outputStream().use {
+                        bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
                     }
+                    val uri = androidx.core.content.FileProvider.getUriForFile(
+                        context,
+                        "${context.packageName}.fileprovider",
+                        file
+                    )
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "image/png"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        clipData = ClipData.newUri(context.contentResolver, "Catalog QR", uri)
+                    }
+                    context.startActivity(Intent.createChooser(shareIntent, "Compartir QR"))
                 }
             )
         }

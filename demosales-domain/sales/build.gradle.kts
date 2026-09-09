@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":demosales-domain:core"))
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.junit.v412)
+    testImplementation(libs.junit)
 }
 
 tasks.test {

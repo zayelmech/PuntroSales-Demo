@@ -4,12 +4,12 @@ import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 
 /**
@@ -19,7 +19,7 @@ import java.util.Locale
 @Composable
 fun String.localDate(): String {
     val context = LocalContext.current
-    val locale: Locale = Locale.getDefault()
+    val locale = LocalLocale.current.platformLocale
     val is24h = DateFormat.is24HourFormat(context)
     val zone = ZoneId.systemDefault()
 

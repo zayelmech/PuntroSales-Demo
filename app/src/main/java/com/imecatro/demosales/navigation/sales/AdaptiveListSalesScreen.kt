@@ -3,7 +3,7 @@ package com.imecatro.demosales.navigation.sales
 import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
@@ -36,7 +36,7 @@ fun ListAndDetailsSalesPane(
     onEditSale: (Long) -> Unit = {},
     onDuplicateSale: (Long) -> Unit = {}
 ) {
-    val adaptiveInfo = currentWindowAdaptiveInfo()
+    val adaptiveInfo = currentWindowAdaptiveInfoV2()
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
     val customDirective = if (isPortrait) {

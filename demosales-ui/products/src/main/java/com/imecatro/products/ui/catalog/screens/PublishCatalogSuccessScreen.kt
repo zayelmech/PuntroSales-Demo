@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
@@ -291,7 +292,7 @@ private fun ConfettiPiece(angle: Float) {
     Box(
         modifier = Modifier
             .size(8.dp)
-            .offset(y = (-60 - translation).dp)
+            .offset { IntOffset(x = 0, y = (-60 - translation).dp.roundToPx()) }
             .rotate(angle)
             .background(BrandColor.copy(alpha = 0.6f), CircleShape)
     )

@@ -45,6 +45,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTooltipState
@@ -60,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -83,7 +85,6 @@ import com.imecatro.products.ui.R
 import com.imecatro.products.ui.add.model.AddProductUiModel
 import com.imecatro.products.ui.add.viewmodel.AddViewModel
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -263,7 +264,9 @@ fun AddProductComposable(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             leadingIcon = {
                                 TooltipBox(
-                                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                        TooltipAnchorPosition.Above
+                                    ),
                                     tooltip = {
                                         PlainTooltip { Text(stringResource(R.string.tooltip_info_stock)) }
                                     },
@@ -490,8 +493,8 @@ fun AddProductComposableStateImpl(
         mutableStateOf("")
     }
 
-    val locale: Locale = Locale.getDefault()
-    var currencySelected by remember {
+    val locale = LocalLocale.current.platformLocale
+    var currencySelected by remember(locale) {
         mutableStateOf(Money.getCurrency(locale))
     }
     var unitSelected by remember {
@@ -592,5 +595,5 @@ fun AddProductComposableStateImpl(
 
     }
 
-    UiStateHandler(uiState, onDismiss = { addViewModel::onErrorMessageDismissed })
+    UiStateHandler(uiState, onDismiss = addViewModel::onErrorMessageDismissed)
 }

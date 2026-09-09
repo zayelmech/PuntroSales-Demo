@@ -46,6 +46,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -72,6 +73,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -178,7 +180,11 @@ fun PublishCatalogSummaryScreen(
             // Products Summary Card
             SummaryCard(
                 title = stringResource(R.string.publish_catalog_summary_products_title),
-                subtitle = stringResource(R.string.publish_catalog_summary_products_count, summary.selectedCount),
+                subtitle = pluralStringResource(
+                    R.plurals.publish_catalog_summary_products_count,
+                    summary.selectedCount,
+                    summary.selectedCount
+                ),
                 icon = Icons.Outlined.Inventory2,
                 buttonText = stringResource(R.string.publish_catalog_summary_btn_edit_products),
                 onEditClick = { showProductDialog = true }
@@ -575,7 +581,9 @@ private fun StoreInfoEditDialog(
                             readOnly = true,
                             label = { Text(stringResource(R.string.publish_catalog_edit_label_template)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = templateExpanded) },
-                            modifier = Modifier.menuAnchor(),
+                            modifier = Modifier.menuAnchor(
+                                ExposedDropdownMenuAnchorType.PrimaryNotEditable
+                            ),
                             shape = RoundedCornerShape(12.dp)
                         )
                         ExposedDropdownMenu(

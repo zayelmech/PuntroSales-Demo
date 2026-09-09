@@ -81,12 +81,21 @@
 
     <string name="btn_publish_catalog">Publicar Catálogo</string>
 
+    <string name="catalog_auth_accept_terms_prefix">Acepto los </string>
+    <string name="catalog_auth_terms_link">términos y condiciones</string>
+    <string name="catalog_auth_accept_terms_middle"> y reconozco la </string>
+    <string name="catalog_auth_privacy_link">política de privacidad</string>
+
     <string name="publish_catalog_summary_title">Información del catálogo</string>
     <string name="publish_catalog_summary_subtitle">Revisa los datos que verán tus clientes antes de publicar tu catálogo.</string>
     <string name="publish_catalog_summary_no_description">Sin descripción</string>
     <string name="publish_catalog_summary_btn_edit_info">Editar información</string>
     <string name="publish_catalog_summary_products_title">Productos del catálogo</string>
-    <string name="publish_catalog_summary_products_count">%d productos seleccionados</string>
+    <plurals name="publish_catalog_summary_products_count">
+        <item quantity="one">%d producto seleccionado</item>
+        <item quantity="many">%d productos seleccionados</item>
+        <item quantity="other">%d productos seleccionados</item>
+    </plurals>
     <string name="publish_catalog_summary_btn_edit_products">Editar productos</string>
     <string name="publish_catalog_summary_footer">Puedes cambiar esta información antes de publicar. Tus clientes solo verán los datos que confirmes aquí.</string>
     <string name="publish_catalog_summary_label_currency">Moneda</string>
@@ -139,12 +148,28 @@
 
     <string name="publish_catalog_preview_title">Revisa tu catálogo publicado</string>
     <string name="publish_catalog_preview_description">Tu catálogo ya está en línea. Confirma que tus clientes verán la información esperada.</string>
-    <string name="publish_catalog_preview_loading">Preparando vista previa...</string>
+    <string name="publish_catalog_preview_loading">Preparando vista previa…</string>
     <string name="publish_catalog_preview_error">No pudimos cargar la vista previa</string>
     <string name="publish_catalog_preview_retry">Intentar de nuevo</string>
     <string name="publish_catalog_preview_footer">Puedes cerrar esta revisión o actualizar tu catálogo cuando quieras.</string>
     <string name="publish_catalog_preview_btn_publish">Continuar</string>
     <string name="publish_catalog_preview_btn_cancel">Cerrar revisión</string>
+
+    <string name="publish_catalog_success_title">¡Tu catálogo ya está en línea!</string>
+    <string name="publish_catalog_success_description">Ya puedes compartirlo con tus clientes mediante un enlace web.</string>
+    <string name="publish_catalog_success_url_title">Enlace de tu catálogo</string>
+    <string name="publish_catalog_success_btn_share_whatsapp">Compartir por WhatsApp</string>
+    <string name="publish_catalog_success_btn_view">Ver catálogo</string>
+    <string name="publish_catalog_success_btn_copy">Copiar enlace</string>
+    <string name="publish_catalog_success_next_steps_title">¿Qué sigue?</string>
+    <string name="publish_catalog_success_step_share">Comparte tu catálogo con clientes</string>
+    <string name="publish_catalog_success_step_update">Actualiza productos cuando quieras</string>
+    <string name="publish_catalog_success_step_keep_updated">Mantén siempre la información actualizada</string>
+    <string name="publish_catalog_success_metrics_products">Productos publicados</string>
+    <string name="publish_catalog_success_metrics_images">Imágenes publicadas</string>
+    <string name="publish_catalog_success_metrics_last_update">Última actualización</string>
+    <string name="publish_catalog_success_metrics_now">Hace unos segundos</string>
+    <string name="publish_catalog_share_message">¡Hola! Te comparto mi catálogo de productos actualizado. Puedes verlo aquí: %s</string>
 
     <string name="catalog_auth_signed">Has iniciado sesión con tu cuenta de Google. ¿Deseas continuar o cambiar de cuenta?</string>
 

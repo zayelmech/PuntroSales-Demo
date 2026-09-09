@@ -9,6 +9,7 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.graphics.toColorInt
 
 class BarcodeBoxView @JvmOverloads constructor(
     context: Context,
@@ -23,7 +24,7 @@ class BarcodeBoxView @JvmOverloads constructor(
     }
 
     private val scrimPaint: Paint = Paint().apply {
-        color = Color.parseColor("#99000000") // Fondo semi-transparente
+        color = "#99000000".toColorInt() // Fondo semi-transparente
     }
 
     private val eraserPaint: Paint = Paint().apply {

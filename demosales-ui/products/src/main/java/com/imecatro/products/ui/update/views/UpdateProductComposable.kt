@@ -79,7 +79,7 @@ fun UpdateProductComposableStateImpl(
             }
         }
 
-    UiStateHandler(uiState, onDismiss = { updateProductViewModel::onErrorMessageDismissed })
+    UiStateHandler(uiState, onDismiss = updateProductViewModel::onErrorMessageDismissed)
 
     if (uiState.isLoading) return // Loading effect
 
