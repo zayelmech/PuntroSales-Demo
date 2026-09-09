@@ -126,10 +126,23 @@ fun SearchTopBar(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewSearchTopBar() {
+private fun PreviewSearchTopBar() {
     SearchTopBar(
         title = "Products",
         query = "",
+        onQueryChange = {},
+        extraActions = {
+            // Example of extra icons
+        }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewSearchTopBarExpanded() {
+    SearchTopBar(
+        title = "Products",
+        query = "hi",
         onQueryChange = {},
         extraActions = {
             // Example of extra icons

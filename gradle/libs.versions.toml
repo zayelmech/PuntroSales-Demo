@@ -2,6 +2,7 @@
 activityCompose = "1.13.0"
 adaptive = "1.2.0"
 appcompat = "1.7.1"
+browser = "1.8.0"
 barcodeScanning = "17.3.0"
 cameraCore = "1.5.1"
 coilCompose = "2.7.0"
@@ -24,13 +25,19 @@ lifecycleRuntimeKtx = "2.10.0"
 lifecycleViewmodelCompose = "2.10.0"
 mapsCompose = "8.3.0"
 playServicesMaps = "20.0.0"
+playServicesAuth = "21.3.0"
+credentials = "1.6.0"
+googleid = "1.2.0"
 material = "1.13.0"
 materialIconsCore = "1.7.8"
+materialIconsExtended = "1.7.8"
 navigationCompose = "2.9.7"
 roomKtx = "2.8.4"
 agp = "8.13.2"
 kotlin = "2.2.0"
 ksp = "2.2.0-2.0.2"
+
+zxingCore = "3.5.4"
 
 compileSdk = "36"
 targetSdk = "35"
@@ -38,10 +45,12 @@ targetSdk = "35"
 androidxComposeBom = "2026.03.01"
 material3AdaptiveNavigationSuite = "1.4.0"
 uiTestJunit4 = "1.11.0"
+firebaseFirestoreKtx = "26.3.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 
 #Camera
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
@@ -50,6 +59,7 @@ androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", versi
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
 
 androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsCore" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 
 androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -91,7 +101,15 @@ barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref =
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-config = { module = "com.google.firebase:firebase-config", version = "23.1.0" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestoreKtx" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroid" }
 html-to-pdf-convertor = { module = "io.github.mddanishansari:html-to-pdf-convertor", version.ref = "htmlToPdfConvertor" }
@@ -110,6 +128,7 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 material = { module = "com.google.android.material:material", version.ref = "material" }
 androidx-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxingCore" }
 [plugins]
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }

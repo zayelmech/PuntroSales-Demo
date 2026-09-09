@@ -116,6 +116,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.browser)
 
     implementation(project(":demosales-data:products"))
     implementation(project(":demosales-data:sales"))
@@ -160,10 +161,19 @@ dependencies {
     androidTestImplementation(libs.androidx.room.testing)
 
     implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     add("googleImplementation", platform(libs.firebase.bom))
     add("googleImplementation", libs.firebase.analytics)
     add("googleImplementation", "com.google.firebase:firebase-crashlytics")
+    add("googleImplementation", libs.firebase.storage)
+    add("googleImplementation", libs.firebase.auth)
+    add("googleImplementation", libs.firebase.config)
+    add("googleImplementation", libs.firebase.firestore)
+
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 }
 
 dokka {

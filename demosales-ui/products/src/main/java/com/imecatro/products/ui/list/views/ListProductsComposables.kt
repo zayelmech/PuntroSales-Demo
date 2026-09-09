@@ -3,6 +3,7 @@ package com.imecatro.products.ui.list.views
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,8 +31,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -111,6 +113,8 @@ fun ListOfProducts(
     onCardClicked: (Long?) -> Unit = {},
     onNavigateAction: () -> Unit = {},
     onGenerateSampleData: () -> Unit = {},
+    isCatalogPublished: Boolean = false,
+    onManagementAction: () -> Unit = {},
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     //var expanded by rememberSaveable { mutableStateOf(false) }
@@ -139,22 +143,32 @@ fun ListOfProducts(
 
     Scaffold(
         floatingActionButton = {
-            if (list.isNotEmpty() || text.isNotEmpty()) {
-                FloatingActionButton(
-                    onClick = { onNavigateAction() },
-                ) {
-
-                    Row(
-                        Modifier.padding(10.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (isCatalogPublished) {
+                    SmallFloatingActionButton(
+                        onClick = onManagementAction,
+                        //containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                       // contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        containerColor = Color(0xFF37C8AB),
+                        contentColor = Color.White
                     ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                        AnimatedVisibility(!scrollState.isScrollInProgress) {
-                            Spacer(modifier = Modifier.size(5.dp))
-                            Text(stringResource(R.string.btn_new_product))
-                        }
+                        Image(
+                            painter = painterResource(R.drawable.ic_published_catalog),
+                            contentDescription = "Manage Catalog",
+                        )
                     }
+                }
 
+                if (list.isNotEmpty() || text.isNotEmpty()) {
+                    ExtendedFloatingActionButton(
+                        onClick = onNavigateAction,
+                        icon = { Icon(Icons.Default.Add, null) },
+                        text = { Text(stringResource(R.string.btn_new_product)) },
+                        expanded = !scrollState.isScrollInProgress
+                    )
                 }
             }
         },
@@ -358,11 +372,10 @@ fun EmptyProductsState(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
+        Image(
             painter = painterResource(R.drawable.baseline_insert_photo_24),
             contentDescription = null,
-            modifier = Modifier.size(120.dp),
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            modifier = Modifier.size(120.dp)
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
@@ -435,6 +448,7 @@ fun ListOfProductsStateImpl(
     productsViewModel: ProductsViewModel,
     onCategoriesNav: () -> Unit,
     onCreateCatalog: (List<Long>) -> Unit = {},
+    onManagementAction: () -> Unit = {},
     onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -477,7 +491,10 @@ fun ListOfProductsStateImpl(
         onSelectAllChecked = { productsViewModel.onSelectAllProducts(it) }, // for selection all item
         allSelected = uiState.allSelected,
         onNavigateAction = { onNavigateAction(null) },
-        onGenerateSampleData = { productsViewModel.generateSampleData() })
+        onGenerateSampleData = { productsViewModel.generateSampleData() },
+        isCatalogPublished = uiState.isCatalogPublished,
+        onManagementAction = onManagementAction
+    )
 
     UiStateHandler(uiState) {
 
@@ -515,6 +532,7 @@ fun ListOfProductsStateImpl(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
+                        showShareReport = false
                         onCreateCatalog(uiState.idsSelected)
                     }) {
                         Text(stringResource(R.string.txt_catalog_pdf))
@@ -528,7 +546,7 @@ fun ListOfProductsStateImpl(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewListOfProducts() {
+private fun PreviewListOfProducts() {
     PuntroSalesDemoTheme {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -537,6 +555,23 @@ fun PreviewListOfProducts() {
             ListOfProducts(list = fakeProductsList(20), false) {
                 Log.d(TAG, "PreviewListOfProducts: ")
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewListOfProductsCatalogPublished() {
+    PuntroSalesDemoTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        ) {
+            ListOfProducts(
+                list = fakeProductsList(20),
+                isCatalogPublished = true,
+                onManagementAction = { },
+                onNavigateAction = { }
+            )
         }
     }
 }

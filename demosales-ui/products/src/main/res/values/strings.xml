@@ -48,7 +48,7 @@
     <string name="txt_uncategorized">Uncategorized</string>
     <string name="txt_select_all">Select all</string>
     <string name="btn_save_pdf">Save PDF</string>
-    <string name="txt_catalog_pdf">Creates catalog</string>
+    <string name="txt_catalog_pdf">Creates web catalog</string>
     <string name="top_bar_catalog">Catalog</string>
     <string name="title_products_list">Products</string>
     <string name="btn_download_products_csv">Export CSV</string>
@@ -62,4 +62,99 @@
     <string name="btn_generate_sample_data">Generate sample data</string>
     <string name="btn_advanced_options">Advanced options</string>
     <string name="btn_hide_advanced_options">Hide advanced options</string>
+    <string name="catalog_auth_title">Authentication</string>
+    <string name="catalog_auth_back_desc">Back</string>
+    <string name="catalog_auth_headline">Identify your catalog!</string>
+    <string name="catalog_auth_description">We use your Google account to link and protect your catalog.We won\'t publish anything without your permission.</string>
+    <string name="btn_sign_in_google">Start with Google</string>
+    <string name="btn_skip_auth">Maybe later</string>
+    <string name="btn_publish_catalog">Publish Catalog</string>
+
+    <string name="catalog_auth_accept_terms_prefix">I accept the </string>
+    <string name="catalog_auth_terms_link">terms and conditions</string>
+    <string name="catalog_auth_accept_terms_middle"> and I am aware of the </string>
+    <string name="catalog_auth_privacy_link">privacy policy</string>
+
+    <string name="publish_catalog_summary_title">Catalog Information</string>
+    <string name="publish_catalog_summary_subtitle">Review the data your customers will see before publishing your catalog.</string>
+    <string name="publish_catalog_summary_no_description">No description</string>
+    <string name="publish_catalog_summary_btn_edit_info">Edit information</string>
+    <string name="publish_catalog_summary_products_title">Catalog products</string>
+    <string name="publish_catalog_summary_products_count">%d products selected</string>
+    <string name="publish_catalog_summary_btn_edit_products">Edit products</string>
+    <string name="publish_catalog_summary_footer">You can change this information before publishing. Your customers will only see the data you confirm here.</string>
+    <string name="publish_catalog_summary_label_currency">Currency</string>
+    <string name="publish_catalog_summary_label_whatsapp">WhatsApp</string>
+    <string name="publish_catalog_summary_label_location">Location</string>
+    <string name="publish_catalog_summary_location_empty">Not specified</string>
+    <string name="publish_catalog_summary_label_template">Template</string>
+    <string name="publish_catalog_summary_label_stock_visible">Visible stock</string>
+    <string name="publish_catalog_summary_stock_enabled">Enabled</string>
+    <string name="publish_catalog_summary_stock_disabled">Disabled</string>
+    <string name="publish_catalog_summary_stat_categories">Categories</string>
+    <string name="publish_catalog_summary_stat_with_image">With image</string>
+    <string name="publish_catalog_summary_stat_without_image">Without image</string>
+    <string name="publish_catalog_summary_stat_unavailable">Unavailable</string>
+
+    <string name="publish_catalog_edit_title">Basic information</string>
+    <string name="publish_catalog_edit_logo_placeholder">Store logo or image (Recommended)</string>
+    <string name="publish_catalog_edit_label_name">Store name *</string>
+    <string name="publish_catalog_edit_label_description">Description</string>
+    <string name="publish_catalog_edit_label_whatsapp">WhatsApp *</string>
+    <string name="publish_catalog_edit_label_currency">Currency</string>
+    <string name="publish_catalog_edit_label_template">Template *</string>
+    <string name="publish_catalog_edit_label_location">Location</string>
+    <string name="publish_catalog_edit_label_show_stock">Show available stock</string>
+    <string name="publish_catalog_edit_desc_show_stock">Your customers will see the available quantity</string>
+
+    <string name="publish_catalog_selection_title">Products</string>
+    <string name="publish_catalog_selection_filter_all">All</string>
+    <string name="publish_catalog_selection_filter_selected">Selected</string>
+    <string name="publish_catalog_selection_filter_no_image">No image</string>
+    <string name="publish_catalog_selection_filter_categories">Categories</string>
+    <string name="publish_catalog_selection_no_name">No name</string>
+    <string name="publish_catalog_selection_no_category">No category</string>
+
+    <string name="publish_catalog_title">Publish your catalog online</string>
+    <string name="publish_catalog_description">Share your products with customers via a free web link. No technical knowledge required.</string>
+    <string name="publish_catalog_benefit_whatsapp">Share via WhatsApp</string>
+    <string name="publish_catalog_benefit_update">Update anytime</string>
+    <string name="publish_catalog_benefit_no_web">No website building</string>
+    <string name="publish_catalog_btn_continue">Continue</string>
+    <string name="publish_catalog_btn_later">Maybe later</string>
+
+    <string name="publish_catalog_progress_title">Preparing your catalog</string>
+    <string name="publish_catalog_progress_description">Analyzing your products and organizing information for publication.</string>
+    <string name="publish_catalog_progress_step_products">Products found</string>
+    <string name="publish_catalog_progress_step_images">Images found</string>
+    <string name="publish_catalog_progress_step_processing">Processing catalog</string>
+    <string name="publish_catalog_progress_step_web">Generating web view</string>
+    <string name="publish_catalog_progress_step_ready">Preparing publication</string>
+    <string name="publish_catalog_progress_footer">This may take a few seconds.</string>
+
+    <string name="publish_catalog_preview_title">Review published catalog</string>
+    <string name="publish_catalog_preview_description">Your catalog is already online. Confirm that your customers will see the expected information.</string>
+    <string name="publish_catalog_preview_loading">Preparing preview...</string>
+    <string name="publish_catalog_preview_error">We couldn\'t load the preview</string>
+    <string name="publish_catalog_preview_retry">Try again</string>
+    <string name="publish_catalog_preview_footer">You can close this review or update your catalog whenever you want.</string>
+    <string name="publish_catalog_preview_btn_publish">Continue</string>
+    <string name="publish_catalog_preview_btn_cancel">Close review</string>
+
+    <string name="publish_catalog_success_title">¡Tu catálogo ya está en línea!</string>
+    <string name="publish_catalog_success_description">Ya puedes compartirlo con tus clientes mediante un enlace web.</string>
+    <string name="publish_catalog_success_url_title">Enlace de tu catálogo</string>
+    <string name="publish_catalog_success_btn_share_whatsapp">Compartir por WhatsApp</string>
+    <string name="publish_catalog_success_btn_view">Ver catálogo</string>
+    <string name="publish_catalog_success_btn_copy">Copiar enlace</string>
+    <string name="publish_catalog_success_next_steps_title">¿Qué sigue?</string>
+    <string name="publish_catalog_success_step_share">Comparte tu catálogo con clientes</string>
+    <string name="publish_catalog_success_step_update">Actualiza productos cuando quieras</string>
+    <string name="publish_catalog_success_step_keep_updated">Mantén siempre la información actualizada</string>
+    <string name="publish_catalog_success_metrics_products">Productos publicados</string>
+    <string name="publish_catalog_success_metrics_images">Imágenes publicadas</string>
+    <string name="publish_catalog_success_metrics_last_update">Última actualización</string>
+    <string name="publish_catalog_success_metrics_now">Hace unos segundos</string>
+    <string name="publish_catalog_share_message">¡Hola! Te comparto mi catálogo de productos actualizado. Puedes verlo aquí: %s</string>
+    <string name="catalog_auth_signed">You have signed with your google account you wish to continue or change your account</string>
 </resources>

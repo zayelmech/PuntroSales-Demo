@@ -3,9 +3,9 @@ package com.imecatro.demosales.di
 import android.content.Context
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.profile.data.repository.ProfileRepositoryImpl
-import com.imecatro.demosales.profile.domain.repository.ProfileRepository
-import com.imecatro.demosales.profile.domain.usecases.GetProfileUseCase
-import com.imecatro.demosales.profile.domain.usecases.UpdateProfileUseCase
+import com.imecatro.demosales.domain.core.profile.repository.ProfileRepository
+import com.imecatro.demosales.domain.core.profile.usecases.GetProfileUseCase
+import com.imecatro.demosales.domain.core.profile.usecases.UpdateProfileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

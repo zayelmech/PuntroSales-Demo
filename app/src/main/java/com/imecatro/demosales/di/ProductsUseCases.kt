@@ -2,6 +2,7 @@ package com.imecatro.demosales.di
 
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.domain.core.files.FileInteractor
+import com.imecatro.demosales.domain.products.repository.CatalogRepository
 import com.imecatro.demosales.domain.products.repository.CategoriesRepository
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.AddCategoryUseCase
@@ -14,9 +15,14 @@ import com.imecatro.demosales.domain.products.usecases.ExportProductsCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.ExportStockHistoryCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfCurrenciesUseCase
 import com.imecatro.demosales.domain.products.usecases.GetListOfUnitsUseCase
+import com.imecatro.demosales.domain.products.usecases.GetCatalogUrlUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductDetailsByIdUseCase
+import com.imecatro.demosales.domain.products.usecases.GetPublishedCatalogUseCase
+import com.imecatro.demosales.domain.products.usecases.IsCatalogPublishedUseCase
+import com.imecatro.demosales.domain.products.usecases.PublishWebCatalogUseCase
 import com.imecatro.demosales.domain.products.usecases.RemoveFromStockUseCase
 import com.imecatro.demosales.domain.products.usecases.SearchProductByBarcode
+import com.imecatro.demosales.domain.products.usecases.UnpublishCatalogUseCase
 import com.imecatro.demosales.domain.sales.details.GetDetailsOfSaleByIdUseCase
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
 import dagger.Module
@@ -154,4 +160,43 @@ object ProductsUseCases {
         coroutineDispatcher: CoroutineProvider
     ): ExportStockHistoryCsvUseCase =
         ExportStockHistoryCsvUseCase(productsRepository, fileInteractor, coroutineDispatcher)
+
+    @Provides
+    fun providesPublishWebCatalogUseCase(
+        catalogRepository: CatalogRepository,
+        productsRepository: ProductsRepository,
+        ioDispatcher: CoroutineProvider
+    ) = PublishWebCatalogUseCase(
+        catalogRepository = catalogRepository,
+        productsRepository = productsRepository,
+        ioDispatcher = ioDispatcher
+    )
+
+    @Provides
+    fun providesIsCatalogPublishedUseCase(
+        catalogRepository: CatalogRepository,
+        coroutineDispatcher: CoroutineProvider
+    ): IsCatalogPublishedUseCase =
+        IsCatalogPublishedUseCase(catalogRepository, coroutineDispatcher)
+
+    @Provides
+    fun providesUnpublishCatalogUseCase(
+        catalogRepository: CatalogRepository,
+        coroutineDispatcher: CoroutineProvider
+    ): UnpublishCatalogUseCase =
+        UnpublishCatalogUseCase(catalogRepository, coroutineDispatcher)
+
+    @Provides
+    fun providesGetPublishedCatalogUseCase(
+        catalogRepository: CatalogRepository,
+        coroutineDispatcher: CoroutineProvider
+    ): GetPublishedCatalogUseCase =
+        GetPublishedCatalogUseCase(catalogRepository, coroutineDispatcher)
+
+    @Provides
+    fun providesGetCatalogUrlUseCase(
+        catalogRepository: CatalogRepository,
+        coroutineDispatcher: CoroutineProvider
+    ): GetCatalogUrlUseCase =
+        GetCatalogUrlUseCase(catalogRepository, coroutineDispatcher)
 }

@@ -6,6 +6,7 @@ import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.ExportProductsCsvUseCase
 import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
+import com.imecatro.demosales.domain.products.usecases.IsCatalogPublishedUseCase
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.products.ui.list.mappers.toProductUiModel
@@ -35,9 +36,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
-    private val productsRepository: ProductsRepository, //= ProductsRepositoryDummyImpl()
+    private val productsRepository: ProductsRepository,
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
     private val exportProductsCsvUseCase: ExportProductsCsvUseCase,
+    private val isCatalogPublishedUseCase: IsCatalogPublishedUseCase,
     private val iODispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ListProductsUiState>(ListProductsUiState.idle) {
 
@@ -148,6 +150,11 @@ class ProductsViewModel @Inject constructor(
     }
 
     override fun onStart() {
+        viewModelScope.launch {
+            isCatalogPublishedUseCase.execute(Unit).onSuccess { catalog ->
+                updateState { copy(isCatalogPublished = catalog != null) }
+            }
+        }
         viewModelScope.launch(Dispatchers.IO) {
             getAllCategoriesUseCase().collect { list ->
                 val filter = list.map { CategoriesFilter(it.name, false) }

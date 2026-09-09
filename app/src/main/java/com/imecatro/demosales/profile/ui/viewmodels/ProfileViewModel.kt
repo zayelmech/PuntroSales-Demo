@@ -2,8 +2,8 @@ package com.imecatro.demosales.profile.ui.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.core.architecture.usecase.onAny
-import com.imecatro.demosales.profile.domain.usecases.GetProfileUseCase
-import com.imecatro.demosales.profile.domain.usecases.UpdateProfileUseCase
+import com.imecatro.demosales.domain.core.profile.usecases.GetProfileUseCase
+import com.imecatro.demosales.domain.core.profile.usecases.UpdateProfileUseCase
 import com.imecatro.demosales.profile.ui.mappers.toDomainModel
 import com.imecatro.demosales.profile.ui.mappers.toUiModel
 import com.imecatro.demosales.profile.ui.model.UserProfileUiModel
@@ -34,8 +34,18 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateStoreName(name: String) {
-        updateState { copy(profile = profile.copy(storeName = name)) }
+    fun onUpdateInfo(name: String, description: String, whatsapp: String, location: String, currency: String) {
+        updateState {
+            copy(
+                profile = profile.copy(
+                    storeName = name,
+                    storeDescription = description,
+                    whatsapp = whatsapp,
+                    location = location,
+                    currency = currency
+                )
+            )
+        }
         onSaveSettings()
     }
 

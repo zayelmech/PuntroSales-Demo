@@ -1,8 +1,6 @@
 package com.imecatro.demosales.navigation.products
 
 import androidx.annotation.Keep
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -34,16 +32,9 @@ sealed class ProductsDestinations {
     @Serializable
     data class Details(val id: Long, val mode : DetailsOf = DetailsOf.Details )
 
-    /**
-     * Destination for the catalog maker screen.
-     * @property ids Collection of product IDs to include in the catalog.
-     */
-    @Serializable
-    data class CatalogMaker (val ids : Collection<Long>)
-
     /** Destination for the adaptive list-detail layout. */
     @Serializable
-    data object ListAndDetails
+    data object ListAndDetails : ProductsDestinations()
 
     /** Destination for the categories screen. */
     @Serializable

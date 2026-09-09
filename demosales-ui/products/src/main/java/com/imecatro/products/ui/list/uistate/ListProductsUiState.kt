@@ -18,6 +18,7 @@ data class ListProductsUiState(
     val productsFiltered: List<ProductUiModel>,
     val isSearching: Boolean,
     val enableSelection: Boolean = false,
+    val isCatalogPublished: Boolean = false,
 ) : UiState {
 
     override fun isFetchingOrProcessingData(): Boolean {

@@ -1,6 +1,6 @@
 package com.imecatro.demosales.profile.ui.uistate
 
-import com.imecatro.demosales.profile.domain.model.UserProfileDomainModel
+import com.imecatro.demosales.domain.core.profile.model.UserProfileDomainModel
 import com.imecatro.demosales.profile.ui.mappers.toUiModel
 import com.imecatro.demosales.profile.ui.model.UserProfileUiModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel

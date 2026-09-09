@@ -37,6 +37,7 @@ import kotlinx.parcelize.Parcelize
 fun ListAndDetailsPane(
     onAddProduct: () -> Unit = {},
     onCreateCatalog: (List<Long>) -> Unit = {},
+    onManagementAction: () -> Unit = {},
     onEditProduct: (Long) -> Unit = {}
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfo()
@@ -62,6 +63,7 @@ fun ListAndDetailsPane(
                 ListOfProductsStateImpl(
                     productsViewModel = hiltViewModel(),
                     onCreateCatalog = onCreateCatalog,
+                    onManagementAction = onManagementAction,
                     onCategoriesNav = {
                         scope.launch {
                             navigator.navigateTo(

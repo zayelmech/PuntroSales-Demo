@@ -50,7 +50,7 @@
     <string name="txt_uncategorized">Sin categoría</string>
     <string name="txt_select_all">Seleccionar todos</string>
     <string name="btn_save_pdf">Guardar PDF</string>
-    <string name="txt_catalog_pdf">Crear catálogo - PDF</string>
+    <string name="txt_catalog_pdf">Crear catálogo Web</string>
     <string name="top_bar_catalog">Catálogo</string>
     <string name="title_products_list">Inventario</string>
     <string name="btn_download_products_csv">Exportar CSV</string>
@@ -64,4 +64,81 @@
     <string name="btn_generate_sample_data">Generar datos de ejemplo</string>
     <string name="btn_advanced_options">Opciones avanzadas</string>
     <string name="btn_hide_advanced_options">Ocultar opciones avanzadas</string>
+
+    <string name="catalog_auth_title">Autenticación</string>
+    <string name="catalog_auth_back_desc">Regresar</string>
+    <string name="catalog_auth_headline">¡Publica tu catálogo!</string>
+    <string name="catalog_auth_description">Utilizamos tu cuenta de Google para asociar y proteger tu catálogo.No publicaremos nada sin tu autorización.</string>
+    <string name="btn_sign_in_google">Iniciar con Google</string>
+    <string name="btn_skip_auth">En otro momento</string>
+    <string name="publish_catalog_title">Publica tu catálogo</string>
+    <string name="publish_catalog_description">Comparte tus productos con clientes mediante un enlace web gratuito. No necesitas conocimientos técnicos.</string>
+    <string name="publish_catalog_benefit_whatsapp">Comparte por WhatsApp</string>
+    <string name="publish_catalog_benefit_update">Actualiza cuando quieras</string>
+    <string name="publish_catalog_benefit_no_web">Sin crear páginas web</string>
+    <string name="publish_catalog_btn_continue">Continuar</string>
+    <string name="publish_catalog_btn_later">Más tarde</string>
+
+    <string name="btn_publish_catalog">Publicar Catálogo</string>
+
+    <string name="publish_catalog_summary_title">Información del catálogo</string>
+    <string name="publish_catalog_summary_subtitle">Revisa los datos que verán tus clientes antes de publicar tu catálogo.</string>
+    <string name="publish_catalog_summary_no_description">Sin descripción</string>
+    <string name="publish_catalog_summary_btn_edit_info">Editar información</string>
+    <string name="publish_catalog_summary_products_title">Productos del catálogo</string>
+    <string name="publish_catalog_summary_products_count">%d productos seleccionados</string>
+    <string name="publish_catalog_summary_btn_edit_products">Editar productos</string>
+    <string name="publish_catalog_summary_footer">Puedes cambiar esta información antes de publicar. Tus clientes solo verán los datos que confirmes aquí.</string>
+    <string name="publish_catalog_summary_label_currency">Moneda</string>
+    <string name="publish_catalog_summary_label_whatsapp">WhatsApp</string>
+    <string name="publish_catalog_summary_label_location">Ubicación</string>
+    <string name="publish_catalog_summary_location_empty">No especificada</string>
+    <string name="publish_catalog_summary_label_template">Plantilla</string>
+    <string name="publish_catalog_summary_label_stock_visible">Stock visible</string>
+    <string name="publish_catalog_summary_stock_enabled">Activado</string>
+    <string name="publish_catalog_summary_stock_disabled">Desactivado</string>
+    <string name="publish_catalog_summary_stat_categories">Categorías</string>
+    <string name="publish_catalog_summary_stat_with_image">Con imagen</string>
+    <string name="publish_catalog_summary_stat_without_image">Sin imagen</string>
+    <string name="publish_catalog_summary_stat_unavailable">No disponibles</string>
+
+    <string name="publish_catalog_edit_title">Información básica</string>
+    <string name="publish_catalog_edit_logo_placeholder">Logo o imagen de la tienda (Recomendado)</string>
+    <string name="publish_catalog_edit_label_name">Nombre de la tienda *</string>
+    <string name="publish_catalog_edit_label_description">Descripción</string>
+    <string name="publish_catalog_edit_label_whatsapp">WhatsApp *</string>
+    <string name="publish_catalog_edit_label_currency">Moneda</string>
+    <string name="publish_catalog_edit_label_template">Plantilla *</string>
+    <string name="publish_catalog_edit_label_location">Ubicación</string>
+    <string name="publish_catalog_edit_label_show_stock">Mostrar stock disponible</string>
+    <string name="publish_catalog_edit_desc_show_stock">Tus clientes verán la cantidad disponible</string>
+
+    <string name="publish_catalog_selection_title">Productos</string>
+    <string name="publish_catalog_selection_filter_all">Todos</string>
+    <string name="publish_catalog_selection_filter_selected">Seleccionados</string>
+    <string name="publish_catalog_selection_filter_no_image">Sin imagen</string>
+    <string name="publish_catalog_selection_filter_categories">Categorías</string>
+    <string name="publish_catalog_selection_no_name">Sin nombre</string>
+    <string name="publish_catalog_selection_no_category">Sin categoría</string>
+
+    <string name="publish_catalog_progress_title">Estamos preparando tu catálogo</string>
+    <string name="publish_catalog_progress_description">Analizando tus productos y organizando la información para la publicación.</string>
+    <string name="publish_catalog_progress_step_products">Productos encontrados</string>
+    <string name="publish_catalog_progress_step_images">Imágenes encontradas</string>
+    <string name="publish_catalog_progress_step_processing">Procesando catálogo</string>
+    <string name="publish_catalog_progress_step_web">Generando vista web</string>
+    <string name="publish_catalog_progress_step_ready">Preparando publicación</string>
+    <string name="publish_catalog_progress_footer">Esto puede tomar unos segundos.</string>
+
+    <string name="publish_catalog_preview_title">Revisa tu catálogo publicado</string>
+    <string name="publish_catalog_preview_description">Tu catálogo ya está en línea. Confirma que tus clientes verán la información esperada.</string>
+    <string name="publish_catalog_preview_loading">Preparando vista previa...</string>
+    <string name="publish_catalog_preview_error">No pudimos cargar la vista previa</string>
+    <string name="publish_catalog_preview_retry">Intentar de nuevo</string>
+    <string name="publish_catalog_preview_footer">Puedes cerrar esta revisión o actualizar tu catálogo cuando quieras.</string>
+    <string name="publish_catalog_preview_btn_publish">Continuar</string>
+    <string name="publish_catalog_preview_btn_cancel">Cerrar revisión</string>
+
+    <string name="catalog_auth_signed">Has iniciado sesión con tu cuenta de Google. ¿Deseas continuar o cambiar de cuenta?</string>
+
 </resources>

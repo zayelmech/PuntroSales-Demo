@@ -1,7 +1,7 @@
 package com.imecatro.demosales.ui.viewmodels
 
 import androidx.lifecycle.viewModelScope
-import com.imecatro.demosales.profile.domain.usecases.GetProfileUseCase
+import com.imecatro.demosales.domain.core.profile.usecases.GetProfileUseCase
 import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.uistate.MainUiState
 import dagger.hilt.android.lifecycle.HiltViewModel

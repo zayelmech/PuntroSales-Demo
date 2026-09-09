@@ -40,9 +40,13 @@ import androidx.compose.ui.window.Dialog
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UiStateHandler(state: UiState, onDismiss: () -> Unit) {
+fun UiStateHandler(
+    state: UiState,
+    showLoading: Boolean = true,
+    onDismiss: () -> Unit
+) {
 
-    if (state.isLoading && state.error == null) Dialog(onDismissRequest = {}) {
+    if (showLoading && state.isLoading && state.error == null) Dialog(onDismissRequest = {}) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }

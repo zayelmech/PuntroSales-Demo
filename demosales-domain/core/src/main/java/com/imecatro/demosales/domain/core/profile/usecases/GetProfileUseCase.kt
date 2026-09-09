@@ -1,9 +1,9 @@
-package com.imecatro.demosales.profile.domain.usecases
+package com.imecatro.demosales.domain.core.profile.usecases
 
 import com.imecatro.demosales.domain.core.architecture.coroutine.CoroutineProvider
 import com.imecatro.demosales.domain.core.architecture.usecase.BackgroundUseCase
-import com.imecatro.demosales.profile.domain.model.UserProfileDomainModel
-import com.imecatro.demosales.profile.domain.repository.ProfileRepository
+import com.imecatro.demosales.domain.core.profile.model.UserProfileDomainModel
+import com.imecatro.demosales.domain.core.profile.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetProfileUseCase(
