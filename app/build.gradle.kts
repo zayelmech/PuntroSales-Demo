@@ -1,9 +1,7 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp.plugin)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.parcelize)
@@ -60,11 +58,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
 
-    }
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-        }
     }
     buildFeatures {
         compose = true
