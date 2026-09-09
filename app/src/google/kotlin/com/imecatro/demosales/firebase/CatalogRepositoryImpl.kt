@@ -22,7 +22,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import okio.ByteString.Companion.encode
 import java.io.ByteArrayOutputStream
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import javax.inject.Inject
 
@@ -202,7 +205,9 @@ class CatalogRepositoryImpl @Inject constructor(
         // 6. Return the final web catalog URL
         val previewBaseUrl = "https://www.imecatro.com/catalog/?catalog="
 
-        return previewBaseUrl + Base64.encodeToString(jsonCatalogUrl.toByteArray(), Base64.URL_SAFE)
+        return previewBaseUrl + withContext(Dispatchers.IO) {
+            URLEncoder.encode(jsonCatalogUrl, StandardCharsets.UTF_8.toString())
+        }
     }
 
     override suspend fun isCatalogPublished(): Boolean {
