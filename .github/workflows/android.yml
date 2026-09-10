@@ -36,17 +36,25 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew :app:assembleGoogleDebug --stacktrace
 
-      - name: Generate Lint report
-        run: ./gradlew :app:lintGoogleDebug --stacktrace
-
-      - name: Generate Dokka docs
+      - name: Generate Lint reports by module
         run: |
-          ./gradlew dokkaGeneratePublicationHtml --stacktrace || ./gradlew dokkaGenerate --stacktrace
+          ./gradlew \
+            :app:lintGoogleDebug \
+            :app:lintHuaweiDebug \
+            :demosales-data:clients:lintDebug \
+            :demosales-data:products:lintDebug \
+            :demosales-data:sales:lintDebug \
+            :demosales-ui:clients:lintDebug \
+            :demosales-ui:products:lintDebug \
+            :demosales-ui:sales:lintDebug \
+            :demosales-ui:theme:lintDebug \
+            --stacktrace
+
+      - name: Generate Dokka multi-module docs
+        run: ./gradlew :dokkaGeneratePublicationHtml --stacktrace
 
       - name: Generate Kover coverage report
-        run: |
-          ./gradlew testGoogleDebugUnitTest --stacktrace
-          ./gradlew koverHtmlReport --stacktrace || ./gradlew :app:koverHtmlReportGoogleDebug --stacktrace
+        run: ./gradlew :app:testGoogleDebugUnitTest :app:koverHtmlReportGoogleDebug --stacktrace
 
       - name: Prepare static reports folder
         run: |
@@ -57,51 +65,72 @@ jobs:
           mkdir -p _site/dokka
           mkdir -p _site/coverage
 
-          echo "=== Searching Lint report ==="
-          LINT_INDEX=$(find . \
-            \( -name "lint-results-googleDebug.html" -o -name "lint-results-debug.html" -o -name "lint-results*.html" \) \
-            | head -n 1)
+          cat > _site/lint/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>PuntroSales Lint Reports</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.5; }
+              li { margin: 10px 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Android Lint Reports by Module</h1>
+            <ul>
+              <li><a href="./app-google-debug/">app — Google Debug</a></li>
+              <li><a href="./app-huawei-debug/">app — Huawei Debug</a></li>
+              <li><a href="./demosales-data-clients/">demosales-data-clients</a></li>
+              <li><a href="./demosales-data-products/">demosales-data-products</a></li>
+              <li><a href="./demosales-data-sales/">demosales-data-sales</a></li>
+              <li><a href="./demosales-ui-clients/">demosales-ui-clients</a></li>
+              <li><a href="./demosales-ui-products/">demosales-ui-products</a></li>
+              <li><a href="./demosales-ui-sales/">demosales-ui-sales</a></li>
+              <li><a href="./demosales-ui-theme/">demosales-ui-theme</a></li>
+            </ul>
+          </body>
+          </html>
+          EOF
 
-          if [ -n "$LINT_INDEX" ] && [ -f "$LINT_INDEX" ]; then
-            echo "Lint report found at: $LINT_INDEX"
-            cp "$LINT_INDEX" _site/lint/index.html
-          else
-            echo "ERROR: Lint report not found"
-            find . -path "*/build/reports/*" -type f | sort
-            exit 1
-          fi
+          copy_lint_report() {
+            target="$1"
+            source="$2"
+            if [ ! -f "$source" ]; then
+              echo "ERROR: Expected Lint report not found: $source"
+              exit 1
+            fi
+            mkdir -p "_site/lint/$target"
+            cp "$source" "_site/lint/$target/index.html"
+          }
 
-          echo "=== Searching Dokka index.html ==="
-          DOKKA_INDEX=$(find . \
-            -path "*/build/dokka*" \
-            -name "index.html" \
-            | head -n 1)
+          copy_lint_report "app-google-debug" "app/build/reports/lint-results-googleDebug.html"
+          copy_lint_report "app-huawei-debug" "app/build/reports/lint-results-huaweiDebug.html"
+          copy_lint_report "demosales-data-clients" "demosales-data/clients/build/reports/lint-results-debug.html"
+          copy_lint_report "demosales-data-products" "demosales-data/products/build/reports/lint-results-debug.html"
+          copy_lint_report "demosales-data-sales" "demosales-data/sales/build/reports/lint-results-debug.html"
+          copy_lint_report "demosales-ui-clients" "demosales-ui/clients/build/reports/lint-results-debug.html"
+          copy_lint_report "demosales-ui-products" "demosales-ui/products/build/reports/lint-results-debug.html"
+          copy_lint_report "demosales-ui-sales" "demosales-ui/sales/build/reports/lint-results-debug.html"
+          copy_lint_report "demosales-ui-theme" "demosales-ui/theme/build/reports/lint-results-debug.html"
 
-          if [ -n "$DOKKA_INDEX" ] && [ -f "$DOKKA_INDEX" ]; then
-            DOKKA_DIR=$(dirname "$DOKKA_INDEX")
-            echo "Dokka docs found at: $DOKKA_DIR"
-            cp -a "$DOKKA_DIR"/. _site/dokka/
-          else
-            echo "ERROR: Dokka index.html not found"
+          echo "=== Copying Dokka multi-module documentation ==="
+          DOKKA_DIR="build/dokka/html"
+          if [ ! -f "$DOKKA_DIR/index.html" ]; then
+            echo "ERROR: Dokka multi-module index not found at $DOKKA_DIR/index.html"
             find . -path "*/build/dokka*" -type f | sort || true
             exit 1
           fi
+          cp -a "$DOKKA_DIR"/. _site/dokka/
 
-          echo "=== Searching Kover index.html ==="
-          KOVER_INDEX=$(find . \
-            -path "*/build/reports/kover/*" \
-            -name "index.html" \
-            | head -n 1)
-
-          if [ -n "$KOVER_INDEX" ] && [ -f "$KOVER_INDEX" ]; then
-            KOVER_DIR=$(dirname "$KOVER_INDEX")
-            echo "Kover report found at: $KOVER_DIR"
-            cp -a "$KOVER_DIR"/. _site/coverage/
-          else
-            echo "ERROR: Kover index.html not found"
-            find . -path "*/build/reports/kover*" -type f | sort || true
+          echo "=== Copying Kover report ==="
+          KOVER_DIR="app/build/reports/kover/htmlGoogleDebug"
+          if [ ! -f "$KOVER_DIR/index.html" ]; then
+            echo "ERROR: Kover report not found at $KOVER_DIR/index.html"
             exit 1
           fi
+          cp -a "$KOVER_DIR"/. _site/coverage/
 
           cat > _site/index.html <<'EOF'
           <!DOCTYPE html>
@@ -116,8 +145,8 @@ jobs:
           </head>
           <body>
             <h1>PuntroSales CI Reports</h1>
-            <a href="./lint/">Android Lint Report</a>
-            <a href="./dokka/">Dokka Documentation</a>
+            <a href="./lint/">Android Lint Reports by Module</a>
+            <a href="./dokka/">Dokka Multi-module Documentation</a>
             <a href="./coverage/">Kover Coverage Report</a>
           </body>
           </html>

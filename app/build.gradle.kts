@@ -175,6 +175,9 @@ dokka {
     }
 
     dokkaSourceSets.configureEach {
+        // Dokka 2.2 cannot analyze multiple Android flavors that share source roots.
+        // The Google release variant contains the common application API we publish.
+        suppress.set(name != "googleRelease")
         // Point to the markdown file for the home page (module/package documentation)
         includes.from(project.layout.projectDirectory.file("src/main/dokka/module.md"))
     }

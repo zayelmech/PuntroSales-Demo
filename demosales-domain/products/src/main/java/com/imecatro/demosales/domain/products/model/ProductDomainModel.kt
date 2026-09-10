@@ -10,7 +10,7 @@ import com.imecatro.demosales.domain.core.model.ProductUnit
  * @property name The name of the product. Can be null.
  * @property price The price of the product. Can be null.
  * @property currency The currency in which the price is expressed. Can be null.
- * @property unit The unit of measurement for the product (e.g., "kg", "pcs"). Defaults to [ProductUnit.Default.symbol].
+ * @property unit The unit of measurement for the product (e.g., "kg", "pcs"). Defaults to "pz".
  * @property stock Information about the product's stock.
  * @property details A detailed description of the product.
  * @property imageUri The URI of the product's image. Can be null if no image is available.
@@ -28,4 +28,3 @@ data class ProductDomainModel(
     val category: ProductCategoryDomainModel?,
     val barcode : String?
 )
-

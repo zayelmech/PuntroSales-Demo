@@ -86,7 +86,7 @@ fun AppDestinations.toRoute(): ParentFeature {
 /**
  * Navigates to a root destination in the navigation graph.
  *
- * Uses [NavOptions] to clear the backstack up to the start destination and maintain state.
+ * Uses navigation options to clear the backstack up to the start destination and maintain state.
  *
  * @param route The root [ParentFeature] route to navigate to.
  */

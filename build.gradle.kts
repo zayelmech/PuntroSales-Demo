@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaExtension
+
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.android.library) apply false
@@ -15,5 +17,32 @@ plugins {
 
 subprojects {
     pluginManager.apply("org.jetbrains.kotlinx.kover")
-    pluginManager.apply("org.jetbrains.dokka")
+    pluginManager.withPlugin("org.jetbrains.dokka") {
+        extensions.configure<DokkaExtension> {
+            dokkaPublications.named("html") {
+                moduleName.set(project.path.removePrefix(":").replace(":", "-"))
+            }
+        }
+    }
+}
+
+dokka {
+    dokkaPublications.html {
+        moduleName.set("PuntroSales")
+    }
+}
+
+dependencies {
+    dokka(project(":app"))
+    dokka(project(":demosales-data:clients"))
+    dokka(project(":demosales-data:products"))
+    dokka(project(":demosales-data:sales"))
+    dokka(project(":demosales-domain:clients"))
+    dokka(project(":demosales-domain:core"))
+    dokka(project(":demosales-domain:products"))
+    dokka(project(":demosales-domain:sales"))
+    dokka(project(":demosales-ui:clients"))
+    dokka(project(":demosales-ui:products"))
+    dokka(project(":demosales-ui:sales"))
+    dokka(project(":demosales-ui:theme"))
 }
