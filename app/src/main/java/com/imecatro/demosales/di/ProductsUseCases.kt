@@ -8,6 +8,7 @@ import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.AddCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.DeleteCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.GetAllCategoriesUseCase
+import com.imecatro.demosales.domain.products.usecases.GetAllProductsUseCase
 import com.imecatro.demosales.domain.products.usecases.UpdateCategoryUseCase
 import com.imecatro.demosales.domain.products.usecases.GetProductsLikeUseCase
 import com.imecatro.demosales.domain.products.usecases.AddStockUseCase
@@ -38,6 +39,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 @Module
 @InstallIn(ViewModelComponent::class)
 object ProductsUseCases {
+
+    @Provides
+    fun providesGetAllProductsUseCase(productsRepository: ProductsRepository) =
+        GetAllProductsUseCase(productsRepository)
 
     /**
      * Provides [GetAllCategoriesUseCase].

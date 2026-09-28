@@ -13,6 +13,7 @@ import com.imecatro.demosales.ui.sales.add.viewmodel.AddSaleViewModel
 import com.imecatro.demosales.ui.sales.add.viewmodel.CheckoutViewModel
 import com.imecatro.demosales.ui.sales.details.viewmodel.TicketDetailsViewModel
 import com.imecatro.demosales.ui.sales.details.views.TicketDetailsComposableImpl
+import com.imecatro.demosales.ui.sales.fulfillment.views.FulfillmentPlanScreenImpl
 
 /**
  * Defines the navigation graph for the Sales feature.
@@ -28,6 +29,7 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
 
             ListAndDetailsSalesPane(
                 onAddSale = { navController.navigate(SalesDestinations.Add()) },
+                onOpenFulfillmentPlan = { navController.navigate(SalesDestinations.FulfillmentPlan) },
                 onEditSale = { id ->
                     navController.navigate(SalesDestinations.Checkout(id)) {
                         popUpTo(SalesDestinations.Details(id)) { inclusive = true }
@@ -38,6 +40,13 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
                         popUpTo(SalesDestinations.Details(id)) { inclusive = true }
                     }
                 }
+            )
+        }
+        composable<SalesDestinations.FulfillmentPlan> {
+            FulfillmentPlanScreenImpl(
+                viewModel = hiltViewModel(),
+                onBack = { navController.popBackStack() },
+                onOpenOrder = { id -> navController.navigate(SalesDestinations.Details(id)) }
             )
         }
         composable<SalesDestinations.Add> { backStackEntry ->
@@ -105,9 +114,7 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
                     }
                 },
                 onBackToList = {
-                    navController.navigate(SalesDestinations.List) {
-                        popUpTo(SalesDestinations.List) { inclusive = true }
-                    }
+                    navController.popBackStack()
                 }
             )
         }

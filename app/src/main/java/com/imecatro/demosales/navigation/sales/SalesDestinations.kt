@@ -12,6 +12,10 @@ sealed class SalesDestinations {
     @Serializable
     object List
 
+    /** Read-only demand and purchasing plan for pending orders. */
+    @Serializable
+    object FulfillmentPlan
+
     /**
      * Destination for adding a new sale.
      * @property id Optional ID if duplicating an existing sale.

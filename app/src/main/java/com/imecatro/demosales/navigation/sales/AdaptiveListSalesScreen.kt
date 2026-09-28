@@ -34,7 +34,8 @@ import kotlinx.parcelize.Parcelize
 fun ListAndDetailsSalesPane(
     onAddSale: () -> Unit = {},
     onEditSale: (Long) -> Unit = {},
-    onDuplicateSale: (Long) -> Unit = {}
+    onDuplicateSale: (Long) -> Unit = {},
+    onOpenFulfillmentPlan: () -> Unit = {}
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -57,7 +58,10 @@ fun ListAndDetailsSalesPane(
         navigator = navigator,
         mainPane = {
             AnimatedPane {
-                SalesListComposableStateImpl(salesListViewModel = hiltViewModel()) { id ->
+                SalesListComposableStateImpl(
+                    salesListViewModel = hiltViewModel(),
+                    onOpenFulfillmentPlan = onOpenFulfillmentPlan
+                ) { id ->
                     if (id != null) {
                         scope.launch {
                             viewModel.loadSaleDetailsBy(id)

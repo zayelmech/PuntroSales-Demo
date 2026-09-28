@@ -87,7 +87,8 @@ fun SalesListComposable(
     onShowSalesMetrics: () -> Unit = {},
     onAddNewSale: () -> Unit = {},
     searchQuery: String = "",
-    onSearchQueryChange: (String) -> Unit = {}
+    onSearchQueryChange: (String) -> Unit = {},
+    onOpenFulfillmentPlan: () -> Unit = {}
 ) {
 
     val scrollState = rememberLazyListState()
@@ -157,6 +158,12 @@ fun SalesListComposable(
                     onClearSearchBar = { onSearchQueryChange("") },
                     placeholder = stringResource(R.string.txt_placeholder_search),
                     extraActions = {
+                        FilledIconButton(onClick = onOpenFulfillmentPlan) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_fulfillment_plan_24),
+                                contentDescription = stringResource(R.string.fulfillment_title)
+                            )
+                        }
                         IconButton(onClick = { showFilters = !showFilters }) {
                             Icon(
                                 painter = painterResource(PuntroSalesIcons.filter),
@@ -290,6 +297,7 @@ private val fakelist = listOf(
 @Composable
 fun SalesListComposableStateImpl(
     salesListViewModel: SalesListViewModel,
+    onOpenFulfillmentPlan: () -> Unit = {},
     onNavigate: (Long?) -> Unit
 ) {
 
@@ -333,7 +341,8 @@ fun SalesListComposableStateImpl(
         statusList = statusFilterUiState,
         onAddNewSale = { onNavigate(null) },
         searchQuery = searchQuery,
-        onSearchQueryChange = { salesListViewModel.onSearchQueryChange(it) }
+        onSearchQueryChange = { salesListViewModel.onSearchQueryChange(it) },
+        onOpenFulfillmentPlan = onOpenFulfillmentPlan
     )
 
     LaunchedEffect(reportState) {
