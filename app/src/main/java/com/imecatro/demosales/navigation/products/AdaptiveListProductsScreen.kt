@@ -38,7 +38,8 @@ fun ListAndDetailsPane(
     onAddProduct: () -> Unit = {},
     onCreateCatalog: (List<Long>) -> Unit = {},
     onManagementAction: () -> Unit = {},
-    onEditProduct: (Long) -> Unit = {}
+    onEditProduct: (Long) -> Unit = {},
+    banner: @Composable () -> Unit = {}
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -62,6 +63,7 @@ fun ListAndDetailsPane(
             AnimatedPane {
                 ListOfProductsStateImpl(
                     productsViewModel = hiltViewModel(),
+                    banner = banner,
                     onCreateCatalog = onCreateCatalog,
                     onManagementAction = onManagementAction,
                     onCategoriesNav = {

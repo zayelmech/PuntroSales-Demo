@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_title">Pon en marcha tu negocio</string>
+    <string name="onboarding_intro_badge">PUNTRO SALES · 5 PASOS GUIADOS</string>
+    <string name="onboarding_welcome_title">Todo lo necesario para tu primera venta</string>
+    <string name="onboarding_intro">Configura tu tienda, prepara tu inventario, registra tu primer pedido y comparte un catálogo con tus clientes.</string>
+    <string name="onboarding_intro_plan_title">Tu ruta para comenzar</string>
+    <string name="onboarding_flexible">Completa los pasos en cualquier orden o continúa cuando estés listo.</string>
+    <string name="onboarding_start">Empezar ahora</string>
+    <string name="onboarding_later">Ahora no</string>
+    <string name="onboarding_continue">Continuar</string>
+    <string name="onboarding_all_steps">Ver todos los pasos</string>
+    <string name="onboarding_close">Cerrar</string>
+    <string name="onboarding_progress">%1$d de 5 pasos</string>
+    <string name="onboarding_product_progress">Productos: %1$d de 5</string>
+    <string name="onboarding_business">Configura tu negocio</string>
+    <string name="onboarding_products">Agrega cinco productos</string>
+    <string name="onboarding_order">Registra tu primer pedido</string>
+    <string name="onboarding_fulfillment">Consulta qué debes surtir</string>
+    <string name="onboarding_catalog">Publica o comparte tu catálogo</string>
+    <string name="onboarding_business_hint">Abre los datos del negocio, revisa el nombre y la moneda y guarda. El logo y la descripción son opcionales.</string>
+    <string name="onboarding_products_hint">Guarda cinco productos. Puedes registrar pedidos aunque tengas menos.</string>
+    <string name="onboarding_order_hint">Agrega productos a un pedido y guárdalo. Recomendamos guardarlo como pendiente para descubrir el Plan de surtido.</string>
+    <string name="onboarding_fulfillment_hint">Abre el Plan de surtido y espera a que cargue. Tener inventario suficiente también cuenta.</string>
+    <string name="onboarding_catalog_hint">Publica tu catálogo y usa su enlace o código QR para compartirlo. La publicación completa este paso; compartir no confirma la recepción.</string>
+    <string name="onboarding_done">Completado</string>
+    <string name="onboarding_pending">Pendiente</string>
+    <string name="onboarding_complete">Completaste los cinco pasos. ¡Tu negocio está listo!</string>
+</resources>

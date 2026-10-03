@@ -9,6 +9,8 @@ import com.imecatro.demosales.domain.core.auth.repository.AuthRepository
 import com.imecatro.demosales.domain.products.repository.CatalogRepository
 import com.imecatro.demosales.firebase.AuthRepositoryImpl
 import com.imecatro.demosales.firebase.CatalogRepositoryImpl
+import com.imecatro.demosales.onboarding.OnboardingStore
+import com.imecatro.demosales.onboarding.OnboardingCatalogRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -50,5 +52,6 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideCatalogRepository(impl: CatalogRepositoryImpl): CatalogRepository = impl
+    fun provideCatalogRepository(impl: CatalogRepositoryImpl, onboarding: OnboardingStore): CatalogRepository =
+        OnboardingCatalogRepository(impl, onboarding)
 }

@@ -13,11 +13,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.imecatro.demosales.onboarding.OnboardingStore
+import com.imecatro.demosales.onboarding.OnboardingStep
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase
+    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val onboarding: OnboardingStore
 ) : BaseViewModel<ProfileUiState>(ProfileUiState.idle) {
 
     override fun onStart() {
@@ -46,7 +49,7 @@ class ProfileViewModel @Inject constructor(
                 )
             )
         }
-        onSaveSettings()
+        onSaveSettings(confirmBusiness = true)
     }
 
     fun onUpdateLanguage(language: String) {
@@ -71,10 +74,15 @@ class ProfileViewModel @Inject constructor(
 
     fun onErrorMessage() = updateState { copy(profileError = null) }
 
-    private fun onSaveSettings() {
+    private fun onSaveSettings(confirmBusiness: Boolean = false) {
+        val settings = uiState.value.profile
         viewModelScope.launch {
-            val settings = uiState.value.profile
             updateProfileUseCase.execute(settings.toDomainModel())
+                .onSuccess {
+                    if (confirmBusiness && settings.storeName.isNotBlank() && settings.currency.isNotBlank()) {
+                        onboarding.complete(OnboardingStep.BUSINESS)
+                    }
+                }
                 .onFailure { updateState { copy(profileError = it.message) } }
         }
     }

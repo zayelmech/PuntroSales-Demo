@@ -4,6 +4,8 @@ import com.imecatro.demosales.domain.core.auth.repository.AuthRepository
 import com.imecatro.demosales.domain.core.auth.repository.UserAuthenticated
 import com.imecatro.demosales.domain.products.repository.CatalogRepository
 import com.imecatro.demosales.domain.products.usecases.WebCatalogDomainModel
+import com.imecatro.demosales.onboarding.OnboardingStore
+import com.imecatro.demosales.onboarding.OnboardingCatalogRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +25,8 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideCatalogRepository(): CatalogRepository = UnsupportedCatalogRepository
+    fun provideCatalogRepository(onboarding: OnboardingStore): CatalogRepository =
+        OnboardingCatalogRepository(UnsupportedCatalogRepository, onboarding)
 }
 
 private data object UnsupportedAuthRepository : AuthRepository {

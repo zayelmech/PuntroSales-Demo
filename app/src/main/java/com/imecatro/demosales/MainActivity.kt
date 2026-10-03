@@ -19,6 +19,8 @@ import com.imecatro.demosales.ui.AppAdaptiveNavigation
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import com.imecatro.demosales.onboarding.OnboardingComponent
+import javax.inject.Inject
 
 /**
  * Main entry point for the application.
@@ -31,6 +33,8 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject lateinit var onboardingComponent: OnboardingComponent
 
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -62,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppAdaptiveNavigation()
+                    AppAdaptiveNavigation(onboardingComponent)
                 }
             }
         }

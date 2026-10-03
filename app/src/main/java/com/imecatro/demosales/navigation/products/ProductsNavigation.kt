@@ -3,6 +3,7 @@ package com.imecatro.demosales.navigation.products
 import android.content.ClipData
 import android.content.Intent
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -58,12 +59,16 @@ import kotlinx.coroutines.launch
  * @param navController The [NavHostController] used for navigation between screens.
  */
 @OptIn(ExperimentalMaterial3Api::class)
-inline fun <reified T : Any> NavGraphBuilder.productsNavigation(navController: NavHostController) {
+inline fun <reified T : Any> NavGraphBuilder.productsNavigation(
+    navController: NavHostController,
+    noinline banner: @Composable () -> Unit = {}
+) {
     navigation<T>(startDestination = ProductsDestinations.ListAndDetails) {
 
 
         composable<ProductsDestinations.ListAndDetails> {
             ListAndDetailsPane(
+                banner = banner,
                 onAddProduct = {
                     navController.navigate(ProductsDestinations.Add)
                 }, onCreateCatalog = { ids ->

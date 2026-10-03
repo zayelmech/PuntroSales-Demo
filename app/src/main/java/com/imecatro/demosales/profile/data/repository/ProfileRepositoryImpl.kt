@@ -2,7 +2,6 @@ package com.imecatro.demosales.profile.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
 import com.imecatro.demosales.domain.core.profile.model.UserProfileDomainModel
 import com.imecatro.demosales.domain.core.profile.repository.ProfileRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -56,7 +55,7 @@ class ProfileRepositoryImpl @Inject constructor(
     )
 
     override suspend fun updateProfile(profile: UserProfileDomainModel) {
-        sharedPreferences.edit(commit = true) {
+        val saved = sharedPreferences.edit().apply {
             putString(KEY_STORE_NAME, profile.storeName)
             putString(KEY_STORE_DESCRIPTION, profile.storeDescription)
             putString(KEY_STORE_LOGO, profile.storeLogoUri)
@@ -65,7 +64,8 @@ class ProfileRepositoryImpl @Inject constructor(
             putString(KEY_LANGUAGE, profile.language)
             putString(KEY_CURRENCY, profile.currency)
             putBoolean(KEY_DARK_THEME, profile.isDarkTheme)
-        }
+        }.commit()
+        check(saved) { "Could not save business settings" }
         // No need to manually update _profileState, the listener will do it.
     }
 

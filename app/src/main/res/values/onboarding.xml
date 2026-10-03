@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_title">Get your business started</string>
+    <string name="onboarding_intro_badge">PUNTRO SALES · 5 GUIDED STEPS</string>
+    <string name="onboarding_welcome_title">Everything you need for your first sale</string>
+    <string name="onboarding_intro">Set up your store, build your inventory, take your first order and share a catalog with your customers.</string>
+    <string name="onboarding_intro_plan_title">Your quick-start route</string>
+    <string name="onboarding_flexible">Complete the steps in any order, or come back whenever you’re ready.</string>
+    <string name="onboarding_start">Let’s get started</string>
+    <string name="onboarding_later">Not now</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_all_steps">View all steps</string>
+    <string name="onboarding_close">Close</string>
+    <string name="onboarding_progress">%1$d of 5 steps</string>
+    <string name="onboarding_product_progress">Products: %1$d of 5</string>
+    <string name="onboarding_business">Set up your business</string>
+    <string name="onboarding_products">Add five products</string>
+    <string name="onboarding_order">Save your first order</string>
+    <string name="onboarding_fulfillment">Check what to stock</string>
+    <string name="onboarding_catalog">Publish or share your catalog</string>
+    <string name="onboarding_business_hint">Open business details, review your name and currency, then save. Logo and description are optional.</string>
+    <string name="onboarding_products_hint">Save five products. You can take orders with fewer products.</string>
+    <string name="onboarding_order_hint">Add products to an order and save it. We recommend saving it as pending to explore the Fulfillment plan.</string>
+    <string name="onboarding_fulfillment_hint">Open the Fulfillment plan and wait for it to load. Having enough inventory also counts.</string>
+    <string name="onboarding_catalog_hint">Publish your catalog, then use its link or QR code to share it. Publication completes this step; sharing does not confirm delivery.</string>
+    <string name="onboarding_done">Completed</string>
+    <string name="onboarding_pending">Pending</string>
+    <string name="onboarding_complete">All five steps completed. Your business is ready!</string>
+</resources>

@@ -5,7 +5,10 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -63,6 +66,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -115,11 +119,13 @@ fun ListOfProducts(
     onGenerateSampleData: () -> Unit = {},
     isCatalogPublished: Boolean = false,
     onManagementAction: () -> Unit = {},
+    banner: @Composable () -> Unit = {},
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     //var expanded by rememberSaveable { mutableStateOf(false) }
 
     val scrollState = rememberLazyListState()
+    var hasBanner by remember { mutableStateOf(false) }
 
     var showFilters by remember { mutableStateOf(false) }
 
@@ -142,6 +148,11 @@ fun ListOfProducts(
     }
 
     Scaffold(
+        // Scaffold measures this slot separately, reserves its height for the list,
+        // and places floating actions above it. Empty content consumes no space.
+        bottomBar = {
+            Box(Modifier.onSizeChanged { hasBanner = it.height > 0 }) { banner() }
+        },
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
@@ -281,6 +292,11 @@ fun ListOfProducts(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding),
+                contentPadding = PaddingValues(bottom = when {
+                    !hasBanner -> 0.dp
+                    isCatalogPublished -> 152.dp
+                    else -> 88.dp
+                }),
                 state = scrollState,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -368,6 +384,7 @@ fun EmptyProductsState(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -449,6 +466,7 @@ fun ListOfProductsStateImpl(
     onCategoriesNav: () -> Unit,
     onCreateCatalog: (List<Long>) -> Unit = {},
     onManagementAction: () -> Unit = {},
+    banner: @Composable () -> Unit = {},
     onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -468,6 +486,7 @@ fun ListOfProductsStateImpl(
         }
     }
     ListOfProducts(
+        banner = banner,
         list = productsList.toMutableStateList(),
         isLoading = uiState.isFetchingProducts,
         searchList = uiState.productsFiltered,

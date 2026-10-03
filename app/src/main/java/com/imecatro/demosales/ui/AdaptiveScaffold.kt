@@ -1,5 +1,7 @@
 package com.imecatro.demosales.ui
 
+import com.imecatro.demosales.onboarding.OnboardingComponent
+import com.imecatro.demosales.onboarding.OnboardingAppContent
 import androidx.annotation.Keep
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -105,7 +107,7 @@ fun NavHostController.navigateToRoot(route: ParentFeature) {
  * navigation rail, or navigation drawer based on the device's screen size and state.
  */
 @Composable
-fun AppAdaptiveNavigation() {
+fun AppAdaptiveNavigation(onboardingComponent: OnboardingComponent) {
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -122,30 +124,32 @@ fun AppAdaptiveNavigation() {
             }
         }
 
-    NavigationSuiteScaffold(
-        layoutType = customNavSuiteType,
-        navigationSuiteItems = {
-            adaptiveNavigationBar(currentDestination) { newDestination ->
-                when (newDestination) {
-                    AppDestinations.PRODUCTS -> navController.navigateToRoot(NavigationDirections.ProductsFeature)
-                    AppDestinations.SALES -> navController.navigateToRoot(NavigationDirections.SalesFeature)
-                    AppDestinations.CLIENTS -> navController.navigateToRoot(NavigationDirections.ClientsFeature)
-                    AppDestinations.PROFILE -> navController.navigateToRoot(NavigationDirections.ProfileFeature)
+    OnboardingAppContent(navController, onboardingComponent) { banner, onPlanLoaded ->
+        NavigationSuiteScaffold(
+            layoutType = customNavSuiteType,
+            navigationSuiteItems = {
+                adaptiveNavigationBar(currentDestination) { newDestination ->
+                    when (newDestination) {
+                        AppDestinations.PRODUCTS -> navController.navigateToRoot(NavigationDirections.ProductsFeature)
+                        AppDestinations.SALES -> navController.navigateToRoot(NavigationDirections.SalesFeature)
+                        AppDestinations.CLIENTS -> navController.navigateToRoot(NavigationDirections.ClientsFeature)
+                        AppDestinations.PROFILE -> navController.navigateToRoot(NavigationDirections.ProfileFeature)
+                    }
                 }
+            }) {
+            NavHost(
+                navController = navController,
+                startDestination = NavigationDirections.ProductsFeature
+            ) {
+                // We can add, see, edit or delete any product
+                productsNavigation<NavigationDirections.ProductsFeature>(navController, banner)
+                // We can add, see, edit or delete any sale
+                salesFeature<NavigationDirections.SalesFeature>(navController, onPlanLoaded)
+                // We can add, see, edit or delete any client
+                clientsNavigation<NavigationDirections.ClientsFeature>(navController)
+                // We can edit global configurations
+                profileNavigation<NavigationDirections.ProfileFeature>(navController)
             }
-        }) {
-        NavHost(
-            navController = navController,
-            startDestination = NavigationDirections.ProductsFeature
-        ) {
-            // We can add, see, edit or delete any product
-            productsNavigation<NavigationDirections.ProductsFeature>(navController)
-            // We can add, see, edit or delete any sale
-            salesFeature<NavigationDirections.SalesFeature>(navController)
-            // We can add, see, edit or delete any client
-            clientsNavigation<NavigationDirections.ClientsFeature>(navController)
-            // We can edit global configurations
-            profileNavigation<NavigationDirections.ProfileFeature>(navController)
         }
     }
 }

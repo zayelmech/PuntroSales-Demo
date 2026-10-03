@@ -17,6 +17,9 @@ import com.imecatro.products.data.datasource.CategoriesDao
 import com.imecatro.products.data.datasource.ProductsDao
 import com.imecatro.products.data.repository.CategoriesRepositoryImpl
 import com.imecatro.products.data.repository.ProductsRepositoryImpl
+import com.imecatro.demosales.onboarding.OnboardingStore
+import com.imecatro.demosales.onboarding.OnboardingProductsRepository
+import com.imecatro.demosales.onboarding.OnboardingSalesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,9 +46,10 @@ class RepositoryModule {
     @Provides
     fun provideRoomRepositoryImplementation(
         dao: ProductsDao,
-        categories: CategoriesDao
+        categories: CategoriesDao,
+        onboarding: OnboardingStore
     ): ProductsRepository =
-        ProductsRepositoryImpl(dao, categories)
+        OnboardingProductsRepository(ProductsRepositoryImpl(dao, categories), onboarding)
 
     /**
      * Provides the [CategoriesRepository] implementation.
@@ -80,8 +84,9 @@ class RepositoryModule {
     @Singleton
     fun providesAddSaleRepoImpl(
         dao: SalesRoomDao,
-        ordersRoomDao: OrdersRoomDao
-    ): AddSaleRepository = AddSaleRepositoryImpl(dao, ordersRoomDao)
+        ordersRoomDao: OrdersRoomDao,
+        onboarding: OnboardingStore
+    ): AddSaleRepository = OnboardingSalesRepository(AddSaleRepositoryImpl(dao, ordersRoomDao), onboarding)
 
 
     /**

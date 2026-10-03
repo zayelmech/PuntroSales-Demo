@@ -1,5 +1,9 @@
 package com.imecatro.demosales.navigation.sales
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.imecatro.demosales.ui.sales.fulfillment.viewmodel.FulfillmentPlanViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -23,7 +27,10 @@ import com.imecatro.demosales.ui.sales.fulfillment.views.FulfillmentPlanScreenIm
  * @param T The type of the root destination for this feature.
  * @param navController The [NavHostController] used for navigation between screens.
  */
-inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHostController) {
+inline fun <reified T : Any> NavGraphBuilder.salesFeature(
+    navController: NavHostController,
+    crossinline onPlanLoaded: (Boolean, Boolean, Boolean) -> Unit = { _, _, _ -> }
+) {
     navigation<T>(startDestination = SalesDestinations.List) {
         composable<SalesDestinations.List> {
 
@@ -43,8 +50,13 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
             )
         }
         composable<SalesDestinations.FulfillmentPlan> {
+            val viewModel: FulfillmentPlanViewModel = hiltViewModel()
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+            LaunchedEffect(state) {
+                onPlanLoaded(state.isLoading, state.hasError, state.needsReview)
+            }
             FulfillmentPlanScreenImpl(
-                viewModel = hiltViewModel(),
+                viewModel = viewModel,
                 onBack = { navController.popBackStack() },
                 onOpenOrder = { id -> navController.navigate(SalesDestinations.Details(id)) }
             )
@@ -77,7 +89,7 @@ inline fun <reified T : Any> NavGraphBuilder.salesFeature(navController: NavHost
             }
         }
         composable<SalesDestinations.SuccessDetails> { backStackEntry ->
-            val navArgs = backStackEntry.toRoute<SalesDestinations.Details>()
+            val navArgs = backStackEntry.toRoute<SalesDestinations.SuccessDetails>()
 
             val viewModel: TicketDetailsViewModel =
                 hiltViewModel(creationCallback = { f: TicketDetailsViewModel.Factory -> f.create(navArgs.id) })

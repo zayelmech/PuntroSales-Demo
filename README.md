@@ -8,6 +8,29 @@ An Android point-of-sale app for managing products, inventory, sales, customers,
 
 Checked items are implemented. Remaining work is listed under [Pending features](#pending-features).
 
+### Getting started — Onboarding
+
+The app introduces a five-step, optional checklist: configure the business, save five products, save an order with products, consult the Fulfillment plan, and publish/share the catalog. **Start** opens the checklist; **Not now** keeps the app available without completing or hiding the remaining steps. Steps can be opened in any order.
+
+- The introduction is claimed once using `ONBOARDING_VERSION` (currently `1`), independent of the app version. Missing preferences cover both a new installation and the first upgrade from an older release. Rotation keeps the same presentation; later launches and ordinary app updates do not present it again.
+- `onboarding_prefs` stores the presented version, individual milestones, current product count, completion, and acknowledgement separately. Completed milestones survive product deletion, order cancellation, and catalog removal.
+- Existing saved products and pending/completed orders with products are recognized through the existing use cases. Business details count after an explicit successful save; changing theme/language or using default values alone does not count. For older versions without a confirmation marker, a saved, non-default business name is the available evidence. Ambiguous default profiles need one confirmation; logo and description are optional.
+- The Fulfillment step completes only after a successful, usable load, including an empty or fully covered plan. Loading errors or missing inventory/unit information do not count. New users are encouraged to save their first order as pending.
+- The catalog milestone is recorded after confirmed public-route publication, or recognition of an already published catalog. Opening preview/management or cancelling a share chooser does not count. Existing link/QR sharing remains available; sharing never implies receipt. Catalog publishing still requires authentication/network and is unavailable in the existing Huawei distribution.
+- A compact themed inventory card shows progress and the next step. Its checklist scrolls independently and supports English/Spanish and large text. Finishing all five steps removes the card and shows a brief confirmation.
+
+**Composition and dependency injection:** all onboarding types live in `:app` under `onboarding`. Hilt binds `OnboardingComponent` to `MaterialOnboardingComponent` and injects it into `MainActivity`. The app passes its composable through the products navigation graph, adaptive pane, and inventory state container into the optional `banner` slot. Inventory renders the slot in its `Scaffold.bottomBar`, outside the product list and empty-state scroll containers; Scaffold reserves its height and places floating actions above it. An empty slot consumes no space. No UI module depends on `:app` or knows onboarding rules. App-owned decorators of existing repository contracts record successful product/order/catalog operations; business confirmation and successful plan loads are connected in app code. ViewModels contain no UI contexts, composables, or navigation controllers.
+
+**Validation:** onboarding unit tests cover presentation/versioning, persisted milestones, legacy defaults, existing data, real operation success/failure, and plan results. Android tests cover SharedPreferences upgrades/restarts, introduction actions, arbitrary checklist order, navigation destinations, fixed banner scrolling/removal, empty slots, and large fonts in dark theme. Run:
+
+```sh
+./gradlew :app:testGoogleDebugUnitTest :app:connectedGoogleDebugAndroidTest
+./gradlew :app:assembleGoogleDebug :app:assembleHuaweiDebug
+./gradlew :app:lintGoogleDebug
+```
+
+Validated on 2026-09-30: Google/Huawei debug builds, 45 app unit tests (17 onboarding tests), 17 sales unit tests, 11 Android tests (10 onboarding tests) on API 35, and Google debug lint. Manual emulator checks covered the actual Hilt entry point, initial dismissal, rotation, restart, and landscape at 200% text size. Remote publication is covered through repository test doubles; no real catalog was published during validation.
+
 ### Fulfillment plan — Plan de surtido
 
 Turn pending orders into a purchasing list. Open **Sales → the highlighted clipboard button in the top bar** to see the plan for all pending orders, independently of the sales list filters.
