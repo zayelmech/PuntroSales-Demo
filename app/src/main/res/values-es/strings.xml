@@ -10,4 +10,7 @@
     <string name="txt_language">Lenguaje</string>
     <string name="txt_currency">Moneda</string>
     <string name="txt_dark_theme">Modo obscuro</string>
+
+    <string name="user_visible_description">Punto de Venta</string>
+
 </resources>

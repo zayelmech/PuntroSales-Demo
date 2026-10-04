@@ -1,0 +1,7 @@
+<AppFunctionAppMetadata xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions"
+    appfn:description="This is PuntroSales, an offline first point of sales.
+    Operational Patterns:
+    - Use 'createsProduct' to add new product with name, price and stock.
+    Constraints:
+    - Name or content must be non-null when creating a task."
+    appfn:displayDescription="@string/user_visible_description" />

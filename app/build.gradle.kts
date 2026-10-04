@@ -39,10 +39,6 @@ android {
         manifestPlaceholders["MAPS_API_KEY"] = properties.getProperty("MAPS_API_KEY", "")
     }
 
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -98,6 +94,9 @@ afterEvaluate {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -168,6 +167,10 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+
+
+    implementation(libs.androidx.appfunctions)
+    ksp(libs.androidx.appfunctions.compiler)
 }
 
 dokka {

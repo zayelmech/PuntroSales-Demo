@@ -10,4 +10,6 @@
     <string name="txt_currency">Currency</string>
     <string name="txt_dark_theme">Dark Theme</string>
     <string name="default_web_client_id">1008006075423-fbq1ickfq19uc2aq297mhj65ljhii4bq.apps.googleusercontent.com</string>
+
+    <string name="user_visible_description">Point of sales</string>
 </resources>
