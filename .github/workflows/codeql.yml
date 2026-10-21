@@ -45,11 +45,11 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
         build-mode: manual
@@ -64,7 +64,7 @@ jobs:
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
     # If this step fails, then you should remove it and run the build manually (see below)
     # - name: Autobuild
-    #   uses: github/codeql-action/autobuild@v3
+    #   uses: github/codeql-action/autobuild@v4
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
@@ -76,14 +76,13 @@ jobs:
     #     echo "Run, Build Application using script"
     #     ./location_of_script_within_repo/buildscript.sh
     - name: Set up JDK 17
-      uses: actions/setup-java@cd89f46ac9d01407894225f350157564c9c7cee2 # v3.12.0
+      uses: actions/setup-java@v5
       with:
         distribution: "temurin"
         java-version: 17
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
       with:
-        # Override the default list, which includes the obsolete 'tools' package.
         packages: 'platform-tools'
     - name: Create google-services.json
       env:
@@ -97,6 +96,16 @@ jobs:
       run: ./gradlew :app:assembleGoogleDebug :app:assembleHuaweiDebug --no-daemon --stacktrace
       
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
+        output: codeql-results
+        upload: always
+        wait-for-processing: true
+
+    - name: Upload CodeQL report
+      uses: actions/upload-artifact@v6
+      with:
+        name: codeql-${{ matrix.language }}
+        path: codeql-results/*.sarif
+        if-no-files-found: error
