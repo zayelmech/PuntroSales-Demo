@@ -21,9 +21,11 @@ jobs:
           java-version: '17'
           cache: gradle
 
-      # Install the Android SDK + required packages explicitly
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # Override the default list, which includes the obsolete 'tools' package.
+          packages: 'platform-tools'
 
       - name: Create google-services.json
         run: |

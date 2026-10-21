@@ -80,10 +80,10 @@ jobs:
         distribution: "temurin"
         java-version: 17
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v2
+      uses: android-actions/setup-android@v3
       with:
-        sdk-platform: 33
-        # ndk-version: '21.3.6528147'
+        # Override the default list, which includes the obsolete 'tools' package.
+        packages: 'platform-tools'
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
