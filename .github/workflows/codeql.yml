@@ -49,9 +49,10 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
+        build-mode: manual
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
@@ -63,7 +64,7 @@ jobs:
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
     # If this step fails, then you should remove it and run the build manually (see below)
     # - name: Autobuild
-    #   uses: github/codeql-action/autobuild@v2
+    #   uses: github/codeql-action/autobuild@v3
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
@@ -84,12 +85,18 @@ jobs:
       with:
         # Override the default list, which includes the obsolete 'tools' package.
         packages: 'platform-tools'
+    - name: Create google-services.json
+      env:
+        GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+      run: |
+        mkdir -p app/src/google
+        printf '%s' "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > app/src/google/google-services.json
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew --settings-file=settings.gradle :app:assembleDebug #build 
+      run: ./gradlew :app:assembleGoogleDebug :app:assembleHuaweiDebug --no-daemon --stacktrace
       
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
