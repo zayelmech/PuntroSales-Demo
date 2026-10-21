@@ -26,10 +26,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Store
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -42,6 +44,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -51,6 +56,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,12 +69,20 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.imecatro.demosales.R
@@ -79,13 +94,20 @@ import com.imecatro.demosales.ui.theme.DropListPicker
 import com.imecatro.demosales.ui.theme.PuntroSalesDemoTheme
 import com.imecatro.demosales.ui.theme.architect.UiStateHandler
 import com.imecatro.demosales.ui.theme.common.saveMediaToStorage
+import kotlinx.coroutines.launch
 import com.imecatro.products.ui.R as ProductR
+
+private const val DATA_POLICY_URL = "https://www.imecatro.com/privacy.html"
 
 @Composable
 fun ProfileSettingsStateImpl(
     viewModel: ProfileViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.refreshCloudAccount()
+    }
 
     val context = LocalContext.current
     var showStoreDialog by remember { mutableStateOf(false) }
@@ -110,6 +132,8 @@ fun ProfileSettingsStateImpl(
 
     ProfileSettings(
         profile = uiState.profile,
+        isUserAuthenticated = uiState.isUserAuthenticated,
+        cloudAccountName = uiState.cloudAccountName,
         onUpdateInfo = viewModel::onUpdateInfo,
         onLanguageSelected = viewModel::onUpdateLanguage,
         onDarkThemeEnabled = viewModel::onUpdateTheme,
@@ -140,12 +164,21 @@ fun ProfileSettings(
     openImagePicker: () -> Unit = {},
     showStoreDialog: Boolean = false,
     onDismissDialog: () -> Unit = {},
-    onShowDialog: () -> Unit = {}
+    onShowDialog: () -> Unit = {},
+    isUserAuthenticated: Boolean = false,
+    cloudAccountName: String? = null
 ) {
     val view = LocalView.current
     val scrollState = rememberScrollState()
+    var showDeleteCloudDataDialog by rememberSaveable(isUserAuthenticated, cloudAccountName) {
+        mutableStateOf(false)
+    }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val deletionUnavailableMessage = stringResource(R.string.profile_delete_cloud_data_unavailable)
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.title_profile)) }
@@ -223,6 +256,30 @@ fun ProfileSettings(
                     )
                 }
             )
+
+            if (isUserAuthenticated) {
+                HorizontalDivider()
+
+                cloudAccountName?.let { accountName ->
+                    Text(
+                        text = stringResource(R.string.profile_cloud_account, accountName),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = { showDeleteCloudDataDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Icon(Icons.Outlined.DeleteOutline, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.profile_delete_cloud_data))
+                }
+            }
         }
     }
 
@@ -233,6 +290,81 @@ fun ProfileSettings(
             onSave = onUpdateInfo
         )
     }
+
+    if (isUserAuthenticated && showDeleteCloudDataDialog) {
+        DeleteCloudDataConfirmationDialog(
+            cloudAccountName = cloudAccountName,
+            onDismiss = { showDeleteCloudDataDialog = false },
+            onConfirm = {
+                showDeleteCloudDataDialog = false
+                coroutineScope.launch {
+                    // Connect the deletion request here when the backend is available.
+                    snackbarHostState.showSnackbar(
+                        message = deletionUnavailableMessage,
+                        duration = SnackbarDuration.Long
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun DeleteCloudDataConfirmationDialog(
+    cloudAccountName: String?,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Outlined.DeleteOutline, contentDescription = null) },
+        title = { Text(stringResource(R.string.profile_delete_cloud_data_title)) },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                cloudAccountName?.let { accountName ->
+                    Text(
+                        text = stringResource(R.string.profile_cloud_account, accountName),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Text(stringResource(R.string.profile_delete_cloud_data_message))
+                Text(
+                    buildAnnotatedString {
+                        withLink(
+                            LinkAnnotation.Url(
+                                DATA_POLICY_URL,
+                                TextLinkStyles(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        textDecoration = TextDecoration.Underline
+                                    )
+                                )
+                            )
+                        ) {
+                            append(stringResource(R.string.profile_delete_cloud_data_policy_link))
+                        }
+                    }
+                )
+                Text(stringResource(R.string.profile_delete_cloud_data_local_data))
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(stringResource(R.string.profile_delete_cloud_data_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.profile_delete_cloud_data_cancel))
+            }
+        }
+    )
 }
 
 @Composable
@@ -454,7 +586,21 @@ fun PreviewProfileSettings() {
                 language = "English",
                 currency = "USD",
                 isDarkTheme = false,
-            )
+            ),
+            isUserAuthenticated = true,
+            cloudAccountName = "Demo"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewDeleteCloudDataConfirmationDialog() {
+    PuntroSalesDemoTheme {
+        DeleteCloudDataConfirmationDialog(
+            cloudAccountName = "Demo",
+            onDismiss = {},
+            onConfirm = {}
         )
     }
 }

@@ -10,7 +10,9 @@ import com.imecatro.demosales.ui.theme.architect.UiState
 data class ProfileUiState(
     val profile: UserProfileUiModel,
     val isLoading: Boolean = false,
-    val profileError: String? = null
+    val profileError: String? = null,
+    val isUserAuthenticated: Boolean = false,
+    val cloudAccountName: String? = null
 ) : UiState {
     override fun isFetchingOrProcessingData(): Boolean = isLoading
 

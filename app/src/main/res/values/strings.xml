@@ -9,5 +9,14 @@
     <string name="txt_language">Language</string>
     <string name="txt_currency">Currency</string>
     <string name="txt_dark_theme">Dark Theme</string>
+    <string name="profile_cloud_account">Account: %1$s</string>
+    <string name="profile_delete_cloud_data">Delete my cloud data</string>
+    <string name="profile_delete_cloud_data_title">Delete your account and cloud data?</string>
+    <string name="profile_delete_cloud_data_message">Are you sure? This action will delete your Puntro Sales account, your published catalog, and all images and files you uploaded to that catalog.</string>
+    <string name="profile_delete_cloud_data_policy_link">For more information about what will be deleted and the deletion timeline, read the data policy.</string>
+    <string name="profile_delete_cloud_data_local_data">Products, sales, and images stored on this device will be kept.</string>
+    <string name="profile_delete_cloud_data_confirm">Accept</string>
+    <string name="profile_delete_cloud_data_cancel">Cancel</string>
+    <string name="profile_delete_cloud_data_unavailable">Cloud data deletion is not available yet. No data has been deleted.</string>
     <string name="default_web_client_id">1008006075423-fbq1ickfq19uc2aq297mhj65ljhii4bq.apps.googleusercontent.com</string>
 </resources>

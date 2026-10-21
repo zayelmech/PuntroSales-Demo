@@ -2,6 +2,7 @@ package com.imecatro.demosales.profile.ui.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.imecatro.demosales.domain.core.architecture.usecase.onAny
+import com.imecatro.demosales.domain.core.auth.repository.AuthRepository
 import com.imecatro.demosales.domain.core.profile.usecases.GetProfileUseCase
 import com.imecatro.demosales.domain.core.profile.usecases.UpdateProfileUseCase
 import com.imecatro.demosales.profile.ui.mappers.toDomainModel
@@ -20,10 +21,12 @@ import com.imecatro.demosales.onboarding.OnboardingStep
 class ProfileViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
-    private val onboarding: OnboardingStore
+    private val onboarding: OnboardingStore,
+    private val authRepository: AuthRepository
 ) : BaseViewModel<ProfileUiState>(ProfileUiState.idle) {
 
     override fun onStart() {
+        refreshCloudAccount()
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
             getProfileUseCase().collectLatest { profile ->
@@ -34,6 +37,18 @@ class ProfileViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    fun refreshCloudAccount() {
+        val isAuthenticated = authRepository.isUserAuthenticated()
+        val accountName = if (isAuthenticated) {
+            authRepository.getCurrentUserDisplayName()?.takeIf { it.isNotBlank() }
+        } else {
+            null
+        }
+        updateState {
+            copy(isUserAuthenticated = isAuthenticated, cloudAccountName = accountName)
         }
     }
 

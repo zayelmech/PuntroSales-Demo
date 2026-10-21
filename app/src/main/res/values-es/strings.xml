@@ -10,4 +10,13 @@
     <string name="txt_language">Lenguaje</string>
     <string name="txt_currency">Moneda</string>
     <string name="txt_dark_theme">Modo obscuro</string>
+    <string name="profile_cloud_account">Cuenta: %1$s</string>
+    <string name="profile_delete_cloud_data">Eliminar mis datos en la nube</string>
+    <string name="profile_delete_cloud_data_title">¿Eliminar tu cuenta y tus datos en la nube?</string>
+    <string name="profile_delete_cloud_data_message">¿Estás seguro? Esta acción eliminará tu cuenta de Puntro Sales, tu catálogo publicado y todas las imágenes y archivos que hayas subido a ese catálogo.</string>
+    <string name="profile_delete_cloud_data_policy_link">Si necesitas más información sobre qué se eliminará y los plazos de eliminación, revisa la política de datos.</string>
+    <string name="profile_delete_cloud_data_local_data">Los productos, ventas e imágenes guardados en este dispositivo se conservarán.</string>
+    <string name="profile_delete_cloud_data_confirm">Aceptar</string>
+    <string name="profile_delete_cloud_data_cancel">Cancelar</string>
+    <string name="profile_delete_cloud_data_unavailable">La eliminación de datos en la nube aún no está disponible. No se ha eliminado ningún dato.</string>
 </resources>
