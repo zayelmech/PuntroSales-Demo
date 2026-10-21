@@ -156,3 +156,7 @@ The UI uses **Jetpack Compose and Material 3**, dependency injection uses **Dagg
 ## Project reports
 
 [Browse code quality, API documentation, and test coverage reports](https://apps.imecatro.com/puntrosales/).
+
+## Google Play releases
+
+Push a tag matching `versionName` (for example `v1.15.4`) to build a signed Google release AAB and upload it to internal testing. See [release setup, secrets, and versioning](docs/google-play-release.md).
