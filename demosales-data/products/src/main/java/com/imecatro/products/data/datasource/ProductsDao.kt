@@ -4,6 +4,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
+import com.imecatro.products.data.model.CategoryRoomEntity
+import com.imecatro.products.data.model.ProductListRow
 import androidx.room.Transaction
 import androidx.room.Update
 import com.imecatro.products.data.model.ProductAnCategoryDetailsRoomModel
@@ -14,6 +18,21 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductsDao {
+
+    @RawQuery
+    suspend fun getProductListRows(query: SupportSQLiteQuery): List<ProductListRow>
+
+    @Query("SELECT p.id,p.name,p.nameKey,p.price,p.unit,p.stock,p.imageUri,c.name AS category FROM products_table p LEFT JOIN categories_table c ON c.id=p.category_id WHERE p.id=:id")
+    suspend fun getProductListRowById(id: Long): ProductListRow?
+
+    @RawQuery
+    suspend fun getProductListIds(query: SupportSQLiteQuery): List<Long>
+
+    @RawQuery(observedEntities = [ProductRoomEntity::class, CategoryRoomEntity::class])
+    fun observeProductListCount(query: SupportSQLiteQuery): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM products_table")
+    suspend fun countProducts(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addProduct(product: ProductRoomEntity): Long

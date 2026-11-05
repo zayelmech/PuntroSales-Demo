@@ -14,7 +14,9 @@ import androidx.room.PrimaryKey
         childColumns = ["category_id"],
         onDelete = ForeignKey.SET_NULL
     )],
-    indices = [Index("category_id")]
+    indices = [Index("category_id"), Index(value = ["nameKey", "id"]),
+        Index(value = ["price", "id"]), Index(value = ["stock", "id"]),
+        Index(value = ["category_id", "nameKey", "id"]), Index("searchName"), Index("barcode")]
 )
 data class ProductRoomEntity(
     @PrimaryKey(autoGenerate = true)
@@ -29,5 +31,10 @@ data class ProductRoomEntity(
     val imageUri: String,
     @ColumnInfo(name = "category_id")
     val categoryId: Long? = null,
-    val barcode : String? = null
+    val barcode : String? = null,
+    @ColumnInfo(defaultValue = "''")
+    val nameKey: String = name.lowercase(),
+    // Keep the original text: legacy LIKE is ASCII-insensitive, not Unicode case folding.
+    @ColumnInfo(collate = ColumnInfo.NOCASE, defaultValue = "''")
+    val searchName: String = name,
 )

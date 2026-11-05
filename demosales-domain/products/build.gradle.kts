@@ -16,6 +16,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEa
 }
 
 dependencies {
+    api(libs.androidx.paging.common)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlin.reflect)
     implementation(project(":demosales-domain:core"))

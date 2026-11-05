@@ -58,18 +58,21 @@ internal fun seedProducts(database: AppRoomDatabase, size: Int) {
     try {
         db.execSQL("INSERT INTO categories_table(id,name) VALUES(1,'Food'),(2,'Other')")
         val statement = db.compileStatement("""
-            INSERT INTO products_table(id,name,price,currency,unit,stock,details,imageUri,category_id,barcode)
-            VALUES(?, ?, ?, 'MXN', 'pz', ?, ?, '', ?, ?)
+            INSERT INTO products_table(id,name,price,currency,unit,stock,details,imageUri,category_id,barcode,nameKey,searchName)
+            VALUES(?, ?, ?, 'MXN', 'pz', ?, ?, '', ?, ?, ?, ?)
         """.trimIndent())
         try {
             for (id in 1..size) {
                 statement.bindLong(1, id.toLong())
-                statement.bindString(2, "Product %06d".format(Locale.ROOT, size - id))
+                val name = "Product %06d".format(Locale.ROOT, size - id)
+                statement.bindString(2, name)
                 statement.bindDouble(3, (id % 113) / 10.0)
                 statement.bindDouble(4, (id % 71 - 5).toDouble())
                 statement.bindString(5, "Fixture description ".repeat(8))
                 if (id % 3 == 0) statement.bindNull(6) else statement.bindLong(6, (id % 2 + 1).toLong())
                 statement.bindString(7, "TEST$id")
+                statement.bindString(8, name.lowercase())
+                statement.bindString(9, name)
                 statement.executeInsert()
             }
         } finally {

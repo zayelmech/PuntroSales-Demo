@@ -39,7 +39,7 @@ import com.imecatro.products.data.model.StockRoomEntity
         PurchaseRoomEntity::class,
         StockRoomEntity::class,
         CategoryRoomEntity::class],
-    version = 14
+    version = 15
 )
 abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun productsRoomDao(): ProductsDao
@@ -80,7 +80,8 @@ abstract class AppRoomDatabase : RoomDatabase() {
                     MIGRATION_10_11,
                     MIGRATION_11_12,
                     MIGRATION_12_13,
-                    MIGRATION_13_14
+                    MIGRATION_13_14,
+                    MIGRATION_14_15
                 )
                 .build()
 
@@ -302,5 +303,37 @@ val MIGRATION_13_14 = object : Migration(13, 14) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE client_table ADD COLUMN accumulatedPurchases REAL NOT NULL DEFAULT 0.0")
         db.execSQL("ALTER TABLE client_table ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+val MIGRATION_14_15 = object : Migration(14, 15) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE products_table ADD COLUMN nameKey TEXT NOT NULL DEFAULT ''")
+        db.execSQL("ALTER TABLE products_table ADD COLUMN searchName TEXT COLLATE NOCASE NOT NULL DEFAULT ''")
+        // Bound memory during the one-time backfill; match Kotlin's existing name ordering.
+        val update = db.compileStatement("UPDATE products_table SET nameKey=?,searchName=? WHERE id=?")
+        try {
+            var lastId = Long.MIN_VALUE
+            while (true) {
+                val rows = db.query("SELECT id,name FROM products_table WHERE id > ? ORDER BY id LIMIT 500", arrayOf(lastId)).use { cursor ->
+                    buildList { while (cursor.moveToNext()) add(cursor.getLong(0) to cursor.getString(1)) }
+                }
+                if (rows.isEmpty()) break
+                rows.forEach { (id, name) ->
+                    update.bindString(1, name.lowercase())
+                    update.bindString(2, name)
+                    update.bindLong(3, id)
+                    update.executeUpdateDelete()
+                }
+                lastId = rows.last().first
+            }
+        } finally {
+            update.close()
+        }
+        listOf("nameKey_id" to "nameKey,id", "price_id" to "price,id", "stock_id" to "stock,id",
+            "category_id_nameKey_id" to "category_id,nameKey,id", "searchName" to "searchName", "barcode" to "barcode"
+        ).forEach { (suffix, columns) ->
+            db.execSQL("CREATE INDEX index_products_table_$suffix ON products_table($columns)")
+        }
     }
 }

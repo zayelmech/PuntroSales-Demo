@@ -10,6 +10,9 @@ import com.imecatro.demosales.data.sales.list.repository.AllSalesRepositoryImpl
 import com.imecatro.demosales.domain.clients.repository.ClientsRepository
 import com.imecatro.demosales.domain.products.repository.CategoriesRepository
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
+import com.imecatro.demosales.domain.products.repository.ProductsPagingRepository
+import com.imecatro.demosales.datasource.AppRoomDatabase
+import com.imecatro.products.data.repository.ProductsPagingRepositoryImpl
 import com.imecatro.demosales.domain.sales.add.repository.AddSaleRepository
 import com.imecatro.demosales.domain.sales.details.DetailsSaleRepository
 import com.imecatro.demosales.domain.sales.list.repository.AllSalesRepository
@@ -35,6 +38,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class RepositoryModule {
+
+    @Provides
+    @Singleton
+    fun provideProductsPagingRepository(database: AppRoomDatabase, dao: ProductsDao): ProductsPagingRepository =
+        ProductsPagingRepositoryImpl(database, dao)
 
     /**
      * Provides the [ProductsRepository] implementation.
