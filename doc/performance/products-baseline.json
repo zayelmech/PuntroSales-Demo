@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "69e235a",
+  "databaseVersion": 14,
+  "test": "ProductsLoadingBaselineTest.recordLegacyLoadingBaseline",
+  "device": "Medium_Phone_API_35 / sdk_gphone64_arm64",
+  "api": 35,
+  "variant": "huaweiDebug",
+  "conditions": "Network disabled; second run after emulator boot; file-backed disposable Room database; 2 warmups and 9 samples per size; no images or UI rendering; fixture setup excluded",
+  "metrics": [
+    {"products":1000,"loadedModels":1000,"samplesMs":[37.901791,38.468583,44.213958,37.893084,38.364583,37.136084,41.379542,39.567875,37.401958],"medianMs":38.364583,"p95Ms":44.213958},
+    {"products":10000,"loadedModels":10000,"samplesMs":[83.369417,63.964,70.191125,62.163708,77.676458,65.988458,68.09125,73.815375,81.933416],"medianMs":70.191125,"p95Ms":83.369417},
+    {"products":50000,"loadedModels":50000,"samplesMs":[667.211042,636.304667,660.80875,726.877375,604.709375,659.913876,615.240917,645.540751,615.262959],"medianMs":645.540751,"p95Ms":726.877375}
+  ]
+}
