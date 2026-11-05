@@ -3,62 +3,49 @@ package com.imecatro.demosales.domain.products.products.usecases
 import com.imecatro.demosales.domain.core.model.ProductUnit
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
-import com.imecatro.demosales.domain.products.repository.ProductsRepositoryDummyImpl
+import com.imecatro.demosales.domain.products.repository.ProductsRepository
 import com.imecatro.demosales.domain.products.usecases.AddNewProductUseCase
 import com.imecatro.demosales.domain.products.usecases.State
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class AddNewProductUseCaseTest {
-    @OptIn(DelicateCoroutinesApi::class)
-    private val mainThreadSurrogate = newSingleThreadContext("UI thread")
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(mainThreadSurrogate)
+    @Test fun `adding a product preserves all business fields`() = runTest {
+        val repository = TestProductsRepository()
+        val useCase = AddNewProductUseCase(repository, StandardTestDispatcher(testScheduler))
+        val input = ProductDomainModel(id = 99, name = "Some", currency = "USD", price = 1.0,
+            unit = ProductUnit.Default.symbol, details = "Info here", imageUri = "/data/0",
+            stock = ProductStockDomainModel(0.0, 1.0, emptyList()), category = null, barcode = null)
+        assertEquals(State(1, null), useCase(input))
+        assertEquals(input, repository.getProductDetailsById(99))
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
-        mainThreadSurrogate.close()
+    @Test fun `failed persistence returns the existing error state`() = runTest {
+        val repository = TestProductsRepository().apply { failure = IllegalStateException("Unavailable") }
+        val useCase = AddNewProductUseCase(repository, StandardTestDispatcher(testScheduler))
+        val product = ProductDomainModel(id = 1, name = "Some", currency = "USD", price = 1.0,
+            unit = "pz", details = "", imageUri = null, stock = ProductStockDomainModel(0.0, 0.0, emptyList()),
+            category = null, barcode = null)
+        assertEquals(State(null, "Unavailable"), useCase(product))
+        assertEquals(emptyList<ProductDomainModel>(), repository.products)
     }
+}
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `Adding new Product to dummy repo`() {
-        val fakeRepo = ProductsRepositoryDummyImpl()
-
-        val useCase = AddNewProductUseCase(fakeRepo, mainThreadSurrogate)
-        val input = ProductDomainModel(
-            id = 99,
-            name = "Some",
-            currency = "USD",
-            price = 1.0,
-            unit = ProductUnit.Default.symbol,
-            details = "Info here",
-            imageUri = "/data/0",
-            stock = ProductStockDomainModel(0.0,1.0, emptyList())
-
-        )
-
-        val output = State(1, null)
-        runTest {
-            useCase.invoke(input)
-            assertEquals(input, fakeRepo.getProductDetailsById(99))
-        }
-
-
-    }
+/** Fixture belongs only to the JVM test source set. */
+private class TestProductsRepository : ProductsRepository {
+    val products = mutableListOf<ProductDomainModel>()
+    var failure: Exception? = null
+    override suspend fun addProduct(product: ProductDomainModel) { failure?.let { throw it }; products += product }
+    override fun getAllProducts() = flowOf(products.toList())
+    override suspend fun getProductDetailsById(id: Long) = products.firstOrNull { it.id == id }
+    override fun getProductsWithIds(ids: List<Long>) = products.filter { it.id in ids }
+    override suspend fun deleteProductById(id: Long) { products.removeAll { it.id == id } }
+    override suspend fun updateProduct(product: ProductDomainModel) = error("Not used")
+    override fun searchProducts(letter: String) = flowOf(products.filter { it.name?.startsWith(letter) == true })
+    override suspend fun searchProductByBarcode(barcode: String) = products.firstOrNull { it.barcode == barcode }
+    override suspend fun addStock(reference: String, productId: Long, amount: Double) = error("Not used")
+    override suspend fun removeStock(reference: String, productId: Long, amount: Double) = error("Not used")
 }
