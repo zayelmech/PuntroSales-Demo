@@ -53,16 +53,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.platform.testTag
+import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -98,7 +100,7 @@ private const val TAG = "ListProductsComposables"
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun ListOfProducts(
-    list: List<ProductUiModel>,
+    list: List<ProductUiModel> = emptyList(),
     isLoading: Boolean = false,
     onSearchProduct: (String) -> Unit = {},
     searchList: List<ProductUiModel> = emptyList(),
@@ -119,6 +121,8 @@ fun ListOfProducts(
     onGenerateSampleData: () -> Unit = {},
     isCatalogPublished: Boolean = false,
     onManagementAction: () -> Unit = {},
+    pagingItems: LazyPagingItems<ProductUiModel>? = null,
+    selectedIds: Set<Long> = emptySet(),
     banner: @Composable () -> Unit = {},
 ) {
     var text by rememberSaveable { mutableStateOf("") }
@@ -139,9 +143,10 @@ fun ListOfProducts(
         confirmValueChange = { true }, // Add a default confirmValueChange lambda
     )
 
-    LaunchedEffect(text) {
+    LaunchedEffect(Unit) {
         snapshotFlow { text }
             .debounce(300)
+            .distinctUntilChanged()
             .collect {
                 onSearchProduct(it)
             }
@@ -194,7 +199,7 @@ fun ListOfProducts(
                             query = text,
                             onQueryChange = { text = it },
                             onSearchAction = { onSearchProduct(text) },
-                            onClearSearchBar = { text = "" },
+                            onClearSearchBar = { text = ""; onSearchProduct("") },
                             extraActions = {
                                 IconButton(onClick = { showFilters = !showFilters }) {
                                     Icon(
@@ -281,17 +286,30 @@ fun ListOfProducts(
             }
 
         }) { innerPadding ->
-        if (!isLoading && list.isEmpty() && text.isEmpty()) {
-            EmptyProductsState(
+        val visibleList = if (text.isEmpty()) list else searchList
+        // Keys and count must come from the same immutable generation, even while
+        // Scaffold's lazy item provider is being measured during a query refresh.
+        val snapshot = pagingItems?.itemSnapshotList
+        val count = snapshot?.size ?: visibleList.size
+        val loading = if (pagingItems == null) isLoading
+            else pagingItems.loadState.refresh is LoadState.Loading && count == 0
+        val error = pagingItems?.loadState?.refresh as? LoadState.Error
+        when {
+            error != null && count == 0 -> Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
+                TextButton(onClick = { pagingItems?.retry() }, modifier = Modifier.testTag("products-retry")) {
+                    Text(stringResource(R.string.products_retry))
+                }
+            }
+            !loading && count == 0 && text.isEmpty() && categories.none { it.isChecked } -> EmptyProductsState(
                 onAddProductClicked = onNavigateAction,
                 onGenerateSampleDataClicked = onGenerateSampleData,
                 modifier = Modifier.padding(innerPadding)
             )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(innerPadding),
+            !loading && count == 0 -> Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
+                Text(stringResource(R.string.products_no_results), modifier = Modifier.testTag("products-no-results"))
+            }
+            else -> LazyColumn(
+                modifier = Modifier.fillMaxWidth().padding(innerPadding).testTag("products-list"),
                 contentPadding = PaddingValues(bottom = when {
                     !hasBanner -> 0.dp
                     isCatalogPublished -> 152.dp
@@ -300,16 +318,35 @@ fun ListOfProducts(
                 state = scrollState,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (isLoading)
-                    items(10) { ShimmerListItem(Modifier.fillMaxWidth()) }
-                else {
-                    items(if (text.isEmpty()) list else searchList) { product ->
-
-                        ProductCardCompose(
-                            product = product,
+                if (loading) items(10, contentType = { "loading" }) { ShimmerListItem(Modifier.fillMaxWidth()) }
+                else if (pagingItems != null) {
+                    items(count = count, key = { index -> snapshot?.get(index)?.id ?: "product-placeholder-$index" }, contentType = { "product" }) { index ->
+                        // Access the active presenter to send prefetch hints, while drawing
+                        // the immutable snapshot that also supplied this item's stable key.
+                        if (snapshot === pagingItems.itemSnapshotList) pagingItems[index]
+                        snapshot?.get(index)?.let { product ->
+                            ProductCardCompose(product = product,
+                                isSelected = product.id in selectedIds,
+                                onLongClicked = { if (text.isEmpty()) onProductSelected(product.id) },
+                                onCardClicked = { onCardClicked(product.id) })
+                            HorizontalDivider()
+                        }
+                    }
+                } else {
+                    items(visibleList, key = { requireNotNull(it.id) }, contentType = { "product" }) { product ->
+                        ProductCardCompose(product = product,
+                            isSelected = product.isSelected || product.id in selectedIds,
                             onLongClicked = { if (text.isEmpty()) onProductSelected(product.id) },
                             onCardClicked = { onCardClicked(product.id) })
                         HorizontalDivider()
+                    }
+                }
+                if (pagingItems != null) item(key = "products-page-state", contentType = "page-state") {
+                    when {
+                        pagingItems.loadState.append is LoadState.Loading || pagingItems.loadState.prepend is LoadState.Loading ->
+                            CircularProgressIndicator(Modifier.padding(16.dp).size(24.dp))
+                        pagingItems.loadState.append is LoadState.Error || pagingItems.loadState.prepend is LoadState.Error || error != null ->
+                            TextButton(onClick = { pagingItems.retry() }) { Text(stringResource(R.string.products_retry)) }
                     }
                 }
             }
@@ -471,23 +508,21 @@ fun ListOfProductsStateImpl(
 ) {
     val scope = rememberCoroutineScope()
 
-    val productsList by productsViewModel.productsList.collectAsState()
-    val uiState by productsViewModel.uiState.collectAsState()
+    val productsList = productsViewModel.productsList.collectAsLazyPagingItems()
+    val uiState by productsViewModel.uiState.collectAsStateWithLifecycle()
 
-    val filters by productsViewModel.filtersState.collectAsState()
+    val filters by productsViewModel.filtersState.collectAsStateWithLifecycle()
 
-    val categories by productsViewModel.categories.collectAsState()
+    val categories by productsViewModel.categories.collectAsStateWithLifecycle()
 
     var showShareReport by remember { mutableStateOf(false) }
 
-    val showOptions by remember {
-        derivedStateOf {
-            productsList.any { it.isSelected || uiState.enableSelection }
-        }
-    }
+    val selectedIds = remember(uiState.idsSelected) { uiState.idsSelected.toHashSet() }
+    val showOptions = uiState.enableSelection || selectedIds.isNotEmpty()
     ListOfProducts(
         banner = banner,
-        list = productsList.toMutableStateList(),
+        pagingItems = productsList,
+        selectedIds = selectedIds,
         isLoading = uiState.isFetchingProducts,
         searchList = uiState.productsFiltered,
         onSearchProduct = { productsViewModel.onSearchAction(it) },
@@ -515,9 +550,7 @@ fun ListOfProductsStateImpl(
         onManagementAction = onManagementAction
     )
 
-    UiStateHandler(uiState) {
-
-    }
+    UiStateHandler(uiState, onDismiss = productsViewModel::onErrorConsumed)
 
     LaunchedEffect(uiState) {
         if (uiState.catalogFile != null)

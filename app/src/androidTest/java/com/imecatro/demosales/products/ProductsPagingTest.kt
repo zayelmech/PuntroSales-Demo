@@ -39,6 +39,7 @@ class ProductsPagingTest {
     private val name = "products-regression-${UUID.randomUUID()}.db"
     private lateinit var database: AppRoomDatabase
     private lateinit var repository: ProductsPagingRepositoryImpl
+    private val sources = mutableListOf<ProductsPagingSource>()
 
     @Before fun open() {
         database = Room.databaseBuilder(context, AppRoomDatabase::class.java, name).build()
@@ -47,6 +48,7 @@ class ProductsPagingTest {
     }
 
     @After fun close() {
+        sources.forEach { it.invalidate() }
         database.close()
         context.deleteDatabase(name)
     }
@@ -69,7 +71,7 @@ class ProductsPagingTest {
                     ProductOrder.CREATED -> compareBy { it.id }
                 }.thenBy { it.id }
                 val expected = filtered.sortedWith(if (descending) comparator.reversed() else comparator).map { it.id }
-                val source = repository.createPagingSource(query)
+                val source = repository.createPagingSource(query).also { sources += it }
                 val actual = mutableListOf<ProductListItem>()
                 var page = load(source)
                 actual += page.data
@@ -105,12 +107,12 @@ class ProductsPagingTest {
     }
 
     @Test fun stockAndCategoryWritesInvalidateCachedGenerationAndRefreshAroundTheAnchor() = runBlocking(Dispatchers.IO) {
-        val source = repository.createPagingSource(ProductsQuery(order = ProductOrder.STOCK))
+        val source = repository.createPagingSource(ProductsQuery(order = ProductOrder.STOCK)).also { sources += it }
         val first = load(source)
         val anchor = source.getRefreshKey(PagingState(listOf(first), 8, PagingConfig(17), 0))!!
         database.productsRoomDao().updateProductStock(500.0, anchor.id)
         withTimeout(5_000) { while (!source.invalid) delay(10) }
-        val replacement = repository.createPagingSource(ProductsQuery(order = ProductOrder.STOCK))
+        val replacement = repository.createPagingSource(ProductsQuery(order = ProductOrder.STOCK)).also { sources += it }
         val refreshed = replacement.load(PagingSource.LoadParams.Refresh(anchor, 17, false)) as PagingSource.LoadResult.Page
         assertEquals(500.0, refreshed.data.first { it.id == anchor.id }.stock, 0.0)
         database.categoriesRoomDao().clearCategory(1L)

@@ -2,7 +2,6 @@ package com.imecatro.products.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import androidx.room.InvalidationTracker
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import com.imecatro.demosales.domain.products.model.ProductListItem
@@ -10,7 +9,12 @@ import com.imecatro.demosales.domain.products.model.ProductsQuery
 import com.imecatro.products.data.datasource.ProductsDao
 import com.imecatro.products.data.model.ProductListRow
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -22,15 +26,37 @@ class ProductsPagingSource(
 ) : PagingSource<ProductCursor, ProductListItem>() {
     private val queries = ProductListQueries(query)
     private val observing = AtomicBoolean()
-    private val observer = object : InvalidationTracker.Observer("products_table", "categories_table") {
-        override fun onInvalidated(tables: Set<String>) = invalidate()
+    private val observationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val observationReady = CompletableDeferred<Unit>()
+
+    init {
+        registerInvalidatedCallback {
+            observationScope.cancel()
+            observationReady.cancel()
+        }
+    }
+
+    private fun observeChanges() {
+        observationScope.launch {
+            try {
+                database.invalidationTracker.createFlow("products_table", "categories_table").collect {
+                    if (!observationReady.complete(Unit)) invalidate()
+                }
+            } catch (cancelled: CancellationException) {
+                observationReady.cancel(cancelled)
+            } catch (error: Exception) {
+                if (!observationReady.completeExceptionally(error)) invalidate()
+            }
+        }
     }
 
     override suspend fun load(params: LoadParams<ProductCursor>): LoadResult<ProductCursor, ProductListItem> =
         withContext(Dispatchers.IO) {
             try {
                 // Register before reading. A concurrent mutation invalidates the entire generation.
-                if (observing.compareAndSet(false, true)) database.invalidationTracker.addWeakObserver(observer)
+                if (invalid) return@withContext LoadResult.Invalid()
+                if (observing.compareAndSet(false, true)) observeChanges()
+                observationReady.await()
                 val result = database.withTransaction {
                     when {
                         params is LoadParams.Refresh && params.key?.anchor == true -> refreshAround(params.key!!, params.loadSize)

@@ -32,6 +32,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.paging.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

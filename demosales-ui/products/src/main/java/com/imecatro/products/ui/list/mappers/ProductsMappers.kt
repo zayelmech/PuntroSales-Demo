@@ -1,9 +1,15 @@
 package com.imecatro.products.ui.list.mappers
 
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
+import com.imecatro.demosales.domain.products.model.ProductListItem
 import com.imecatro.products.ui.list.model.ProductUiModel
 import androidx.core.net.toUri
 import java.math.BigDecimal
+
+fun ProductListItem.toProductUiModel() = ProductUiModel(
+    id = id, name = name, price = price.toString(), unit = unit,
+    stock = BigDecimal.valueOf(stock).toString(), imageUrl = imageUri.toUri(), category = category,
+)
 
 fun List<ProductDomainModel>.toProductUiModel(): List<ProductUiModel> {
     return map {
