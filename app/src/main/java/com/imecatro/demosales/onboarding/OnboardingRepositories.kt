@@ -15,14 +15,14 @@ class OnboardingProductsRepository(
 ) : ProductsRepository by delegate {
     override suspend fun addProduct(product: ProductDomainModel) {
         delegate.addProduct(product)
-        store.productsSaved(delegate.getAllProducts().first().size)
+        store.productsSaved(delegate.countProducts())
     }
 
     override suspend fun deleteProductById(id: Long) {
         // Preserve a pre-existing milestone even if deletion is the first action.
-        store.productsSaved(delegate.getAllProducts().first().size)
+        store.productsSaved(delegate.countProducts())
         delegate.deleteProductById(id)
-        store.productsSaved(delegate.getAllProducts().first().size)
+        store.productsSaved(delegate.countProducts())
     }
 }
 

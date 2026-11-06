@@ -76,6 +76,7 @@ android {
     buildFeatures {
         compose = true
     }
+    sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -167,6 +168,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.androidx.paging.testing)
 
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)

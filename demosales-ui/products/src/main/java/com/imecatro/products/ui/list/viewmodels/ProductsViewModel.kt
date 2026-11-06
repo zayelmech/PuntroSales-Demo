@@ -1,6 +1,16 @@
 package com.imecatro.products.ui.list.viewmodels
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
+import androidx.paging.map
+import com.imecatro.demosales.domain.products.model.ProductsQuery
+import com.imecatro.demosales.domain.products.model.ProductOrder
+import com.imecatro.demosales.domain.products.repository.ProductsPagingRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import com.imecatro.demosales.domain.products.model.ProductDomainModel
 import com.imecatro.demosales.domain.products.model.ProductStockDomainModel
 import com.imecatro.demosales.domain.products.repository.ProductsRepository
@@ -11,7 +21,6 @@ import com.imecatro.demosales.ui.theme.architect.BaseViewModel
 import com.imecatro.demosales.ui.theme.architect.ErrorUiModel
 import com.imecatro.products.ui.list.mappers.toProductUiModel
 import com.imecatro.products.ui.list.model.CategoriesFilter
-import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.uistate.ListProductsUiState
 import com.imecatro.products.ui.list.uistate.OrderedFilterState
 import com.imecatro.products.ui.list.uistate.checkElement
@@ -19,29 +28,25 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
     private val productsRepository: ProductsRepository,
+    private val pagingRepository: ProductsPagingRepository,
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
     private val exportProductsCsvUseCase: ExportProductsCsvUseCase,
     private val isCatalogPublishedUseCase: IsCatalogPublishedUseCase,
     private val iODispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ListProductsUiState>(ListProductsUiState.idle) {
+) : BaseViewModel<ListProductsUiState>(ListProductsUiState.idle.copy(isFetchingProducts = false)) {
 
     private val _filtersState = MutableStateFlow(OrderedFilterState.filters)
 
@@ -51,105 +56,58 @@ class ProductsViewModel @Inject constructor(
         MutableStateFlow(emptyList())
     val categories: StateFlow<List<CategoriesFilter>> = _categories.asStateFlow()
 
-    val productsList: StateFlow<List<ProductUiModel>> =
-        productsRepository.getAllProducts()
-            .onStart {
-                updateState { copy(isFetchingProducts = true) }
-            }
-            .combine(filtersState) { products, filters ->
-                // Filter by order
-                applyOrderFilter(products, filters)
-            }
-            .combine(categories) { products, categories ->
-                applyCategories(products, categories)
-            }
-            .map { it.toProductUiModel() }
-            .combine(uiState) { products, report ->
-                val ids = report.idsSelected
-                products.map { product -> product.copy(isSelected = ids.contains(product.id)) }
-            }
-            .onEach {
-                updateState { copy(isFetchingProducts = false) }
-            }
-            .flowOn(Dispatchers.Default) // Perform combine and map on Default dispatcher
-            .catch {
-                updateState { copy(isFetchingProducts = false) }
+    private val query = MutableStateFlow(ProductsQuery())
+    private var selectionJob: Job? = null
+    private var started = false
 
-                val error = ErrorUiModel("", "No data")
-                updateState { copy(errorFetchingProducts = error) }
-            }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    // Cache prepared rows for this ViewModel, independently of selection/dialog state.
+    val productsList = query
+        // Preserve search's existing full-catalog, ID-ordered prefix results.
+        .map { if (it.search.isEmpty()) it else ProductsQuery(search = it.search) }
+        .distinctUntilChanged()
+        .flatMapLatest { pagingRepository.getProductsPaged(it) }
+        .map { page -> page.map { it.toProductUiModel() } }
+        .cachedIn(viewModelScope)
 
-    private fun applyOrderFilter(
-        products: List<ProductDomainModel>, // Assuming products from repository are Domain models
-        filters: List<OrderedFilterState>
-    ): List<ProductDomainModel> {
-        val orderSelected: OrderedFilterState? = filters.firstOrNull { it.isChecked }
-
-        return orderSelected?.let { selectedFilter ->
-            when (selectedFilter.type) {
-                OrderedFilterState.Type.NAME -> products.sortedBy { it.name?.lowercase() }
-                OrderedFilterState.Type.PRICE -> products.sortedBy { it.price }
-                OrderedFilterState.Type.STOCK -> products.sortedBy { it.stock.quantity }
-                OrderedFilterState.Type.DATE -> products.sortedBy { it.id } // Consider if 'id' is appropriate for date sorting
-                OrderedFilterState.Type.NAME_INVERSE -> products.sortedByDescending { it.name?.lowercase() }
-                OrderedFilterState.Type.PRICE_INVERSE -> products.sortedByDescending { it.price }
-                OrderedFilterState.Type.STOCK_INVERSE -> products.sortedByDescending { it.stock.quantity }
-                OrderedFilterState.Type.DATE_INVERSE -> products.sortedByDescending { it.id } // Same consideration for 'id'
-            }
-        } ?: products // Return original list if no filter is selected or if orderSelected is null
-    }
-
-    private fun applyCategories(
-        products: List<ProductDomainModel>, // Assuming products from repository are Domain models
-        filters: List<CategoriesFilter>
-    ): List<ProductDomainModel> {
-        val categoriesChecked = filters.filter { it.isChecked }
-
-        return if (categoriesChecked.isNotEmpty()) {
-            products.filter { product ->
-                categoriesChecked.any { category ->
-                    product.category?.name == category.text ||
-                            category.text.isEmpty() && product.category == null // for products with no category
-
-                }
-            }
-        } else {
-            products
-        }
-    }
-
-
-    fun onSearchAction(query: String) {
-        viewModelScope.launch(iODispatcher) {
-
-            val list = productsRepository.searchProducts(query).first()
-            updateState { copy(productsFiltered = list.toProductUiModel()) }
-        }
-
+    fun onSearchAction(text: String) {
+        if (query.value.search == text) return
+        selectionJob?.cancel()
+        query.update { it.copy(search = text) }
     }
 
     fun onFilterChange(filter: OrderedFilterState) {
-        viewModelScope.launch(iODispatcher) {
-            _filtersState.update { it.checkElement(filter) }
+        _filtersState.update { it.checkElement(filter) }
+        val order = when (filter.type) {
+            OrderedFilterState.Type.NAME, OrderedFilterState.Type.NAME_INVERSE -> ProductOrder.NAME
+            OrderedFilterState.Type.PRICE, OrderedFilterState.Type.PRICE_INVERSE -> ProductOrder.PRICE
+            OrderedFilterState.Type.STOCK, OrderedFilterState.Type.STOCK_INVERSE -> ProductOrder.STOCK
+            OrderedFilterState.Type.DATE, OrderedFilterState.Type.DATE_INVERSE -> ProductOrder.CREATED
         }
+        // Preserve the existing enum-to-direction behavior, including price ordering.
+        val descending = filter.type in setOf(OrderedFilterState.Type.NAME_INVERSE,
+            OrderedFilterState.Type.PRICE_INVERSE, OrderedFilterState.Type.STOCK_INVERSE,
+            OrderedFilterState.Type.DATE_INVERSE)
+        selectionJob?.cancel()
+        query.update { it.copy(order = order, descending = descending) }
     }
 
     fun onFilterCategory(category: CategoriesFilter) {
-        viewModelScope.launch(iODispatcher) {
-            _categories.update { lst ->
-                val index = lst.indexOf(category)
-                lst.mapIndexed { i, categoryFilter ->
-                    if (i == index)
-                        categoryFilter.copy(isChecked = !categoryFilter.isChecked)
-                    else
-                        categoryFilter
-                }
-            }
-        }
+        _categories.update { list -> list.map { if (it == category) it.copy(isChecked = !it.isChecked) else it } }
+        updateCategoryQuery()
+    }
+
+    private fun updateCategoryQuery() {
+        val selected = _categories.value.filter { it.isChecked }
+        val next = query.value.copy(categoryNames = selected.map { it.text }.toSet(),
+            includeUncategorized = selected.any { it.text.isEmpty() })
+        if (next == query.value) return
+        selectionJob?.cancel()
+        query.value = next
     }
 
     override fun onStart() {
+        if (started) return
+        started = true
         viewModelScope.launch {
             isCatalogPublishedUseCase.execute(Unit).onSuccess { catalog ->
                 updateState { copy(isCatalogPublished = catalog != null) }
@@ -157,44 +115,52 @@ class ProductsViewModel @Inject constructor(
         }
         viewModelScope.launch(Dispatchers.IO) {
             getAllCategoriesUseCase().collect { list ->
-                val filter = list.map { CategoriesFilter(it.name, false) }
+                val checked = _categories.value.filter { it.isChecked }.map { it.text }.toSet()
+                val filter = list.map { CategoriesFilter(it.name, it.name in checked) }
 
-                val uncategorized = CategoriesFilter("", false) // for elements with no category
+                val uncategorized = CategoriesFilter("", "" in checked) // for elements with no category
                 _categories.update { filter.plus(uncategorized) }
+                updateCategoryQuery()
 
             }
         }
     }
 
     fun onProductSelected(id: Long?) {
-        if (id == null) {
-            updateState { copy(enableSelection = true) }
+        selectionJob?.cancel()
+        updateState {
+            if (id == null) copy(enableSelection = true)
+            else copy(idsSelected = if (id in idsSelected) idsSelected - id else idsSelected + id,
+                allSelected = false)
+        }
+    }
+
+    fun onSelectAllProducts(checked: Boolean) {
+        selectionJob?.cancel()
+        if (!checked) {
+            updateState { copy(allSelected = false, idsSelected = emptyList()) }
             return
         }
-        if (uiState.value.idsSelected.contains(id))
-            updateState { copy(idsSelected = idsSelected.minus(id)) }
-        else
-            updateState { copy(idsSelected = idsSelected.plus(id)) }
-
-        // Uncheck selection
-        if (productsList.value.size != uiState.value.idsSelected.size) {
-            updateState { copy(allSelected = false, enableSelection = false) }
+        val selectedQuery = query.value.copy(search = "")
+        selectionJob = viewModelScope.launch(iODispatcher) {
+            // Read IDs for the complete result, including pages not loaded in the UI.
+            try {
+                val ids = pagingRepository.getMatchingIds(selectedQuery)
+                updateState { copy(idsSelected = ids, allSelected = true, enableSelection = true) }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                updateState { copy(errorFetchingProducts = ErrorUiModel("", error.message ?: "No data")) }
+            }
         }
-
     }
 
-    fun onSelectAllProducts(checked: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        updateState { copy(allSelected = checked) }
-        val currentIds: List<Long> = productsList.value.map { it.id ?: 0L }.filter { it != 0L }
-        if (checked)
-            updateState { copy(idsSelected = currentIds) }
-        else
-            updateState { copy(idsSelected = emptyList()) }
+    fun onClearSelections() {
+        selectionJob?.cancel()
+        updateState { copy(idsSelected = emptyList(), enableSelection = false, allSelected = false) }
     }
 
-    fun onClearSelections() = viewModelScope.launch(Dispatchers.IO) {
-        updateState { copy(idsSelected = emptyList(), enableSelection = false) }
-    }
+    fun onErrorConsumed() = updateState { copy(errorFetchingProducts = null) }
 
     fun generateSampleData() = viewModelScope.launch(iODispatcher) {
         val samples = listOf(

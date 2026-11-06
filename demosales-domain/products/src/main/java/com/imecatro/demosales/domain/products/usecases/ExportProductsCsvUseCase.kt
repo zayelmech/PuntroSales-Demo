@@ -20,7 +20,7 @@ class ExportProductsCsvUseCase(
 
         val ids = Input().apply(input)
 
-        val lines = productsRepository.getProductsWithIds(ids.ids)
+        val lines = productsRepository.getProductsForExport(ids.ids)
 
         lines.forEach { l ->
             csvLines += listOf(

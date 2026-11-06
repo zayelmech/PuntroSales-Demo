@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.imecatro.products.data.paging.productSearchKey
 
 @Entity(
     tableName = "products_table",
@@ -14,7 +15,9 @@ import androidx.room.PrimaryKey
         childColumns = ["category_id"],
         onDelete = ForeignKey.SET_NULL
     )],
-    indices = [Index("category_id")]
+    indices = [Index("category_id"), Index(value = ["nameKey", "id"]),
+        Index(value = ["price", "id"]), Index(value = ["stock", "id"]),
+        Index(value = ["category_id", "nameKey", "id"]), Index("searchName"), Index("barcode")]
 )
 data class ProductRoomEntity(
     @PrimaryKey(autoGenerate = true)
@@ -29,5 +32,10 @@ data class ProductRoomEntity(
     val imageUri: String,
     @ColumnInfo(name = "category_id")
     val categoryId: Long? = null,
-    val barcode : String? = null
+    val barcode : String? = null,
+    @ColumnInfo(defaultValue = "''")
+    val nameKey: String = name.lowercase(),
+    // Match Android SQLite's ICU LIKE fold; the original name remains unchanged.
+    @ColumnInfo(collate = ColumnInfo.NOCASE, defaultValue = "''")
+    val searchName: String = productSearchKey(name),
 )

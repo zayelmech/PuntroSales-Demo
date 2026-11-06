@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="products_retry">No se pudieron cargar los productos. Reintentar</string>
+    <string name="products_no_results">No hay productos que coincidan con la búsqueda o los filtros.</string>
     <string name="btn_edit">Editar</string>
     <string name="btn_delete">Eliminar</string>
     <string name="title_stock">En existencia</string>
