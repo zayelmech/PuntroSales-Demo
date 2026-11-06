@@ -88,7 +88,7 @@ class PublishWebCatalogUseCase(
     override suspend fun doInBackground(input: CatalogForm): PublishedCatalogDomainModel =
         coroutineScope {
             // 1. Fetch products from the local repository
-            val products = productsRepository.getProductsWithIds(input.productsIds)
+            val products = productsRepository.getProductsForExport(input.productsIds)
 
             // 2. Upload images in parallel and map domain models to DTOs
             val webProducts = products.map { product ->

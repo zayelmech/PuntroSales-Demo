@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.imecatro.demosales.datasource.AppRoomDatabase
 import com.imecatro.products.data.repository.ProductsRepositoryImpl
+import com.imecatro.products.data.paging.productSearchKey
 import com.imecatro.products.ui.list.mappers.toProductUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -72,7 +73,7 @@ internal fun seedProducts(database: AppRoomDatabase, size: Int) {
                 if (id % 3 == 0) statement.bindNull(6) else statement.bindLong(6, (id % 2 + 1).toLong())
                 statement.bindString(7, "TEST$id")
                 statement.bindString(8, name.lowercase())
-                statement.bindString(9, name)
+                statement.bindString(9, productSearchKey(name))
                 statement.executeInsert()
             }
         } finally {

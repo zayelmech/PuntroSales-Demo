@@ -13,7 +13,9 @@ import com.imecatro.demosales.domain.products.model.ProductListItem
 import com.imecatro.demosales.domain.products.model.ProductOrder
 import com.imecatro.demosales.domain.products.model.ProductsQuery
 import com.imecatro.products.data.model.ProductRoomEntity
+import com.imecatro.products.data.model.StockRoomEntity
 import com.imecatro.products.data.paging.ProductCursor
+import com.imecatro.products.data.paging.productSearchKey
 import com.imecatro.products.data.paging.ProductsPagingSource
 import com.imecatro.products.data.repository.ProductsPagingRepositoryImpl
 import com.imecatro.products.data.repository.ProductsRepositoryImpl
@@ -92,10 +94,10 @@ class ProductsPagingTest {
 
     @Test fun prefixMatchingKeepsLegacyCaseWildcardsAndUnicodeBehavior() = runBlocking(Dispatchers.IO) {
         val dao = database.productsRoomDao()
-        listOf("Apple", "apple", "ÁRBOL", "árbol", "Milk_1", "Milk%2").forEach {
+        listOf("Apple", "apple", "ÁRBOL", "árbol", "Milk_1", "Milk%2", "Kelvin", "KELVIN", "kelvin", "İtem", "item", "ſtock", "stock").forEach {
             dao.addProduct(ProductRoomEntity(name = it, price = 1.0, currency = "MXN", unit = "pz", stock = 2.0, details = "", imageUri = ""))
         }
-        for (prefix in listOf("Ap", "ap", "Á", "á", "Milk_", "%", "missing", "Product 0000")) {
+        for (prefix in listOf("Ap", "ap", "Á", "á", "Milk_", "%", "missing", "Product 0000", "k", "i", "s")) {
             val expected = dao.searchProducts(prefix).first().map { it.id }.sorted()
             val actual = repository.getMatchingIds(ProductsQuery(search = prefix))
             assertEquals(prefix, expected, actual)
@@ -129,7 +131,7 @@ class ProductsPagingTest {
                     assertEquals(7L, it.getLong(0))
                     assertEquals("ÁRBOL", it.getString(1))
                     assertEquals("árbol", it.getString(2))
-                    assertEquals("ÁRBOL", it.getString(3))
+                    assertEquals(productSearchKey("ÁRBOL"), it.getString(3))
                     assertEquals(12.5, it.getDouble(4), 0.0)
                     assertEquals(-3.5, it.getDouble(5), 0.0)
                     assertEquals("Original", it.getString(6))
@@ -138,6 +140,49 @@ class ProductsPagingTest {
                 }
             }
         } finally { context.deleteDatabase(migrationName) }
+    }
+
+    @Test fun editsKeepSearchKeysCurrentAndExportsPreserveBusinessFieldsAndOrder() = runBlocking(Dispatchers.IO) {
+        val dao = database.productsRoomDao()
+        val old = dao.getProductDetailsById(1)
+        dao.updateProduct(old.copy(name = "ÁRBOL edited"))
+        assertEquals(listOf(1L), repository.getMatchingIds(ProductsQuery(search = "ÁRBOL")))
+        assertEquals("árbol edited", dao.getProductListRowById(1)!!.nameKey)
+        dao.addStockAndUpdateProduct(StockRoomEntity(productId = 1, description = "Sale", amount = -2.0,
+            date = "2026-11-05T00:00:00Z", timeStamp = "1"))
+        val legacy = ProductsRepositoryImpl(dao, database.categoriesRoomDao())
+        val details = legacy.getProductsWithIds(listOf(1L)).single()
+        val exported = legacy.getProductsForExport(listOf(2L, 1L, 2L))
+        assertEquals(listOf(2L, 1L, 2L), exported.map { it.id })
+        val one = exported[1]
+        assertEquals(details.name, one.name)
+        assertEquals(details.details, one.details)
+        assertEquals(details.category, one.category)
+        assertEquals(details.barcode, one.barcode)
+        assertEquals(details.stock.quantity, one.stock.quantity, 0.0)
+        assertEquals(details.price, one.price)
+        assertEquals(1, details.stock.history.size)
+        assertTrue(one.stock.history.isEmpty())
+        assertEquals(121, legacy.countProducts())
+        assertEquals(121, legacy.getAllProducts().first().size)
+    }
+
+    @Test fun seekAndPrefixQueriesUseTheirIndexesOnAndroidSqlite() {
+        val db = database.openHelper.readableDatabase
+        val plans = listOf(
+            "SELECT id FROM products_table WHERE (nameKey,id) > ('product',20) ORDER BY nameKey,id LIMIT 40" to "index_products_table_nameKey_id",
+            "SELECT id FROM products_table WHERE (price,id) > (1,20) ORDER BY price,id LIMIT 40" to "index_products_table_price_id",
+            "SELECT id FROM products_table WHERE (stock,id) > (1,20) ORDER BY stock,id LIMIT 40" to "index_products_table_stock_id",
+            "SELECT id FROM products_table WHERE searchName >= 'product 0000' AND searchName < 'product 0001' AND name LIKE 'Product 0000%' LIMIT 40" to "index_products_table_searchName"
+        )
+        plans.forEach { (sql, index) ->
+            val plan = db.query("EXPLAIN QUERY PLAN $sql").use { cursor ->
+                buildList { while (cursor.moveToNext()) add(cursor.getString(3)) }.joinToString()
+            }
+            assertTrue(plan, plan.contains("SEARCH"))
+            assertTrue(plan, plan.contains(index))
+            assertFalse(plan, plan.contains("TEMP B-TREE"))
+        }
     }
 
     private suspend fun load(source: ProductsPagingSource, key: ProductCursor? = null): PagingSource.LoadResult.Page<ProductCursor, ProductListItem> {

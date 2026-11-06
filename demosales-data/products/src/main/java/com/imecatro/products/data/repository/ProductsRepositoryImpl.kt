@@ -54,6 +54,15 @@ class ProductsRepositoryImpl(
     override fun getAllProducts(): Flow<List<ProductDomainModel>> =
         productsDao?.getProductsWithCategories()?.map { it.toProductListDomain() } ?: emptyFlow()
 
+    override suspend fun countProducts(): Int = productsDao?.countProducts() ?: 0
+
+    override fun getProductsForExport(ids: List<Long>): List<ProductDomainModel> {
+        val byId = ids.distinct().chunked(500).flatMap { batch ->
+            productsDao?.getProductsForExport(batch)?.toProductListDomain().orEmpty()
+        }.associateBy { it.id }
+        return ids.mapNotNull { byId[it] }
+    }
+
     override suspend fun deleteProductById(id: Long) {
         productsDao?.deleteProductById(id)
     }

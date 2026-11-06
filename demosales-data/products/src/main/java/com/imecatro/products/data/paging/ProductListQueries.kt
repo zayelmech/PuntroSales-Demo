@@ -74,7 +74,19 @@ internal class ProductListQueries(private val query: ProductsQuery) {
         val args = mutableListOf<Any>()
         if (query.search.isNotEmpty()) {
             // Preserve SQLite LIKE matching (including existing wildcard behavior).
-            conditions += "p.searchName LIKE ?"
+            // Android can override LIKE, disabling its automatic range optimization.
+            // Index the same simple ICU fold used by Android's LIKE, including
+            // Kelvin sign/long S/supplementary letters; LIKE checks the original text.
+            val prefix = productSearchKey(query.search.takeWhile { it != '%' && it != '_' && it != '\u0000' })
+            if (prefix.isNotEmpty()) {
+                conditions += "p.searchName >= ?"
+                args += prefix
+                prefixUpperBound(prefix)?.let {
+                    conditions += "p.searchName < ?"
+                    args += it
+                }
+            }
+            conditions += "p.name LIKE ?"
             args += query.search + "%"
         }
         val categoryConditions = mutableListOf<String>()

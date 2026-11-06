@@ -18,6 +18,7 @@ import com.imecatro.products.data.datasource.ProductsDao
 import com.imecatro.products.data.model.CategoryRoomEntity
 import com.imecatro.products.data.model.ProductRoomEntity
 import com.imecatro.products.data.model.StockRoomEntity
+import com.imecatro.products.data.paging.productSearchKey
 
 /**
  * The main Room database for the application.
@@ -321,7 +322,7 @@ val MIGRATION_14_15 = object : Migration(14, 15) {
                 if (rows.isEmpty()) break
                 rows.forEach { (id, name) ->
                     update.bindString(1, name.lowercase())
-                    update.bindString(2, name)
+                    update.bindString(2, productSearchKey(name))
                     update.bindLong(3, id)
                     update.executeUpdateDelete()
                 }

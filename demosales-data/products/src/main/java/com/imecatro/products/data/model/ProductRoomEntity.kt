@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.imecatro.products.data.paging.productSearchKey
 
 @Entity(
     tableName = "products_table",
@@ -34,7 +35,7 @@ data class ProductRoomEntity(
     val barcode : String? = null,
     @ColumnInfo(defaultValue = "''")
     val nameKey: String = name.lowercase(),
-    // Keep the original text: legacy LIKE is ASCII-insensitive, not Unicode case folding.
+    // Match Android SQLite's ICU LIKE fold; the original name remains unchanged.
     @ColumnInfo(collate = ColumnInfo.NOCASE, defaultValue = "''")
-    val searchName: String = name,
+    val searchName: String = productSearchKey(name),
 )

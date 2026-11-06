@@ -8,6 +8,7 @@ import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.imecatro.products.data.model.CategoryRoomEntity
 import com.imecatro.products.data.model.ProductListRow
+import com.imecatro.products.data.paging.productSearchKey
 import androidx.room.Transaction
 import androidx.room.Update
 import com.imecatro.products.data.model.ProductAnCategoryDetailsRoomModel
@@ -35,7 +36,11 @@ interface ProductsDao {
     suspend fun countProducts(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addProduct(product: ProductRoomEntity): Long
+    fun insertProduct(product: ProductRoomEntity): Long
+
+    fun addProduct(product: ProductRoomEntity): Long = insertProduct(
+        product.copy(nameKey = product.name.lowercase(), searchName = productSearchKey(product.name))
+    )
 
 
     @Deprecated("Use [getProductsFullDetailsByd] instead")
@@ -47,6 +52,10 @@ interface ProductsDao {
     fun getProductsWithCategories(): Flow<List<ProductAnCategoryDetailsRoomModel>>
 
     @Transaction
+    @Query("SELECT * FROM products_table WHERE id IN (:ids)")
+    fun getProductsForExport(ids: List<Long>): List<ProductAnCategoryDetailsRoomModel>
+
+    @Transaction
     @Query("SELECT * FROM products_table WHERE id = :id ORDER BY name")
     fun getProductFullDetailsByd(id: Long): ProductFullDetailsRoomModel
 
@@ -54,7 +63,11 @@ interface ProductsDao {
     fun deleteProductById(id: Long)
 
     @Update
-    fun updateProduct(product: ProductRoomEntity)
+    fun persistProduct(product: ProductRoomEntity)
+
+    fun updateProduct(product: ProductRoomEntity) = persistProduct(
+        product.copy(nameKey = product.name.lowercase(), searchName = productSearchKey(product.name))
+    )
 
     @Query("SELECT * FROM products_table WHERE id = :id ")
     fun getProductDetailsById(id: Long): ProductRoomEntity
