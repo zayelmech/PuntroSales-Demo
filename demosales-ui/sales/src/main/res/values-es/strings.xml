@@ -87,4 +87,10 @@
     <string name="fulfillment_share">Compartir lista de compra</string>
     <string name="fulfillment_shopping_list">Lista de compra · Plan de surtido</string>
     <string name="fulfillment_share_error">No se encontró una aplicación para compartir la lista.</string>
+    <string name="sales_date_single">Elegir una fecha</string>
+    <string name="sales_date_range">Rango personalizado</string>
+    <string name="sales_date_all">Todas las fechas</string>
+    <string name="sales_date_apply">Aplicar</string>
+    <string name="sales_date_cancel">Cancelar</string>
+    <string name="sales_list_empty">No hay ventas que coincidan con los filtros.</string>
 </resources>

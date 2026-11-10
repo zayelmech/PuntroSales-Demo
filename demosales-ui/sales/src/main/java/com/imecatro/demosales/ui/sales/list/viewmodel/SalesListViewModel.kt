@@ -11,6 +11,7 @@ import com.imecatro.demosales.domain.sales.list.usecases.GetAllSalesUseCase
 import com.imecatro.demosales.domain.sales.list.usecases.GetSalesMetricsUseCase
 import com.imecatro.demosales.domain.sales.model.OrderStatus
 import com.imecatro.demosales.ui.sales.list.mappers.toUiModel
+import com.imecatro.demosales.ui.sales.list.model.SalesDateRange
 import com.imecatro.demosales.ui.sales.list.model.SalesList
 import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
 import com.imecatro.demosales.ui.sales.list.model.toDomain
@@ -55,6 +56,9 @@ class SalesListViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _dateFilter = MutableStateFlow<SalesDateRange?>(null)
+    val dateFilter: StateFlow<SalesDateRange?> = _dateFilter.asStateFlow()
+
     val metrics: StateFlow<SalesMetricsDomainModel> = getSalesMetricsUseCase.invoke()
         .flowOn(coroutineProvider.io)
         .stateIn(
@@ -80,6 +84,9 @@ class SalesListViewModel @Inject constructor(
 
     val salesListUiState: StateFlow<SalesList> =
         getAllSalesUseCase.invoke()
+            .combine(dateFilter) { sales, range ->
+                if (range == null) sales else sales.filter { range.contains(it.date) }
+            }
             .map { sales -> sales.toUiModel() }
             .combine(statusFilterState) { sales, statusFilter ->
                 // Filter by status
@@ -108,6 +115,12 @@ class SalesListViewModel @Inject constructor(
             .flowOn(coroutineProvider.io)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
+
+    fun onDateFilterChange(range: SalesDateRange?) {
+        if (_dateFilter.value == range) return
+        onClearSelections()
+        _dateFilter.value = range
+    }
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
@@ -141,7 +154,7 @@ class SalesListViewModel @Inject constructor(
     }
 
     fun onClearSelections() {
-        _reportState.update { it.copy(ids = emptyList(), enableSelection = false) }
+        _reportState.update { it.copy(ids = emptyList(), enableSelection = false, allSelected = false) }
     }
 
     fun onDownloadCsv() = viewModelScope.launch(coroutineProvider.io) {

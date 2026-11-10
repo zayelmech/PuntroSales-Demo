@@ -33,7 +33,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,7 +40,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,6 +58,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imecatro.demosales.ui.sales.R
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
 import com.imecatro.demosales.ui.sales.list.model.StatusFilterUiModel
+import com.imecatro.demosales.ui.sales.list.model.SalesDateRange
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
 import com.imecatro.demosales.ui.theme.common.SearchTopBar
 import com.imecatro.demosales.ui.theme.common.download
@@ -88,7 +90,9 @@ fun SalesListComposable(
     onAddNewSale: () -> Unit = {},
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},
-    onOpenFulfillmentPlan: () -> Unit = {}
+    onOpenFulfillmentPlan: () -> Unit = {},
+    selectedDateRange: SalesDateRange? = null,
+    onDateFilterChange: (SalesDateRange?) -> Unit = {}
 ) {
 
     val scrollState = rememberLazyListState()
@@ -193,6 +197,22 @@ fun SalesListComposable(
                     horizontalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     FilterChip(
+                        onClick = { dateFilter = true },
+                        selected = selectedDateRange != null,
+                        label = {
+                            val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                                .withLocale(LocalLocale.current.platformLocale)
+                            Text(when {
+                                selectedDateRange == null -> stringResource(R.string.txt_filter_date)
+                                selectedDateRange.start == selectedDateRange.end -> selectedDateRange.start.format(formatter)
+                                else -> "${selectedDateRange.start.format(formatter)} – ${selectedDateRange.end.format(formatter)}"
+                            })
+                        },
+                        leadingIcon = {
+                            Icon(if (selectedDateRange != null) Icons.Filled.Done else Icons.Filled.ArrowDropDown, null)
+                        }
+                    )
+                    FilterChip(
                         onClick = { statusFilter = true },
                         label = {
                             Text(stringResource(R.string.txt_filter_state))
@@ -227,7 +247,7 @@ fun SalesListComposable(
                 item {
                     ListItem(
                         headlineContent = {
-                            Text(stringResource(R.string.txt_sales_list))
+                            Text(stringResource(R.string.txt_sales_list_tittle))
                         },
                         supportingContent = {
                             Text(stringResource(R.string.txt_sales_list_description))
@@ -241,6 +261,9 @@ fun SalesListComposable(
                         })
                     HorizontalDivider()
                 }
+                if (list.isEmpty()) {
+                    item { Text(stringResource(R.string.sales_list_empty), Modifier.padding(24.dp)) }
+                }
                 items(list) { sale ->
                     CardOfSaleComposable(
                         sale = sale,
@@ -251,19 +274,16 @@ fun SalesListComposable(
             }
 
 
-            if (dateFilter)
-                ModalBottomSheet(onDismissRequest = { dateFilter = false }) {
-                    Text(text = "Any time")
-                    Text(text = "One week ago")
-                    ListItem(leadingContent = {
-                        RadioButton(selected = true, onClick = {})
-                    }, headlineContent = {
-                        Text(text = "One month ago")
-                    })
-                    TextButton(onClick = { /*TODO*/ }) {
-                        Text(text = "Custom Range")
-                    }
-                }
+            if (dateFilter) {
+                SalesDateFilterDialog(
+                    range = selectedDateRange,
+                    onApply = { range ->
+                        onDateFilterChange(range)
+                        dateFilter = false
+                    },
+                    onDismiss = { dateFilter = false }
+                )
+            }
 
             if (statusFilter)
                 ModalBottomSheet(onDismissRequest = { statusFilter = false }) {
@@ -305,6 +325,7 @@ fun SalesListComposableStateImpl(
     val listUiState by salesListViewModel.salesListUiState.collectAsState()
     // Filters
     val statusFilterUiState by salesListViewModel.statusFilterState.collectAsState()
+    val selectedDateRange by salesListViewModel.dateFilter.collectAsStateWithLifecycle()
     // Reports
     val reportState by salesListViewModel.reportState.collectAsState()
 
@@ -339,6 +360,8 @@ fun SalesListComposableStateImpl(
         onStatusFilterChecked = { salesListViewModel.onStatusFilterChange(it) },
         onShowSalesMetrics = { showGraph = true },
         statusList = statusFilterUiState,
+        selectedDateRange = selectedDateRange,
+        onDateFilterChange = salesListViewModel::onDateFilterChange,
         onAddNewSale = { onNavigate(null) },
         searchQuery = searchQuery,
         onSearchQueryChange = { salesListViewModel.onSearchQueryChange(it) },

@@ -81,4 +81,10 @@
     <string name="fulfillment_share">Share shopping list</string>
     <string name="fulfillment_shopping_list">Shopping list · Fulfillment plan</string>
     <string name="fulfillment_share_error">No app was found to share the list.</string>
+    <string name="sales_date_single">Choose a date</string>
+    <string name="sales_date_range">Custom date range</string>
+    <string name="sales_date_all">All dates</string>
+    <string name="sales_date_apply">Apply</string>
+    <string name="sales_date_cancel">Cancel</string>
+    <string name="sales_list_empty">No sales match your filters.</string>
 </resources>
