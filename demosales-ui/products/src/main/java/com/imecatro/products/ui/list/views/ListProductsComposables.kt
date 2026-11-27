@@ -70,7 +70,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -125,13 +124,13 @@ fun ListOfProducts(
     onManagementAction: () -> Unit = {},
     pagingItems: LazyPagingItems<ProductUiModel>? = null,
     selectedIds: Set<Long> = emptySet(),
-    banner: @Composable () -> Unit = {},
+    banner: (@Composable () -> Unit)? = null,
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     //var expanded by rememberSaveable { mutableStateOf(false) }
 
     val scrollState = rememberLazyListState()
-    var hasBanner by remember { mutableStateOf(false) }
+    val hasBanner = banner != null
 
     var showFilters by remember { mutableStateOf(false) }
 
@@ -158,7 +157,7 @@ fun ListOfProducts(
         // Scaffold measures this slot separately, reserves its height for the list,
         // and places floating actions above it. Empty content consumes no space.
         bottomBar = {
-            Box(Modifier.onSizeChanged { hasBanner = it.height > 0 }) { banner() }
+            banner?.invoke()
         },
         floatingActionButton = {
             Column(
@@ -505,7 +504,7 @@ fun ListOfProductsStateImpl(
     onCategoriesNav: () -> Unit,
     onCreateCatalog: (List<Long>) -> Unit = {},
     onManagementAction: () -> Unit = {},
-    banner: @Composable () -> Unit = {},
+    banner: (@Composable () -> Unit)? = null,
     onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()

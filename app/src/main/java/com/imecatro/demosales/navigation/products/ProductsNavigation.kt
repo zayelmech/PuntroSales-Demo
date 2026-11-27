@@ -61,7 +61,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 inline fun <reified T : Any> NavGraphBuilder.productsNavigation(
     navController: NavHostController,
-    noinline banner: @Composable () -> Unit = {}
+    noinline banner: (@Composable () -> Unit)? = null
 ) {
     navigation<T>(startDestination = ProductsDestinations.ListAndDetails) {
 

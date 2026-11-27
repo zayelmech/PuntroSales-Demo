@@ -61,7 +61,12 @@ class OnboardingUiTest {
             PuntroSalesDemoTheme {
                 Column(Modifier.fillMaxSize()) {
                     Box(Modifier.weight(1f)) {
-                        ListOfProducts(list = fakeProductsList(100), banner = { OnboardingBanner(progress.value, {}, {}) })
+                        ListOfProducts(
+                            list = fakeProductsList(100),
+                            banner = if (progress.value.completed) null else {
+                                { OnboardingBanner(progress.value, {}, {}) }
+                            }
+                        )
                     }
                     Surface(Modifier.fillMaxWidth().height(80.dp).testTag("navigation")) { Text("Navigation") }
                 }
