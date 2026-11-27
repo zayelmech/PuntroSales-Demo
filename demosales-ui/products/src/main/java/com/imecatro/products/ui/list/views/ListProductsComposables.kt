@@ -57,6 +57,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
@@ -70,7 +71,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -125,13 +125,13 @@ fun ListOfProducts(
     onManagementAction: () -> Unit = {},
     pagingItems: LazyPagingItems<ProductUiModel>? = null,
     selectedIds: Set<Long> = emptySet(),
-    banner: @Composable () -> Unit = {},
+    banner: (@Composable () -> Unit)? = null,
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     //var expanded by rememberSaveable { mutableStateOf(false) }
 
     val scrollState = rememberLazyListState()
-    var hasBanner by remember { mutableStateOf(false) }
+    val hasBanner = banner != null
 
     var showFilters by remember { mutableStateOf(false) }
 
@@ -145,12 +145,13 @@ fun ListOfProducts(
         confirmValueChange = { true }, // Add a default confirmValueChange lambda
     )
 
+    val currentOnSearchProduct by rememberUpdatedState(onSearchProduct)
     LaunchedEffect(Unit) {
         snapshotFlow { text }
             .debounce(300)
             .distinctUntilChanged()
             .collect {
-                onSearchProduct(it)
+                currentOnSearchProduct(it)
             }
     }
 
@@ -158,7 +159,7 @@ fun ListOfProducts(
         // Scaffold measures this slot separately, reserves its height for the list,
         // and places floating actions above it. Empty content consumes no space.
         bottomBar = {
-            Box(Modifier.onSizeChanged { hasBanner = it.height > 0 }) { banner() }
+            banner?.invoke()
         },
         floatingActionButton = {
             Column(
@@ -357,19 +358,15 @@ fun ListOfProducts(
 
     if (orderedFilter)
         ModalBottomSheet(onDismissRequest = { orderedFilter = false }, sheetState = sheetState) {
-            LazyColumn {
-                items(orderList) { ordered ->
-                    ListItem(
-                        leadingContent = {
-                            RadioButton(selected = ordered.isChecked, onClick = {
-                                onCheckedChange(ordered)
-                            })
-                        },
-                        headlineContent = {
-                            Text(text = stringResource(ordered.text))
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
+            if (orderList.size <= 10) {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    orderList.forEach { ordered -> OrderFilterItem(ordered, onCheckedChange) }
+                }
+            } else {
+                LazyColumn {
+                    items(orderList, key = { it.type.name }, contentType = { "order-filter" }) { ordered ->
+                        OrderFilterItem(ordered, onCheckedChange)
+                    }
                 }
             }
         }
@@ -377,7 +374,7 @@ fun ListOfProducts(
     if (categoriesFilter)
         ModalBottomSheet(onDismissRequest = { categoriesFilter = false }, sheetState = sheetState) {
             LazyColumn {
-                item {
+                item(key = "categories-header", contentType = "categories-header") {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
@@ -393,7 +390,11 @@ fun ListOfProducts(
                         }
                     }
                 }
-                items(categories) { category ->
+                items(
+                    categories,
+                    key = { it.id ?: "category-name:${it.text}" },
+                    contentType = { "category-filter" }
+                ) { category ->
                     ListItem(
                         leadingContent = {
                             Checkbox(checked = category.isChecked, onCheckedChange = {
@@ -411,6 +412,18 @@ fun ListOfProducts(
                 }
             }
         }
+}
+
+
+@Composable
+private fun OrderFilterItem(ordered: OrderedFilterState, onCheckedChange: (OrderedFilterState) -> Unit) {
+    ListItem(
+        leadingContent = {
+            RadioButton(selected = ordered.isChecked, onClick = { onCheckedChange(ordered) })
+        },
+        headlineContent = { Text(text = stringResource(ordered.text)) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+    )
 }
 
 
@@ -505,7 +518,7 @@ fun ListOfProductsStateImpl(
     onCategoriesNav: () -> Unit,
     onCreateCatalog: (List<Long>) -> Unit = {},
     onManagementAction: () -> Unit = {},
-    banner: @Composable () -> Unit = {},
+    banner: (@Composable () -> Unit)? = null,
     onNavigateAction: (Long?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -516,8 +529,6 @@ fun ListOfProductsStateImpl(
     val filters by productsViewModel.filtersState.collectAsStateWithLifecycle()
 
     val categories by productsViewModel.categories.collectAsStateWithLifecycle()
-
-    var showShareReport by remember { mutableStateOf(false) }
 
     val selectedIds = remember(uiState.idsSelected) { uiState.idsSelected.toHashSet() }
     val showOptions = uiState.enableSelection || selectedIds.isNotEmpty()
@@ -554,39 +565,31 @@ fun ListOfProductsStateImpl(
 
     UiStateHandler(uiState, onDismiss = productsViewModel::onErrorConsumed)
 
-    LaunchedEffect(uiState) {
-        if (uiState.catalogFile != null)
-            showShareReport = true
-    }
-
+    val catalogFile = uiState.catalogFile
     val context = LocalContext.current
-    if (showShareReport)
-        ModalBottomSheet(onDismissRequest = {
-            showShareReport = false
-            productsViewModel.onCatalogShared()
-        }
-        ) {
+    if (catalogFile != null)
+        ModalBottomSheet(onDismissRequest = productsViewModel::onCatalogShared) {
             Column(
                 Modifier.padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
-                        uiState.catalogFile?.open(context)
+                        catalogFile.open(context)
                     }) {
                         Text(stringResource(R.string.btn_download_products_csv))
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
-                        uiState.catalogFile?.share(context)
+                        catalogFile.share(context)
                     }) { Icon(Icons.Default.Share, null) }
                     IconButton(onClick = {
-                        uiState.catalogFile?.download(context)
+                        catalogFile.download(context)
                     }) { Icon(painterResource(R.drawable.download), null) }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
-                        showShareReport = false
+                        productsViewModel.onCatalogShared()
                         onCreateCatalog(uiState.idsSelected)
                     }) {
                         Text(stringResource(R.string.txt_catalog_pdf))

@@ -36,7 +36,7 @@ fun OnboardingAppContent(
     navController: NavHostController,
     component: OnboardingComponent,
     viewModel: OnboardingViewModel = hiltViewModel(),
-    content: @Composable (banner: @Composable () -> Unit, onPlanLoaded: (Boolean, Boolean, Boolean) -> Unit) -> Unit
+    content: @Composable (banner: (@Composable () -> Unit)?, onPlanLoaded: (Boolean, Boolean, Boolean) -> Unit) -> Unit
 ) {
     val progress by viewModel.progress.collectAsStateWithLifecycle()
     val showIntroduction by viewModel.showIntroduction.collectAsStateWithLifecycle()
@@ -58,8 +58,13 @@ fun OnboardingAppContent(
         }
     }
 
+    // A null slot communicates absence before measurement, including completion updates.
+    val banner: (@Composable () -> Unit)? = if (!progress.completed && progress.nextStep != null) {
+        { component.Banner(progress, openStep, { showChecklist = true }) }
+    } else null
+
     Box(Modifier.fillMaxSize()) {
-        content({ component.Banner(progress, openStep, { showChecklist = true }) }, viewModel::planLoaded)
+        content(banner, viewModel::planLoaded)
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 80.dp))
     }
 

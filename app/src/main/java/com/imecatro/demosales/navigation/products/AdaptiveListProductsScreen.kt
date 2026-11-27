@@ -39,7 +39,7 @@ fun ListAndDetailsPane(
     onCreateCatalog: (List<Long>) -> Unit = {},
     onManagementAction: () -> Unit = {},
     onEditProduct: (Long) -> Unit = {},
-    banner: @Composable () -> Unit = {}
+    banner: (@Composable () -> Unit)? = null
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT

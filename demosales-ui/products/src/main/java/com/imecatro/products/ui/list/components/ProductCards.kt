@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -32,7 +33,8 @@ import com.imecatro.products.ui.list.images.ProductThumbnails
 import android.net.Uri
 import kotlin.math.roundToInt
 import coil.request.ImageRequest
-import com.imecatro.demosales.ui.theme.common.formatAsCurrency
+import com.imecatro.demosales.ui.theme.LocalCurrencyCode
+import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.products.ui.R
 import com.imecatro.products.ui.list.model.ProductUiModel
 import com.imecatro.products.ui.list.views.ListProductsTestTags
@@ -47,6 +49,12 @@ fun ProductCardCompose(
 ) {
 
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
+    val currencyCode = LocalCurrencyCode.current
+    val price = product.price
+    val formattedPrice = remember(price, locale, currencyCode) {
+        price?.let { runCatching { Money.format(it, locale, currencyCode) }.getOrDefault(it) }
+    }
     val pixels = with(LocalDensity.current) { 80.dp.toPx().roundToInt() }
     val thumbnail by produceState<Uri?>(null, product.imageUrl, pixels) {
         value = null
@@ -100,7 +108,7 @@ fun ProductCardCompose(
             }, headlineContent = {
                 Text(text = product.name ?: "Product name")
             }, supportingContent = {
-                Text(text = "${product.price?.formatAsCurrency()}")
+                Text(text = "$formattedPrice")
             }, trailingContent = {
                 val color =
                     if (product.stock.contains("-")) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
