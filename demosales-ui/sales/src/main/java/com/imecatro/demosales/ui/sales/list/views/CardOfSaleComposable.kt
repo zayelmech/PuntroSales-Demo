@@ -15,14 +15,18 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imecatro.demosales.ui.sales.list.model.SaleOnListUiModel
-import com.imecatro.demosales.ui.theme.common.formatAsCurrency
+import com.imecatro.demosales.ui.theme.LocalCurrencyCode
+import com.imecatro.demosales.ui.theme.common.Money
 import com.imecatro.demosales.ui.theme.common.localDate
+import java.util.Locale
 
 @Preview(showBackground = true)
 @Composable
@@ -36,9 +40,15 @@ fun CardOfSaleComposable(
         statusColor = Color.Blue,
         isSelected = true
     ),
+    locale: Locale = LocalLocale.current.platformLocale,
+    currencyCode: String? = LocalCurrencyCode.current,
     onLongClicked: () -> Unit = {},
     onCardClicked: () -> Unit = {}
 ) {
+    val formattedTotal = remember(sale.total, locale, currencyCode) {
+        runCatching { Money.format(sale.total.toString(), locale, currencyCode) }
+            .getOrDefault("0.0")
+    }
     val backgroundColor = if (sale.isSelected) {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
     } else {
@@ -68,7 +78,7 @@ fun CardOfSaleComposable(
                 }
             },
             headlineContent = {
-                Text(text = sale.total.formatAsCurrency())
+                Text(text = formattedTotal)
             },
             overlineContent = {
                 Text(text = sale.clientName)

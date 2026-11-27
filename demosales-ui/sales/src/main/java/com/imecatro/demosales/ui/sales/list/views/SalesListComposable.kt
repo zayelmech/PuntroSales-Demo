@@ -62,6 +62,7 @@ import com.imecatro.demosales.ui.sales.list.model.SalesDateRange
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
+import com.imecatro.demosales.ui.theme.LocalCurrencyCode
 import com.imecatro.demosales.ui.theme.common.SearchTopBar
 import com.imecatro.demosales.ui.theme.common.download
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
@@ -96,6 +97,8 @@ fun SalesListComposable(
 ) {
 
     val scrollState = rememberLazyListState()
+    val locale = LocalLocale.current.platformLocale
+    val currencyCode = LocalCurrencyCode.current
 
     var dateFilter by remember { mutableStateOf(false) }
 
@@ -269,6 +272,8 @@ fun SalesListComposable(
                 items(items = list, key = { it.id }, contentType = { "sale" }) { sale ->
                     CardOfSaleComposable(
                         sale = sale,
+                        locale = locale,
+                        currencyCode = currencyCode,
                         onLongClicked = { onCardSelected(sale.id) },
                         onCardClicked = { onCardClicked(sale.id) }
                     )
