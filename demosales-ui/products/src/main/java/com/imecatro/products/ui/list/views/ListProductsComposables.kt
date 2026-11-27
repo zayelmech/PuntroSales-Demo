@@ -57,6 +57,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
@@ -144,12 +145,13 @@ fun ListOfProducts(
         confirmValueChange = { true }, // Add a default confirmValueChange lambda
     )
 
+    val currentOnSearchProduct by rememberUpdatedState(onSearchProduct)
     LaunchedEffect(Unit) {
         snapshotFlow { text }
             .debounce(300)
             .distinctUntilChanged()
             .collect {
-                onSearchProduct(it)
+                currentOnSearchProduct(it)
             }
     }
 
