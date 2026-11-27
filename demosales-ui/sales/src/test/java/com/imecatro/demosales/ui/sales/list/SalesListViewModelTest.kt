@@ -146,4 +146,32 @@ class SalesListViewModelTest {
         advanceUntilIdle()
         assertEquals(listOf(2L), vm.reportState.value.ids)
     }
+
+    @Test fun `selection survives search and toggling a selected sale clears its row`() = runTest(dispatcher) {
+        val vm = observe()
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        vm.onSearchQueryChange("3")
+        advanceUntilIdle()
+        assertFalse(vm.salesListUiState.value.single().isSelected)
+        vm.onSearchQueryChange("")
+        advanceUntilIdle()
+        assertEquals(listOf(2L), vm.salesListUiState.value.filter { it.isSelected }.map { it.id })
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        assertTrue(vm.reportState.value.ids.isEmpty())
+        assertTrue(vm.salesListUiState.value.none { it.isSelected })
+    }
+
+    @Test fun `select all and clear update every visible row`() = runTest(dispatcher) {
+        val vm = observe()
+        vm.onSelectAllSales(true)
+        advanceUntilIdle()
+        assertTrue(vm.salesListUiState.value.all { it.isSelected })
+        vm.onSelectAllSales(false)
+        advanceUntilIdle()
+        assertTrue(vm.salesListUiState.value.none { it.isSelected })
+        assertTrue(vm.reportState.value.ids.isEmpty())
+        assertFalse(vm.reportState.value.allSelected)
+    }
 }

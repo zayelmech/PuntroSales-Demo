@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -47,6 +48,11 @@ class SalesListViewModel @Inject constructor(
     private val _reportState = MutableStateFlow(ExportSalesReportInput())
 
     val reportState: StateFlow<ExportSalesReportInput> = _reportState.asStateFlow()
+
+    private val selectedIds = reportState
+        .map { it.ids }
+        .distinctUntilChanged()
+        .map { it.toSet() }
 
     private val _statusFilterState: MutableStateFlow<List<StatusFilterUiModel>> =
         MutableStateFlow(StatusFilterUiModel.filters)
@@ -107,8 +113,7 @@ class SalesListViewModel @Inject constructor(
                     }
                 }
             }
-            .combine(reportState) { sales, report ->
-                val ids = report.ids
+            .combine(selectedIds) { sales, ids ->
                 sales.map { sale -> sale.copy(isSelected = ids.contains(sale.id)) }
             }
             .catch { Log.e(TAG, ": ", it) }
