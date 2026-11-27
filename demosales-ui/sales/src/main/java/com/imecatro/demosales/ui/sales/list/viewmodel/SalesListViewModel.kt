@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -114,8 +115,24 @@ class SalesListViewModel @Inject constructor(
                 }
             }
             .combine(selectedIds) { sales, ids ->
-                sales.map { sale -> sale.copy(isSelected = ids.contains(sale.id)) }
+                sales to ids
             }
+            .runningFold(SalesListSelection()) { previous, (sales, ids) ->
+                SalesListSelection(
+                    source = sales,
+                    rows = sales.mapIndexed { index, sale ->
+                        val isSelected = sale.id in ids
+                        val previousRow = previous.rows.getOrNull(index)
+                        when {
+                            previousRow != null && previousRow.isSelected == isSelected &&
+                                previous.source.getOrNull(index) == sale -> previousRow
+                            sale.isSelected == isSelected -> sale
+                            else -> sale.copy(isSelected = isSelected)
+                        }
+                    }
+                )
+            }
+            .map { it.rows }
             .catch { Log.e(TAG, ": ", it) }
             .flowOn(coroutineProvider.io)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
@@ -200,3 +217,8 @@ class SalesListViewModel @Inject constructor(
     }
 
 }
+
+private data class SalesListSelection(
+    val source: SalesList = emptyList(),
+    val rows: SalesList = emptyList()
+)

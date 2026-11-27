@@ -174,4 +174,36 @@ class SalesListViewModelTest {
         assertTrue(vm.reportState.value.ids.isEmpty())
         assertFalse(vm.reportState.value.allSelected)
     }
+
+    @Test fun `toggling a sale retains other selected and unselected row instances`() = runTest(dispatcher) {
+        val vm = observe()
+        val initial = vm.salesListUiState.value
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        val firstSelection = vm.salesListUiState.value
+        assertSame(initial[0], firstSelection[0])
+        assertNotSame(initial[1], firstSelection[1])
+        vm.onCardSelected(3)
+        advanceUntilIdle()
+        val secondSelection = vm.salesListUiState.value
+        assertSame(firstSelection[0], secondSelection[0])
+        assertSame(firstSelection[1], secondSelection[1])
+        assertNotSame(firstSelection[2], secondSelection[2])
+        vm.onCardSelected(3)
+        advanceUntilIdle()
+        assertSame(secondSelection[1], vm.salesListUiState.value[1])
+        assertFalse(vm.salesListUiState.value[2].isSelected)
+    }
+
+    @Test fun `updated and reordered source sales refresh selected rows`() = runTest(dispatcher) {
+        val vm = observe()
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        sales.value = sales.value.map { if (it.id == 2L) it.copy(total = 42.0) else it }.reversed()
+        advanceUntilIdle()
+        val rows = vm.salesListUiState.value
+        assertEquals(listOf(4L, 3L, 2L, 1L), rows.map { it.id })
+        assertEquals(42.0, rows.single { it.id == 2L }.total, 0.0)
+        assertEquals(listOf(2L), rows.filter { it.isSelected }.map { it.id })
+    }
 }
