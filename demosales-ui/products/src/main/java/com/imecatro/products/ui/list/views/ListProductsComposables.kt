@@ -516,8 +516,6 @@ fun ListOfProductsStateImpl(
 
     val categories by productsViewModel.categories.collectAsStateWithLifecycle()
 
-    var showShareReport by remember { mutableStateOf(false) }
-
     val selectedIds = remember(uiState.idsSelected) { uiState.idsSelected.toHashSet() }
     val showOptions = uiState.enableSelection || selectedIds.isNotEmpty()
     ListOfProducts(
@@ -553,39 +551,31 @@ fun ListOfProductsStateImpl(
 
     UiStateHandler(uiState, onDismiss = productsViewModel::onErrorConsumed)
 
-    LaunchedEffect(uiState) {
-        if (uiState.catalogFile != null)
-            showShareReport = true
-    }
-
+    val catalogFile = uiState.catalogFile
     val context = LocalContext.current
-    if (showShareReport)
-        ModalBottomSheet(onDismissRequest = {
-            showShareReport = false
-            productsViewModel.onCatalogShared()
-        }
-        ) {
+    if (catalogFile != null)
+        ModalBottomSheet(onDismissRequest = productsViewModel::onCatalogShared) {
             Column(
                 Modifier.padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
-                        uiState.catalogFile?.open(context)
+                        catalogFile.open(context)
                     }) {
                         Text(stringResource(R.string.btn_download_products_csv))
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
-                        uiState.catalogFile?.share(context)
+                        catalogFile.share(context)
                     }) { Icon(Icons.Default.Share, null) }
                     IconButton(onClick = {
-                        uiState.catalogFile?.download(context)
+                        catalogFile.download(context)
                     }) { Icon(painterResource(R.drawable.download), null) }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = {
-                        showShareReport = false
+                        productsViewModel.onCatalogShared()
                         onCreateCatalog(uiState.idsSelected)
                     }) {
                         Text(stringResource(R.string.txt_catalog_pdf))

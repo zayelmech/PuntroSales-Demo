@@ -121,6 +121,34 @@ class ProductsInventoryUiTest {
         assertEquals(0, fullCatalogReads.get())
     }
 
+    @Test fun creatingCatalogConsumesReportAndSelectionDoesNotReopenSheet() {
+        var catalogIds: List<Long>? = null
+        compose.setContent {
+            PuntroSalesDemoTheme {
+                ListOfProductsStateImpl(viewModel, {}, onCreateCatalog = { catalogIds = it }, onNavigateAction = {})
+            }
+        }
+        awaitCard(1)
+        compose.runOnIdle {
+            viewModel.onProductSelected(1L)
+            viewModel.onProcessProducts()
+        }
+        compose.waitUntil(5_000) { viewModel.uiState.value.catalogFile != null }
+        val report = viewModel.uiState.value.catalogFile
+        try {
+            val createCatalog = context.getString(com.imecatro.products.ui.R.string.txt_catalog_pdf)
+            compose.onNodeWithText(createCatalog).assertIsDisplayed().performClick()
+            compose.runOnIdle {
+                assertEquals(listOf(1L), catalogIds)
+                assertNull(viewModel.uiState.value.catalogFile)
+                viewModel.onProductSelected(2L)
+            }
+            compose.onNodeWithText(createCatalog).assertDoesNotExist()
+        } finally {
+            report?.delete()
+        }
+    }
+
     private fun awaitCard(id: Long) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("ElevatedCard-$id").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("ElevatedCard-$id").assertIsDisplayed()
