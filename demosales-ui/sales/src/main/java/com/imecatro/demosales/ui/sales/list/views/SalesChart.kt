@@ -139,7 +139,7 @@ private fun SalesRangeChips(
     onSelected: (SalesRangeChip) -> Unit
 ) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(SalesRangeChip.entries) { chip ->
+        items(items = SalesRangeChip.entries, key = { it.name }, contentType = { "range_chip" }) { chip ->
             FilterChip(
                 selected = selectedRange == chip,
                 onClick = { onSelected(chip) },

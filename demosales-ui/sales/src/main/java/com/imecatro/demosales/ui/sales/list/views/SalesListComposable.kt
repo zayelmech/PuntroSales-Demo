@@ -244,7 +244,7 @@ fun SalesListComposable(
                 state = scrollState,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                item {
+                item(key = "sales_header", contentType = "sales_header") {
                     ListItem(
                         headlineContent = {
                             Text(stringResource(R.string.txt_sales_list_tittle))
@@ -262,9 +262,11 @@ fun SalesListComposable(
                     HorizontalDivider()
                 }
                 if (list.isEmpty()) {
-                    item { Text(stringResource(R.string.sales_list_empty), Modifier.padding(24.dp)) }
+                    item(key = "sales_empty", contentType = "sales_empty") {
+                        Text(stringResource(R.string.sales_list_empty), Modifier.padding(24.dp))
+                    }
                 }
-                items(list) { sale ->
+                items(items = list, key = { it.id }, contentType = { "sale" }) { sale ->
                     CardOfSaleComposable(
                         sale = sale,
                         onLongClicked = { onCardSelected(sale.id) },
@@ -288,7 +290,7 @@ fun SalesListComposable(
             if (statusFilter)
                 ModalBottomSheet(onDismissRequest = { statusFilter = false }) {
                     LazyColumn {
-                        items(statusList) { status ->
+                        items(items = statusList, key = { it.type.name }, contentType = { "status_filter" }) { status ->
                             ListItem(
                                 leadingContent = {
                                     Checkbox(
