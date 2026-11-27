@@ -15,6 +15,8 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import java.io.File
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 fun File.share(context: Context){
     val uri = FileProvider.getUriForFile(
@@ -38,6 +40,21 @@ fun File.share(context: Context){
 
 
 fun File.download(context: Context){
+    if (saveToDownloads(context)) {
+        context.startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+    }
+}
+
+suspend fun File.downloadInBackground(context: Context) {
+    val saved = withContext(Dispatchers.IO) { saveToDownloads(context) }
+    if (saved) {
+        withContext(Dispatchers.Main) {
+            context.startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+        }
+    }
+}
+
+private fun File.saveToDownloads(context: Context): Boolean {
     val ext = MimeTypeMap.getFileExtensionFromUrl(name)?.lowercase(Locale.ROOT)
     val mime = when (ext) {
         "csv" -> "text/csv"
@@ -57,7 +74,7 @@ fun File.download(context: Context){
 
         val resolver = context.contentResolver
         val destUri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
-            ?: return
+            ?: return false
 
         resolver.openOutputStream(destUri)?.use { out ->
             inputStream().use { it.copyTo(out) }
@@ -89,7 +106,7 @@ fun File.download(context: Context){
         )
     }
 
-    context.startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
+    return true
 }
 
 fun File.open(context: Context) {

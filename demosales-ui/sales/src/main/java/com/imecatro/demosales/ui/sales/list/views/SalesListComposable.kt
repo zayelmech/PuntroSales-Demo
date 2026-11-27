@@ -62,8 +62,9 @@ import com.imecatro.demosales.ui.sales.list.model.SalesDateRange
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
+import com.imecatro.demosales.ui.theme.LocalCurrencyCode
 import com.imecatro.demosales.ui.theme.common.SearchTopBar
-import com.imecatro.demosales.ui.theme.common.download
+import com.imecatro.demosales.ui.theme.common.downloadInBackground
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
@@ -96,6 +97,8 @@ fun SalesListComposable(
 ) {
 
     val scrollState = rememberLazyListState()
+    val locale = LocalLocale.current.platformLocale
+    val currencyCode = LocalCurrencyCode.current
 
     var dateFilter by remember { mutableStateOf(false) }
 
@@ -244,7 +247,7 @@ fun SalesListComposable(
                 state = scrollState,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                item {
+                item(key = "sales_header", contentType = "sales_header") {
                     ListItem(
                         headlineContent = {
                             Text(stringResource(R.string.txt_sales_list_tittle))
@@ -262,11 +265,15 @@ fun SalesListComposable(
                     HorizontalDivider()
                 }
                 if (list.isEmpty()) {
-                    item { Text(stringResource(R.string.sales_list_empty), Modifier.padding(24.dp)) }
+                    item(key = "sales_empty", contentType = "sales_empty") {
+                        Text(stringResource(R.string.sales_list_empty), Modifier.padding(24.dp))
+                    }
                 }
-                items(list) { sale ->
+                items(items = list, key = { it.id }, contentType = { "sale" }) { sale ->
                     CardOfSaleComposable(
                         sale = sale,
+                        locale = locale,
+                        currencyCode = currencyCode,
                         onLongClicked = { onCardSelected(sale.id) },
                         onCardClicked = { onCardClicked(sale.id) }
                     )
@@ -288,7 +295,7 @@ fun SalesListComposable(
             if (statusFilter)
                 ModalBottomSheet(onDismissRequest = { statusFilter = false }) {
                     LazyColumn {
-                        items(statusList) { status ->
+                        items(items = statusList, key = { it.type.name }, contentType = { "status_filter" }) { status ->
                             ListItem(
                                 leadingContent = {
                                     Checkbox(
@@ -322,7 +329,7 @@ fun SalesListComposableStateImpl(
 ) {
 
     //List
-    val listUiState by salesListViewModel.salesListUiState.collectAsState()
+    val listUiState by salesListViewModel.salesListUiState.collectAsStateWithLifecycle()
     // Filters
     val statusFilterUiState by salesListViewModel.statusFilterState.collectAsState()
     val selectedDateRange by salesListViewModel.dateFilter.collectAsStateWithLifecycle()
@@ -336,8 +343,6 @@ fun SalesListComposableStateImpl(
     var showGraph by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
-
-    val metricsState by salesListViewModel.metrics.collectAsStateWithLifecycle()
 
     val searchQuery by salesListViewModel.searchQuery.collectAsStateWithLifecycle()
 
@@ -394,7 +399,9 @@ fun SalesListComposableStateImpl(
                     }) { Icon(Icons.Default.Share, null) }
 
                     IconButton(onClick = {
-                        reportState.salesFile?.download(context)
+                        reportState.salesFile?.let { file ->
+                            scope.launch { file.downloadInBackground(context) }
+                        }
                     }) { Icon(painterResource(R.drawable.download), null) }
 
                 }
@@ -411,7 +418,9 @@ fun SalesListComposableStateImpl(
                         reportState.groupedProductsFile?.share(context)
                     }) { Icon(Icons.Default.Share, null) }
                     IconButton(onClick = {
-                        reportState.groupedProductsFile?.download(context)
+                        reportState.groupedProductsFile?.let { file ->
+                            scope.launch { file.downloadInBackground(context) }
+                        }
                     }) { Icon(painterResource(R.drawable.download), null) }
 
                 }
@@ -419,6 +428,7 @@ fun SalesListComposableStateImpl(
         }
 
     if (showGraph) {
+        val metricsState by salesListViewModel.metrics.collectAsStateWithLifecycle()
         ModalBottomSheet(
             onDismissRequest = { showGraph = false }
         ) {

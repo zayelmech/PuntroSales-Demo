@@ -17,8 +17,10 @@ import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
 import org.junit.After
@@ -35,8 +37,9 @@ class SalesListViewModelTest {
     private val sales = MutableStateFlow(listOf(
         sale(1, day.minusDays(1)), sale(2, day), sale(3, day, OrderStatus.PENDING), sale(4, day.plusDays(1))
     ))
+    private var subscriptionDelayMillis = 0L
     private val repository = object : AllSalesRepository {
-        override fun getAllSales() = sales
+        override fun getAllSales() = sales.onStart { delay(subscriptionDelayMillis) }
         override suspend fun getSalesWithIds(ids: List<Long>): List<SaleDomainModel> = error("Unused")
     }
     private val details = object : DetailsSaleRepository {
@@ -51,14 +54,18 @@ class SalesListViewModelTest {
     @Before fun setUp() { Dispatchers.setMain(dispatcher) }
     @After fun tearDown() { Dispatchers.resetMain() }
 
-    private fun TestScope.observe(): SalesListViewModel {
+    private fun createViewModel(): SalesListViewModel {
         val coroutines = object : CoroutineProvider {
             override val io = dispatcher
             override val main = dispatcher
         }
-        val vm = SalesListViewModel(GetAllSalesUseCase(repository), coroutines,
+        return SalesListViewModel(GetAllSalesUseCase(repository), coroutines,
             ExportSalesReportUseCase(repository, files, coroutines),
             ExportProductsFromSaleUseCase(details, files, coroutines), GetSalesMetricsUseCase(repository))
+    }
+
+    private fun TestScope.observe(): SalesListViewModel {
+        val vm = createViewModel()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.salesListUiState.collect() }
         advanceUntilIdle()
         return vm
@@ -145,5 +152,86 @@ class SalesListViewModelTest {
         vm.onDateFilterChange(SalesDateRange(day))
         advanceUntilIdle()
         assertEquals(listOf(2L), vm.reportState.value.ids)
+    }
+
+    @Test fun `selection survives search and toggling a selected sale clears its row`() = runTest(dispatcher) {
+        val vm = observe()
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        vm.onSearchQueryChange("3")
+        advanceUntilIdle()
+        assertFalse(vm.salesListUiState.value.single().isSelected)
+        vm.onSearchQueryChange("")
+        advanceUntilIdle()
+        assertEquals(listOf(2L), vm.salesListUiState.value.filter { it.isSelected }.map { it.id })
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        assertTrue(vm.reportState.value.ids.isEmpty())
+        assertTrue(vm.salesListUiState.value.none { it.isSelected })
+    }
+
+    @Test fun `select all and clear update every visible row`() = runTest(dispatcher) {
+        val vm = observe()
+        vm.onSelectAllSales(true)
+        advanceUntilIdle()
+        assertTrue(vm.salesListUiState.value.all { it.isSelected })
+        vm.onSelectAllSales(false)
+        advanceUntilIdle()
+        assertTrue(vm.salesListUiState.value.none { it.isSelected })
+        assertTrue(vm.reportState.value.ids.isEmpty())
+        assertFalse(vm.reportState.value.allSelected)
+    }
+
+    @Test fun `toggling a sale retains other selected and unselected row instances`() = runTest(dispatcher) {
+        val vm = observe()
+        val initial = vm.salesListUiState.value
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        val firstSelection = vm.salesListUiState.value
+        assertSame(initial[0], firstSelection[0])
+        assertNotSame(initial[1], firstSelection[1])
+        vm.onCardSelected(3)
+        advanceUntilIdle()
+        val secondSelection = vm.salesListUiState.value
+        assertSame(firstSelection[0], secondSelection[0])
+        assertSame(firstSelection[1], secondSelection[1])
+        assertNotSame(firstSelection[2], secondSelection[2])
+        vm.onCardSelected(3)
+        advanceUntilIdle()
+        assertSame(secondSelection[1], vm.salesListUiState.value[1])
+        assertFalse(vm.salesListUiState.value[2].isSelected)
+    }
+
+    @Test fun `updated and reordered source sales refresh selected rows`() = runTest(dispatcher) {
+        val vm = observe()
+        vm.onCardSelected(2)
+        advanceUntilIdle()
+        sales.value = sales.value.map { if (it.id == 2L) it.copy(total = 42.0) else it }.reversed()
+        advanceUntilIdle()
+        val rows = vm.salesListUiState.value
+        assertEquals(listOf(4L, 3L, 2L, 1L), rows.map { it.id })
+        assertEquals(42.0, rows.single { it.id == 2L }.total, 0.0)
+        assertEquals(listOf(2L), rows.filter { it.isSelected }.map { it.id })
+    }
+
+    @Test fun `restarting collection retains cached rows while waiting for the database`() = runTest(dispatcher) {
+        val vm = createViewModel()
+        val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            vm.salesListUiState.collect()
+        }
+        advanceUntilIdle()
+        val cachedRows = vm.salesListUiState.value
+        assertEquals(4, cachedRows.size)
+        collector.cancel()
+        runCurrent()
+        subscriptionDelayMillis = 1_000
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.salesListUiState.collect() }
+        runCurrent()
+        assertSame(cachedRows, vm.salesListUiState.value)
+        advanceTimeBy(999)
+        runCurrent()
+        assertSame(cachedRows, vm.salesListUiState.value)
+        advanceUntilIdle()
+        assertEquals(cachedRows, vm.salesListUiState.value)
     }
 }
