@@ -116,7 +116,7 @@ class ProductsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getAllCategoriesUseCase().collect { list ->
                 val checked = _categories.value.filter { it.isChecked }.map { it.text }.toSet()
-                val filter = list.map { CategoriesFilter(it.name, it.name in checked) }
+                val filter = list.map { CategoriesFilter(it.name, it.name in checked, id = it.id) }
 
                 val uncategorized = CategoriesFilter("", "" in checked) // for elements with no category
                 _categories.update { filter.plus(uncategorized) }

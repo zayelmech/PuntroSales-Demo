@@ -356,19 +356,15 @@ fun ListOfProducts(
 
     if (orderedFilter)
         ModalBottomSheet(onDismissRequest = { orderedFilter = false }, sheetState = sheetState) {
-            LazyColumn {
-                items(orderList) { ordered ->
-                    ListItem(
-                        leadingContent = {
-                            RadioButton(selected = ordered.isChecked, onClick = {
-                                onCheckedChange(ordered)
-                            })
-                        },
-                        headlineContent = {
-                            Text(text = stringResource(ordered.text))
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
+            if (orderList.size <= 10) {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    orderList.forEach { ordered -> OrderFilterItem(ordered, onCheckedChange) }
+                }
+            } else {
+                LazyColumn {
+                    items(orderList, key = { it.type.name }, contentType = { "order-filter" }) { ordered ->
+                        OrderFilterItem(ordered, onCheckedChange)
+                    }
                 }
             }
         }
@@ -376,7 +372,7 @@ fun ListOfProducts(
     if (categoriesFilter)
         ModalBottomSheet(onDismissRequest = { categoriesFilter = false }, sheetState = sheetState) {
             LazyColumn {
-                item {
+                item(key = "categories-header", contentType = "categories-header") {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
@@ -392,7 +388,11 @@ fun ListOfProducts(
                         }
                     }
                 }
-                items(categories) { category ->
+                items(
+                    categories,
+                    key = { it.id ?: "category-name:${it.text}" },
+                    contentType = { "category-filter" }
+                ) { category ->
                     ListItem(
                         leadingContent = {
                             Checkbox(checked = category.isChecked, onCheckedChange = {
@@ -410,6 +410,18 @@ fun ListOfProducts(
                 }
             }
         }
+}
+
+
+@Composable
+private fun OrderFilterItem(ordered: OrderedFilterState, onCheckedChange: (OrderedFilterState) -> Unit) {
+    ListItem(
+        leadingContent = {
+            RadioButton(selected = ordered.isChecked, onClick = { onCheckedChange(ordered) })
+        },
+        headlineContent = { Text(text = stringResource(ordered.text)) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+    )
 }
 
 
