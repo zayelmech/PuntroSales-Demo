@@ -21,8 +21,8 @@ android {
         applicationId = "com.imecatro.demosales"
         minSdk = 26
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 30
-        versionName = "1.15.3"
+        versionCode = 31
+        versionName = "1.15.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
