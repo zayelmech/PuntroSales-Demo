@@ -64,7 +64,7 @@ import java.time.format.FormatStyle
 import com.imecatro.demosales.ui.sales.list.viewmodel.SalesListViewModel
 import com.imecatro.demosales.ui.theme.LocalCurrencyCode
 import com.imecatro.demosales.ui.theme.common.SearchTopBar
-import com.imecatro.demosales.ui.theme.common.download
+import com.imecatro.demosales.ui.theme.common.downloadInBackground
 import com.imecatro.demosales.ui.theme.common.formatAsCurrency
 import com.imecatro.demosales.ui.theme.common.open
 import com.imecatro.demosales.ui.theme.common.share
@@ -401,7 +401,9 @@ fun SalesListComposableStateImpl(
                     }) { Icon(Icons.Default.Share, null) }
 
                     IconButton(onClick = {
-                        reportState.salesFile?.download(context)
+                        reportState.salesFile?.let { file ->
+                            scope.launch { file.downloadInBackground(context) }
+                        }
                     }) { Icon(painterResource(R.drawable.download), null) }
 
                 }
@@ -418,7 +420,9 @@ fun SalesListComposableStateImpl(
                         reportState.groupedProductsFile?.share(context)
                     }) { Icon(Icons.Default.Share, null) }
                     IconButton(onClick = {
-                        reportState.groupedProductsFile?.download(context)
+                        reportState.groupedProductsFile?.let { file ->
+                            scope.launch { file.downloadInBackground(context) }
+                        }
                     }) { Icon(painterResource(R.drawable.download), null) }
 
                 }
