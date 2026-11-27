@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.runningFold
@@ -132,6 +133,7 @@ class SalesListViewModel @Inject constructor(
                     }
                 )
             }
+            .drop(1) // Keep the cached rows until the source emits after a lifecycle restart.
             .map { it.rows }
             .catch { Log.e(TAG, ": ", it) }
             .flowOn(coroutineProvider.io)

@@ -329,7 +329,7 @@ fun SalesListComposableStateImpl(
 ) {
 
     //List
-    val listUiState by salesListViewModel.salesListUiState.collectAsState()
+    val listUiState by salesListViewModel.salesListUiState.collectAsStateWithLifecycle()
     // Filters
     val statusFilterUiState by salesListViewModel.statusFilterState.collectAsState()
     val selectedDateRange by salesListViewModel.dateFilter.collectAsStateWithLifecycle()
@@ -343,8 +343,6 @@ fun SalesListComposableStateImpl(
     var showGraph by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
-
-    val metricsState by salesListViewModel.metrics.collectAsStateWithLifecycle()
 
     val searchQuery by salesListViewModel.searchQuery.collectAsStateWithLifecycle()
 
@@ -430,6 +428,7 @@ fun SalesListComposableStateImpl(
         }
 
     if (showGraph) {
+        val metricsState by salesListViewModel.metrics.collectAsStateWithLifecycle()
         ModalBottomSheet(
             onDismissRequest = { showGraph = false }
         ) {
